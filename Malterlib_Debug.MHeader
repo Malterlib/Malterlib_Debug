@@ -1,0 +1,78 @@
+// Copyright © 2015 Hansoft AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
+Import "../Core/Lib_Malterlib.MTarget"
+
+%Group "{Malterlib}/{Lib_Malterlib_Debug}"
+{
+	%Group Debug
+	{
+		%Group Include
+		{
+			Compile.Type "C++"
+			{
+				!!DocumentationEnabled true
+			}
+			%File "Include/Mib/Debug/^*"
+		}
+		%File "Source/^*"
+		%Group Platform
+		{
+			%File "Source/Platform/*"
+			{
+				Compile.Disabled true
+				{
+					!PlatformFamily "@(PlatformFamilyFromFile)"
+				}
+			}
+		}
+		%Group Documentation
+		{
+			%File "Documentation/*"
+		}
+	}
+}
+
+
+Property
+{
+	MalterlibLibrary_Debug true
+	{
+		&
+		{
+			MalterlibLibrary_Debug ""
+			MalterlibLibrary_All true
+		}
+	}
+	MalterlibSubLibraries "Debug;@(MalterlibSubLibraries)"
+	{
+		!!MalterlibLibrary_Debug true
+	}
+//	MalterlibSubLibrarySeparate_Lib_Malterlib_Debug true
+	MalterlibIncludeRoots "@('Include'->MakeAbsolute());@(MalterlibIncludeRoots)"
+	{
+		!!MalterlibLibrary_Debug true
+	}
+}
+
+Property
+{
+	!!MalterlibEnableInternalTests true
+	
+	MalterlibTests "Malterlib_Debug;@(MalterlibTests)"
+	MalterlibTestFiles_Malterlib_Debug "@('Test/*'->MakeAbsolute())"
+}
+
+%Group "~Automatic/NatVis"
+{
+	%File "Source/*.natvis"
+}
+
+Target.ExtraGroups "~Automatic/NatVis;@(Target.ExtraGroups)"
+{
+	&
+	{
+		TargetIsExecutable true
+		GeneratorFamily VisualStudio
+	}
+}

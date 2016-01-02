@@ -1,0 +1,14 @@
+
+EXPORTS
+	VSE_CStr
+	VSE_CWStr
+	VSE_CUStr
+	VSE_CFStr
+	VSE_CFWStr
+	VSE_CFUStr
+	VSE_CMStr
+	VSE_CTime
+	VSE_CTimeSpan
+	VSE_fp32
+	VSE_fp64
+	VSE_fp128

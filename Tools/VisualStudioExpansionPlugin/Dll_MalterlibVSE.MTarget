@@ -1,0 +1,35 @@
+﻿// Copyright © 2015 Hansoft AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
+%Target Dll_MalterlibVSE
+{
+	Property
+	{
+		MalterlibPostCopyProject "DevEnv"
+		ProductName "Malterlib Visual Studio Debugger Extension"
+	}
+	Target
+	{
+		Type "DynamicLibrary"
+		BaseName "MalterlibVSE"
+		ModuleDefinitionFile "@(Builtin.BasePath)/@(Builtin.Function->RelativeBase('MalterlibVSE.def'))"
+	}
+	Compile
+	{
+		!!CompileDialect C
+	
+		PrefixHeader ""
+	}
+	%Group "Header Files"
+	{
+		%File MalterlibVSE.h
+		%File custview.h
+	}
+	%Group "Resource Files"
+	%Group "Source Files"
+	{
+		%File MalterlibVSE.cpp
+		%File MalterlibVSE.def
+	}
+	%Dependency Lib_Malterlib
+}

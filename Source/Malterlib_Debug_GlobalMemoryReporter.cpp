@@ -1,0 +1,51 @@
+﻿// Copyright © 2015 Hansoft AB 
+// Distributed under the MIT license, see license text in LICENSE.Malterlib
+
+#include <Mib/Core/Core>
+#include <Mib/Concurrency/ConcurrencyManager>
+#include <Mib/Debug/RemoteDebugger>
+
+#if DMibConfig_MemoryManager_Stats_Enable
+#	include "Malterlib_Memory_Reporter_Stats.hpp"
+DMibCompilerMessage("---- Stats memory reporter enabled");
+#endif
+
+#if DMibConfig_MemoryManager_Stats_EnableCallstack
+#	include "Malterlib_Memory_Reporter_Callstack.hpp"
+DMibCompilerMessage("---- Callstack memory reporter enabled");
+#endif
+
+#if DMibConfig_MemoryManager_Stats_EnableCategories
+#	include "../../Memory/Source/Malterlib_Memory_Reporter_Categories.hpp"
+DMibCompilerMessage("---- Categories memory reporter enabled");
+#endif
+
+namespace NMib
+{
+#if (DMibConfig_MemoryManager_Stats_Enable + DMibConfig_MemoryManager_Stats_EnableCallstack + DMibConfig_MemoryManager_Stats_EnableCategories) > 1
+#error "Can only use one memory reporter at a time"
+#endif
+#if DMibConfig_MemoryManager_Stats_Enable
+	NMib::NAggregate::TCAggregateSimple<NMem::CStatsMemoryReporter> g_MainReporter = {DAggregateInit};
+#elif DMibConfig_MemoryManager_Stats_EnableCallstack
+	NMib::NAggregate::TCAggregateSimple<NMem::CCallstackMemoryReporter> g_MainReporter = {DAggregateInit};
+#elif DMibConfig_MemoryManager_Stats_EnableCategories
+	NMib::NAggregate::TCAggregateSimple<NMem::CCategoriesMemoryReporter> g_MainReporter = {DAggregateInit};
+#endif
+
+#if DMibConfig_Memory_Shims_EnableGlobal
+	void CSystem::fp_CreateGlobalMemoryReporter()
+	{
+#if DMibConfig_MemoryManager_Stats_Enable || DMibConfig_MemoryManager_Stats_EnableCallstack || DMibConfig_MemoryManager_Stats_EnableCategories
+		g_MainReporter.f_Construct();
+#endif
+	}
+	void CSystem::fp_DestroyGlobalMemoryReporter()
+	{
+#if DMibConfig_MemoryManager_Stats_Enable || DMibConfig_MemoryManager_Stats_EnableCallstack || DMibConfig_MemoryManager_Stats_EnableCategories
+		g_MainReporter.f_Destruct();
+#endif
+	}
+#endif
+
+} // Namespace NMib
