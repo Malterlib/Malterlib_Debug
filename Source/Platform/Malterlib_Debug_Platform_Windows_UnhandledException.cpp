@@ -506,7 +506,7 @@ namespace NMib
 						{
 							FLOATING_SAVE_AREA &FloatSaveArea = _pExceptionInfo->ContextRecord->FloatSave;
 
-							ExceptionInfo += CStrNonTracked::CFormat("Floating point registers:\r\n"
+							ExceptionInfo += NStr::CStrNonTracked::CFormat("Floating point registers:\r\n"
 								"ControlWord=0x{nfh,sf0,sj4} StatusWord=0x{nfh,sf0,sj4} TagWord=0x{nfh,sf0,sj4}\r\n"
 								"ErrorOffset=0x{} ErrorSelector=0x{} DataOffset=0x{}\r\n"
 								"DataSelector=0x{} \r\n")
@@ -519,7 +519,7 @@ namespace NMib
 								<< ((mint)FloatSaveArea.DataSelector)
 								;
 
-							ExceptionInfo += CStrNonTracked::CFormat(
+							ExceptionInfo += NStr::CStrNonTracked::CFormat(
 								"St0=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St1=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
 								"St2=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St3=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
 								"St4=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St5=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
@@ -547,7 +547,7 @@ namespace NMib
 				#ifndef DArchitecture_x64
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_EXTENDED_REGISTERS)
 						{
-							ExceptionInfo += CStrNonTracked::CFormat("SSE registers:\r\n"
+							ExceptionInfo += NStr::CStrNonTracked::CFormat("SSE registers:\r\n"
 								"MXCSR=0x{}\r\n"
 								"Xmm0=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm1=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
 								"Xmm2=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm3=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
