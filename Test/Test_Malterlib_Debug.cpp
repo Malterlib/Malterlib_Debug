@@ -81,7 +81,7 @@ public:
 					{
 						if ( pInfo->m_pSourceFileName && *pInfo->m_pSourceFileName)
 						{
-							if (NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Debug.cpp") != -1)
+							if (NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Malterlib_Debug.cpp") != -1)
 								bFound = true;
 						}
 						else
@@ -116,7 +116,7 @@ public:
 					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
 					if ( pInfo->m_pSourceFileName)
 					{
-						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Debug.cpp")) != DMibExpr(-1))(ExpectLinuxFail);
+						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Malterlib_Debug.cpp")) != DMibExpr(-1))(ExpectLinuxFail);
 					}
 #endif
 
@@ -178,7 +178,7 @@ public:
 					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
 					if ( pInfo->m_pSourceFileName)
 					{
-						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Debug.cpp")) != DMibExpr(-1))(ExpectLinuxFail);
+						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Malterlib_Debug.cpp")) != DMibExpr(-1))(ExpectLinuxFail);
 					}
 #endif
 
@@ -199,7 +199,7 @@ public:
 
 			DMibTest(DMibExpr(bLookup) == DMibExpr(true));
 			
-			DMibTest(DMibExpr(Info.m_File.f_Find("Test_Debug.cpp")) != DMibExpr(-1));
+			DMibTest(DMibExpr(Info.m_File.f_Find("Test_Malterlib_Debug.cpp")) != DMibExpr(-1));
 			DMibTest(DMibExpr(Info.m_Function.f_Find("fg_LookupThisFunc()")) != DMibExpr(-1));
 			
 			/*
