@@ -43,7 +43,7 @@
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
       {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData.m_pPtr != 0)" LegacyAddin="IdsVSE.dll" Export ="VSE_CUStr">
+    <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData.m_pPtr != 0)" LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CUStr">
       ch32
     </DisplayString>
     <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
@@ -177,7 +177,7 @@
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
       {m_lData,su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4" LegacyAddin="IdsVSE.dll" Export ="VSE_CFUStr" />
+    <DisplayString Condition="EDebug_CharSize == 4" LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CFUStr" />
     <DisplayString>
       ""
     </DisplayString>
@@ -234,7 +234,7 @@
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
       {m_lData,su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4" LegacyAddin="IdsVSE.dll" Export ="VSE_CFUStr" />
+    <DisplayString Condition="EDebug_CharSize == 4" LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CFUStr" />
     <DisplayString>
       ""
     </DisplayString>
@@ -277,36 +277,36 @@
 
   <!-- CTime -->
   <Type Name="NIds::NTime::CTime">
-    <DisplayString  LegacyAddin="IdsVSE.dll" Export ="VSE_CTime">
+    <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTime">
       CTime
     </DisplayString>
   </Type>
   <Type Name="NMib::NTime::CTime">
-    <DisplayString  LegacyAddin="IdsVSE.dll" Export ="VSE_CTime">
+    <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTime">
       CTime
     </DisplayString>
   </Type>
 
   <!-- CTimeSpan -->
   <Type Name="NIds::NTime::CTimeSpan">
-    <DisplayString  LegacyAddin="IdsVSE.dll" Export ="VSE_CTimeSpan">
+    <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTimeSpan">
       CTimeSpan
     </DisplayString>
   </Type>
   <Type Name="NMib::NTime::CTimeSpan">
-    <DisplayString  LegacyAddin="IdsVSE.dll" Export ="VSE_CTimeSpan">
+    <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTimeSpan">
       CTimeSpan
     </DisplayString>
   </Type>
 
   <!-- TCFloat -->
   <Type Name="NIds::NMath::TCFloat&lt;1,15,112,NIds::NMath::CNoImplicit,*,NIds::NMath::TCInt&lt;__int64,unsigned __int64&gt; &gt;">
-    <DisplayString LegacyAddin="IdsVSE.dll" Export ="VSE_fp128">
+    <DisplayString LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_fp128">
       fp128
     </DisplayString>
   </Type>
   <Type Name="NMib::NMath::TCFloat&lt;1,15,112,NMib::NMath::CNoImplicit,*,NMib::NMath::TCInt&lt;__int64,unsigned __int64&gt; &gt;">
-    <DisplayString LegacyAddin="IdsVSE.dll" Export ="VSE_fp128">
+    <DisplayString LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_fp128">
       fp128
     </DisplayString>
   </Type>
