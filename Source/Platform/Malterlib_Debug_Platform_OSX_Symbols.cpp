@@ -138,7 +138,7 @@ namespace NMib
 				{
 					if (NMib::NFile::CFile::fs_FileExists(mp_SymbolsFilename, NFile::EFileAttrib_File))
 					{
-						mp_pSymbols = NSys::NFile::fg_Open(mp_SymbolsFilename, NFile::EFileOpen_Read | NFile::EFileOpen_ShareRead);
+						mp_pSymbols = NSys::NFile::fg_Open(mp_SymbolsFilename, NFile::EFileOpen_Read | NFile::EFileOpen_ShareRead, NFile::EFileAttrib_None);
 						if (!mp_pSymbols)
 							return false;
 
