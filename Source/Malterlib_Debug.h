@@ -30,7 +30,11 @@ namespace NMib
 #			define DMibDTrace(_Format, _Args)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
 #			define DMibDTraceRaw(_Args) NMib::NSys::fg_DebugOutput(_Args)
 #			define DMibDTraceSafe(_Format, _Args) NMib::NSys::fg_DebugOutput((NMib::NStr::CFStr512::CFormat(_Format) << _Args).f_GetStr().f_GetStr())
-#			define DMibDTraceTimed(_Format, _Args)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
+#			define DMibDTraceTimed(_Format, _Args)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat("{}: " _Format) << NMib::NTime::CTime::fs_NowLocal() << _Args)
+
+#			define DMibDTrace2(...)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
+#			define DMibDTraceSafe2(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
+#			define DMibDTraceTimed2(d_Format, ...)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}" d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
 #		else
 #			define DMibDTraceRaw(_Args) (void)0
 #			define DMibDTrace(_Format, _Args) (void)0
@@ -55,17 +59,24 @@ namespace NMib
 #			endif
 #		endif
 
-				
 #		if DMibEnableTrace > 0
 #			define DMibTrace(_Format, _Args) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
 #			define DMibTraceRaw(_Args) NMib::NSys::fg_DebugOutput(_Args)
 #			define DMibTraceSafe(_Format, _Args) NMib::NSys::fg_DebugOutput((NMib::NStr::CFStr512::CFormat(_Format) << _Args).f_GetStr().f_GetStr())
-#			define DMibTraceTimed(_Format, _Args) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
+#			define DMibTraceTimed(_Format, _Args) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat("{}: " _Format) << NMib::NTime::CTime::fs_NowLocal() << _Args)
+
+#			define DMibTrace2(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
+#			define DMibTraceSafe2(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
+#			define DMibTraceTimed2(d_Format, ...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
 #		else
 #			define DMibTrace(_Format, _Args) (void)0
 #			define DMibTraceRaw(_Args) (void)0
 #			define DMibTraceSafe(_Format, _Args) (void)0
 #			define DMibTraceTimed(_Format, _Args) (void)0
+
+#			define DMibTrace2(_Format, _Args) (void)0
+#			define DMibTraceSafe2(_Format, _Args) (void)0
+#			define DMibTraceTimed2(_Format, _Args) (void)0
 #		endif
 				
 #		ifndef DMibPNoShortCuts
@@ -73,6 +84,10 @@ namespace NMib
 #			define DTraceRaw DMibTraceRaw
 #			define DTraceSafe DMibTraceSafe
 #			define DTraceTimed DMibTraceTimed
+		
+#			define DTrace2 DMibTrace2
+#			define DTraceSafe2 DMibTraceSafe2
+#			define DTraceTimed2 DMibTraceTimed2
 #		endif
 
 #		ifndef DMibEnableConsole
@@ -86,6 +101,11 @@ namespace NMib
 #			define DMibConErrOut(_Format, _Args) NMib::fg_MalterlibConErrOut((NMib::NStr::fg_GetStringFormat(_Format) << _Args).f_GetStr())
 #			define DMibConErrOutRaw NMib::fg_MalterlibConErrOut
 #			define DMibColorConErrOut(_Color, _Format, _Args) NMib::fg_MalterlibConErrOut(_Color, (NMib::NStr::fg_GetStringFormat(_Format) << _Args).f_GetStr())
+
+#			define DMibConOut2(...) NMib::fg_MalterlibConOut((NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__)).f_GetStr())
+#			define DMibColorConOut2(_Color, ...) NMib::fg_MalterlibConOut(_Color, (NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__)).f_GetStr())
+#			define DMibConErrOut2(...) NMib::fg_MalterlibConErrOut((NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__)).f_GetStr())
+#			define DMibColorConErrOut2(_Color, ...) NMib::fg_MalterlibConErrOut(_Color, (NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__)).f_GetStr())
 #		else
 #			define DMibConOutRaw 1 ? (void)0 : NMib::fg_MalterlibConOut
 #			define DMibConErrOutRaw 1 ? (void)0 : NMib::fg_MalterlibConErrOut
@@ -102,6 +122,11 @@ namespace NMib
 #			define DConErrOut DMibConErrOut
 #			define DColorConErrOut DMibConErrOut
 #			define DConErrOutRaw DMibConErrOutRaw
+
+#			define DConOut2 DMibConOut2
+#			define DColorConOut2 DMibConOut2
+#			define DConErrOut2 DMibConErrOut2
+#			define DColorConErrOut2 DMibConErrOut2
 #		endif
 
 	}
