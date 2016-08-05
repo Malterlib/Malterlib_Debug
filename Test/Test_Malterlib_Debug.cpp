@@ -22,14 +22,17 @@ inline_never void *fg_GetInstructionPointer()
 
 inline_never void* fg_LookupThisFunc()
 {
+	volatile static int Test = DMibPLine;
+	NSys::fg_Compiler_MakeActive(0, &Test);
 	void * volatile pRet = fg_GetInstructionPointer();
 	return pRet;
 }
 
 inline_never mint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, mint _MaxDepth)
 {
+	volatile static int Test = DMibPLine;
+	NSys::fg_Compiler_MakeActive(0, &Test);
 	volatile mint Value = NMib::NSys::fg_System_GetStackTrace(_pStack, _MaxDepth);
-	
 	return Value;
 }
 
@@ -47,6 +50,8 @@ public:
 
 	inline_never static void* fs_LookupThisStaticMemberFunc()
 	{
+		volatile static int Test = DMibPLine;
+		NSys::fg_Compiler_MakeActive(0, &Test);
 		void * volatile pRet = fg_GetInstructionPointer();
 		return pRet;
 	}
@@ -169,10 +174,8 @@ public:
 //					DMibTrace("pInfo->m_pSourceFileName: {}\n", (void*)pInfo->m_pSourceFileName);
 
 					DMibTest(DMibExpr((void*)pInfo->m_pFunctionName) != DMibExpr(nullptr));
-					if ( pInfo->m_pFunctionName)
-					{
+					if (pInfo->m_pFunctionName)
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fs_LookupThisStaticMemberFunc")) != DMibExpr(-1))(ExpectLinuxFail);
-					}
 
 #ifndef DPlatformFamily_OSX
 					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
