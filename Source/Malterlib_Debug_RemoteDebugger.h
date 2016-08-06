@@ -79,7 +79,7 @@ namespace NMib
 					, uint64 _MemoryAllocator
 					, NStr::CStr const& _Name
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_AllocatorDelete
@@ -87,7 +87,7 @@ namespace NMib
 					  uint64 _ThreadID
 					, uint64 _MemoryAllocator
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_ScopeEnter
@@ -95,7 +95,7 @@ namespace NMib
 					  uint64 _ThreadID
 					, uint64 _MemoryAllocator
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_ScopeExit
@@ -103,7 +103,7 @@ namespace NMib
 					  uint64 _ThreadID
 					, uint64 _MemoryAllocator
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_Alloc
@@ -116,7 +116,7 @@ namespace NMib
 					, uint64 _ReturnedSize
 					, fp32 _nBytesOverhead
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 			virtual void f_Resize
 				(
@@ -129,7 +129,7 @@ namespace NMib
 					, uint64 _ReturnedSize
 					, fp32 _nBytesOverhead
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 			virtual void f_Realloc
 				(
@@ -142,7 +142,7 @@ namespace NMib
 					, uint64 _ReturnedSize
 					, fp32 _nBytesOverhead
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			
 				;
 			virtual void f_Free
@@ -151,7 +151,7 @@ namespace NMib
 					, uint64 _MemoryAllocator
 					, uint64 _Address
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_GetSize
@@ -161,7 +161,7 @@ namespace NMib
 					, uint64 _Address
 					, uint64 _Size
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_Protect
@@ -172,7 +172,7 @@ namespace NMib
 					, uint64 _Size
 					, uaint _Protect
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_Commit
@@ -182,7 +182,7 @@ namespace NMib
 					, uint64 _Address
 					, uint64 _Size
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 
 			virtual void f_Decommit
@@ -192,7 +192,7 @@ namespace NMib
 					, uint64 _Address
 					, uint64 _Size
 					, TCStackTrace<uint64> const& _lStack
-				) pure
+				) = 0
 			;
 		};		
 
