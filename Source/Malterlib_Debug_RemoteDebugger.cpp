@@ -64,7 +64,7 @@ namespace NMib
 					if (mp_pReportTo)
 						mp_SocketSema.f_ReportTo(mp_pReportTo);
 
-					mp_Socket.f_Listen(Address, &mp_SocketSema);
+					mp_Socket.f_Listen(Address, &mp_SocketSema, NNet::ENetFlag_ReuseAddress);
 
 					mp_ConnectionState.f_Store(EState_Listening);
 				}
@@ -483,7 +483,7 @@ namespace NMib
 					// be send when the connection is made.
 					CSysPacket_ClientConnect Packet =
 					{
-						NSys::fg_Process_GetCurrentUID()
+						NProcess::NPlatform::fg_Process_GetCurrentUID()
 					};
 
 					mp_pConnection->f_SendPacket(EChannel_System, EPacket_Sys_ClientConnect
