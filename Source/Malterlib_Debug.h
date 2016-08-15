@@ -40,6 +40,10 @@ namespace NMib
 #			define DMibDTrace(_Format, _Args) (void)0
 #			define DMibDTraceSafe(_Format, _Args) (void)0
 #			define DMibDTraceTimed(_Format, _Args) (void)0
+
+#			define DMibDTrace2(...) (void)0
+#			define DMibDTraceSafe2(...) (void)0
+#			define DMibDTraceTimed2(...) (void)0
 #		endif
 				
 #		ifndef DMibPNoShortCuts
@@ -47,6 +51,10 @@ namespace NMib
 #			define DDTraceRaw DMibDTraceRaw
 #			define DDTraceSafe DMibDTraceSafe
 #			define DDTraceTimed DMibDTraceTimed
+
+#			define DDTrace2 DMibDTrace2
+#			define DDTraceSafe2 DMibDTraceSafe2
+#			define DDTraceTimed2 DMibDTraceTimed2
 #		endif
 
 
@@ -74,9 +82,9 @@ namespace NMib
 #			define DMibTraceSafe(_Format, _Args) (void)0
 #			define DMibTraceTimed(_Format, _Args) (void)0
 
-#			define DMibTrace2(_Format, _Args) (void)0
-#			define DMibTraceSafe2(_Format, _Args) (void)0
-#			define DMibTraceTimed2(_Format, _Args) (void)0
+#			define DMibTrace2(...) (void)0
+#			define DMibTraceSafe2(...) (void)0
+#			define DMibTraceTimed2(...) (void)0
 #		endif
 				
 #		ifndef DMibPNoShortCuts
@@ -113,6 +121,11 @@ namespace NMib
 #			define DMibColorConOut(_Color, _Format, _Args) (void)0
 #			define DMibConErrOut(_Format, _Args) (void)0
 #			define DMibColorConErrOut(_Color, _Format, _Args) (void)0
+
+#			define DMibConOut2(...)  (void)0
+#			define DMibColorConOut2(_Color, ...)  (void)0
+#			define DMibConErrOut2(...)  (void)0
+#			define DMibColorConErrOut2(_Color, ...)  (void)0
 #		endif
 				
 #		ifndef DMibPNoShortCuts
