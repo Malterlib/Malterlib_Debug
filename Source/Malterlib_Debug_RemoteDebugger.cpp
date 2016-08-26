@@ -64,7 +64,7 @@ namespace NMib
 					if (mp_pReportTo)
 						mp_SocketSema.f_ReportTo(mp_pReportTo);
 
-					mp_Socket.f_Listen(Address, &mp_SocketSema, NNet::ENetFlag_ReuseAddress);
+					mp_Socket.f_Listen(Address, &mp_SocketSema, NNet::ENetFlag_None);
 
 					mp_ConnectionState.f_Store(EState_Listening);
 				}
