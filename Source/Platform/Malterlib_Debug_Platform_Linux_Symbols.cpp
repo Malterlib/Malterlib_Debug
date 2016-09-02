@@ -250,7 +250,7 @@ namespace NMib
 					)
 				;
 
-				if (iFunc < _Unit.m_lSortedFunctions.f_GetLen())
+				if (iFunc < _Unit.m_lSortedFunctions.f_GetLen() && iFunc >= 0)
 				{			
 					if (_Address < _Unit.m_lSortedFunctions[iFunc].m_LowPC)
 					{
