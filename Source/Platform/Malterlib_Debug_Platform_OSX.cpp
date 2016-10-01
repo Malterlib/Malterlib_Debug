@@ -11,13 +11,7 @@
 #include <dlfcn.h>
 #include <cxxabi.h>
 
-#ifdef DMibConfig_OverrideSystemMalloc
-extern "C"
-{
-	extern bool g_MalterlibMallocOveriddenSuccess;
-}
-#endif
-
+bool fg_MalterlibMallocOverride_Enabled();
 
 void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib::NStr::CStr const &_Message)
 {
@@ -119,8 +113,8 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCode
 	{
 		int Status = 1;
 		char *pDemangled;
-#if defined(DMibConfig_OverrideSystemMalloc) && !defined(_LIBCPP_BUILD_STATIC)
-		if (fg_GetSys()->f_MemoryManager_ReportingLeaks() && g_MalterlibMallocOveriddenSuccess)
+#if !defined(_LIBCPP_BUILD_STATIC)
+		if (fg_GetSys()->f_MemoryManager_ReportingLeaks() && fg_MalterlibMallocOverride_Enabled())
 			Status = 1;
 		else
 #endif
@@ -206,8 +200,8 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 		
 		{
 			char *pDemangled;
-#if defined(DMibConfig_OverrideSystemMalloc) && !defined(_LIBCPP_BUILD_STATIC)
-			if (fg_GetSys()->f_MemoryManager_ReportingLeaks() && g_MalterlibMallocOveriddenSuccess)
+#if !defined(_LIBCPP_BUILD_STATIC)
+			if (fg_GetSys()->f_MemoryManager_ReportingLeaks() && fg_MalterlibMallocOverride_Enabled())
 				Status = 1;
 			else
 #endif
