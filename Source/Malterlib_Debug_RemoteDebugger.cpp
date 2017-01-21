@@ -460,7 +460,7 @@ namespace NMib
 			, mp_pOldReporter(nullptr)
 		{
 			
-			auto CommandString = NSys::fg_Process_GetEnvironmentVariable(NStr::CStrNonTracked("Malterlib_RemoteDebugger"));
+			auto CommandString = NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("Malterlib_RemoteDebugger"));
 					
 			if (!CommandString.f_IsEmpty())
 			{
