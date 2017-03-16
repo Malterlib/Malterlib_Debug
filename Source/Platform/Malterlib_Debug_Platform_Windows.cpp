@@ -15,6 +15,11 @@
 
 namespace NMib
 {
+	namespace NSys
+	{
+		void fg_Windows_ExpectedFilter(LPTOP_LEVEL_EXCEPTION_FILTER _pFilter);
+	}
+
 	namespace NDebug
 	{
 		namespace NPlatform
@@ -66,6 +71,7 @@ namespace NMib
 				if (!g_bIsDll)
 				{
 					m_pPrevExceptionFilter = SetUnhandledExceptionFilter(&fsp_UnhandledException);
+					NSys::fg_Windows_ExpectedFilter(&fsp_UnhandledException);
 					f_InstallExceptionFilterCallback(true);
 				}
 				else
