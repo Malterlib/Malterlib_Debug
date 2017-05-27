@@ -3,17 +3,7 @@
 
   <!-- CStr -->
 
-    <Type Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CStr&gt;">
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CWStr&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CUStr&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CStrNonTracked&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CWStrNonTracked&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CUStrNonTracked&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CStrVMem&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CWStrVMem&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CUStrVMem&gt;"></AlternativeType>
-
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStr&gt;"></AlternativeType>
+    <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStr&gt;">
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStr&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStr&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrNonTracked&gt;"></AlternativeType>
@@ -106,11 +96,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CStrPtr&gt;">
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CWStrPtr&gt;"></AlternativeType>
-    <AlternativeType Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::CStrTraits_CUStrPtr&gt;"></AlternativeType>
-
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrPtr&gt;"></AlternativeType>
+  <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrPtr&gt;">
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrPtr&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrPtr&gt;"></AlternativeType>
     <DisplayString Condition="(m_pData == 0)">
@@ -158,63 +144,6 @@
           ch32 (unicode)
         </DisplayString>
       </Synthetic>
-    </Expand>
-  </Type>
-
-  <Type Name="NIds::NStr::TCStrAggregate&lt;NIds::NStr::TCTCStrTraits&lt;*,NIds::NStr::TCStrImp_Fixed&lt;*,*&gt; &gt; &gt;">
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
-      {m_lData,s8}
-    </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 1)">
-      {m_lData,s}
-    </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1">
-      {m_lData,s}
-    </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
-      {m_lData,su}
-    </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
-      {m_lData,su}
-    </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4" LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CFUStr" />
-    <DisplayString>
-      ""
-    </DisplayString>
-    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
-      m_lData,s8
-    </StringView>
-    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; !(m_Type == 2)">
-      m_lData,s
-    </StringView>
-    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
-      m_lData,su
-    </StringView>
-    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
-      m_lData,su
-    </StringView>
-    <Expand>
-      <Synthetic Name="Type">
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
-          utf8
-        </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 1)">
-          ch8 (unicode)
-        </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1">
-          ansi
-        </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
-          utf16
-        </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
-          ch16 (unicode)
-        </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 4">
-          ch32 (unicode)
-        </DisplayString>
-      </Synthetic>
-      <ExpandedItem>*((NIds::NStr::TCStrImp_Fixed&lt;$T2,$T3&gt; *)this)</ExpandedItem>
     </Expand>
   </Type>
 
@@ -276,11 +205,6 @@
   </Type>
 
   <!-- CTime -->
-  <Type Name="NIds::NTime::CTime">
-    <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTime">
-      CTime
-    </DisplayString>
-  </Type>
   <Type Name="NMib::NTime::CTime">
     <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTime">
       CTime
@@ -288,11 +212,6 @@
   </Type>
 
   <!-- CTimeSpan -->
-  <Type Name="NIds::NTime::CTimeSpan">
-    <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTimeSpan">
-      CTimeSpan
-    </DisplayString>
-  </Type>
   <Type Name="NMib::NTime::CTimeSpan">
     <DisplayString  LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CTimeSpan">
       CTimeSpan
@@ -300,54 +219,113 @@
   </Type>
 
   <!-- TCFloat -->
-  <Type Name="NIds::NMath::TCFloat&lt;1,15,112,NIds::NMath::CNoImplicit,*,NIds::NMath::TCInt&lt;__int64,unsigned __int64&gt; &gt;">
-    <DisplayString LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_fp128">
-      fp128
-    </DisplayString>
-  </Type>
   <Type Name="NMib::NMath::TCFloat&lt;1,15,112,NMib::NMath::CNoImplicit,*,NMib::NMath::TCInt&lt;__int64,unsigned __int64&gt; &gt;">
     <DisplayString LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_fp128">
       fp128
     </DisplayString>
   </Type>
 
-  <Type Name="NIds::NMath::TCFloat&lt;*,*,*,float,*,*&gt;">
-    <DisplayString>
-      {*((float const *)&amp;m_Data)}
-    </DisplayString>
-  </Type>
   <Type Name="NMib::NMath::TCFloat&lt;*,*,*,float,*,*&gt;">
     <DisplayString>
       {*((float const *)&amp;m_Data)}
     </DisplayString>
   </Type>
 
-  <Type Name="NIds::NMath::TCFloat&lt;*,*,*,double,*,*&gt;">
-    <DisplayString>
-      {*((double const *)&amp;m_Data)}
-    </DisplayString>
-  </Type>
   <Type Name="NMib::NMath::TCFloat&lt;*,*,*,double,*,*&gt;">
     <DisplayString>
       {*((double const *)&amp;m_Data)}
     </DisplayString>
   </Type>
 
-  <!-- NIds::NIntrusive::TCDLinkListAggregate<*>::CIterator -->
-  <Type Name="NIds::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;::CIterator">
-    <AlternativeType Name="NIds::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;::CIteratorConst"></AlternativeType>
-    <DisplayString Condition="m_pCurrent != 0">
-      {*(($T1 *)((mint)m_pCurrent - COffset::mc_Offset))}
+  <Type Name="NMib::NPtr::TCUniquePointer&lt;*,*,*,*&gt;">
+    <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
+      {*m_Data.m_pPointTo.m_pPtr}
     </DisplayString>
     <DisplayString>
-      Invalid
+      nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_pCurrent != 0">
-        *(($T1 *)((mint)m_pCurrent - COffset::mc_Offset))
+      <ExpandedItem Condition="m_Data.m_pPointTo.m_pPtr != 0">
+        *m_Data.m_pPointTo.m_pPtr
+      </ExpandedItem>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
+  <Type Name="NMib::NPtr::TCSharedPointer&lt;*&gt;">
+    <DisplayString Condition="m_Data.m_pPointTo != 0">
+      {*m_Data.m_pPointTo}
+    </DisplayString>
+    <DisplayString>
+      nullptr
+    </DisplayString>
+    <Expand>
+      <ExpandedItem Condition="m_Data.m_pPointTo != 0">
+        *m_Data.m_pPointTo
+      </ExpandedItem>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
+
+  <Type Name="NMib::NConcurrency::TCActor&lt;*&gt;">
+    <DisplayString>
+      {m_pInternalActor}
+    </DisplayString>
+    <DisplayString>
+      nullptr
+    </DisplayString>
+    <Expand>
+      <ExpandedItem>
+        m_pInternalActor
       </ExpandedItem>
     </Expand>
   </Type>
+
+    <Type Name="NMib::NConcurrency::TCActorInternal&lt;*&gt;">
+    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
+      {*(($T1 *)mp_pActor.m_Data.m_pPointTo.m_pPtr)}
+    </DisplayString>
+    <DisplayString>
+      Destroyed
+    </DisplayString>
+    <Expand>
+      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
+        *(($T1 *)mp_pActor.m_Data.m_pPointTo.m_pPtr)
+      </ExpandedItem>
+      <Item Name="[Ref Count]">
+        m_RefCount._My_val + 1
+      </Item>
+      <Item Name="[Weak Count]">
+        m_WeakRefCount._My_val
+      </Item>
+      <Item Name="[Internal Actor Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
+  <Type Name="NMib::NConcurrency::CActorHolder">
+    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
+      {*mp_pActor.m_Data.m_pPointTo.m_pPtr}
+    </DisplayString>
+    <DisplayString>
+      nullptr
+    </DisplayString>
+    <Expand>
+      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
+        *mp_pActor.m_Data.m_pPointTo.m_pPtr
+      </ExpandedItem>
+      <Item Name="[Internal Actor Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
   <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;::CIterator">
     <AlternativeType Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;::CIteratorConst"></AlternativeType>
     <DisplayString Condition="m_pCurrent != 0">
@@ -360,51 +338,26 @@
       <ExpandedItem Condition="m_pCurrent != 0">
         *(($T1 *)((mint)m_pCurrent - COffset::mc_Offset))
       </ExpandedItem>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
     </Expand>
   </Type>
 
-  <!-- NIds::NIntrusive::TCDLinkAggregateListNoPrevPtr<*> -->
-  <Type Name="NIds::NIntrusive::TCDLinkAggregateListNoPrevPtr&lt;*&gt;">
-    <Expand>
-      <Item Name ="[Ptr]">
-        (void *)this
-      </Item>
-      <Item Name ="[Next]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pNextPtr.m_pPtr) &amp; ~mint(1)))->m_pNextPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)(((mint)m_pNextPtr.m_pPtr) &amp; ~mint(1)))
-      </Item>
-      <Item Name ="[Prev]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pPrevPtr.m_pPtr->m_pNextPtr.m_pPtr) &amp; ~mint(1)))->m_pNextPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)m_pPrevPtr.m_pPtr)
-      </Item>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCDLinkAggregateListNoPrevPtr&lt;*&gt;">
     <Expand>
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Next]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pNextPtr.m_pPtr) &amp; ~mint(1)))->m_pNextPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)(((mint)m_pNextPtr.m_pPtr) &amp; ~mint(1)))
+      <Item Name ="[Next]" Condition="m_Data.m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_Data.m_pNextPtr) &amp; ~mint(1)))->m_Data.m_pNextPtr) &amp; mint(1)) != mint(1)">
+        *((CThis *)(((mint)m_Data.m_pNextPtr) &amp; ~mint(1)))
       </Item>
-      <Item Name ="[Prev]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pPrevPtr.m_pPtr->m_pNextPtr.m_pPtr) &amp; ~mint(1)))->m_pNextPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)m_pPrevPtr.m_pPtr)
+      <Item Name ="[Prev]" Condition="m_Data.m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)((CThis *)m_Data.m_pPrevPtr)->m_Data.m_pNextPtr) &amp; ~mint(1)))->m_Data.m_pNextPtr) &amp; mint(1)) != mint(1)">
+        *((CThis *)m_Data.m_pPrevPtr)
       </Item>
     </Expand>
   </Type>
 
-  <!-- NIds::NIntrusive::TCDLinkAggregateListNoPrevPtr<*> -->
-  <Type Name="NIds::NIntrusive::TCDLinkAggregate&lt;*&gt;">
-    <Expand>
-      <Item Name ="[Ptr]">
-        (void *)this
-      </Item>
-      <Item Name ="[Next]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pNextPtr.m_pPtr) &amp; ~mint(1)))->m_pPrevPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)m_pNextPtr.m_pPtr)
-      </Item>
-      <Item Name ="[Prev]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pPrevPtr.m_pPtr) &amp; ~mint(1)))->m_pPrevPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)(((mint)m_pPrevPtr.m_pPtr) &amp; ~mint(1)))
-      </Item>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCDLinkAggregate&lt;*&gt;">
     <Expand>
       <Item Name ="[Ptr]">
@@ -419,19 +372,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NIntrusive::TCAVLLinkAggregate&lt;*,*&gt;">
-    <Expand>
-      <Item Name ="[Ptr]">
-        (void *)this
-      </Item>
-      <Item Name ="[Left]" Condition="m_Link.m_pNext[0].m_pPtr != 0">
-        *((NIds::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((mint)m_Link.m_pNext[0].m_pPtr) &amp; ~mint(3)))
-      </Item>
-      <Item Name ="[Right]" Condition="m_Link.m_pNext[0].m_pPtr != 0">
-        *((NIds::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((mint)m_Link.m_pNext[1].m_pPtr) &amp; ~mint(3)))
-      </Item>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCAVLLinkAggregate&lt;*,*&gt;">
     <Expand>
       <Item Name ="[Ptr]">
@@ -447,20 +387,7 @@
   </Type>
 
 
-  <!-- NIds::NIntrusive::TDLink<*> -->
-  <Type Name="NIds::NIntrusive::TDLink&lt;*&gt;">
-    <DisplayString>
-      {m_Link}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem>
-        m_Link
-      </ExpandedItem>
-      <Item Name="[Link Raw View]">
-        *this,!
-      </Item>
-    </Expand>
-  </Type>
+  <!-- NMib::NIntrusive::TDLink<*> -->
   <Type Name="NMib::NIntrusive::TDLink&lt;*&gt;">
     <DisplayString>
       {m_Link}
@@ -475,16 +402,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NIntrusive::TCSLinkAggr&lt;*&gt;">
-    <Expand>
-      <Item Name ="[Ptr]">
-        (void *)this
-      </Item>
-      <Item Name ="[Next]" Condition="m_pNext.m_pPtr != 0">
-        *((CThis *)m_pNext.m_pPtr)
-      </Item>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCSLinkAggr&lt;*&gt;">
     <Expand>
       <Item Name ="[Ptr]">
@@ -496,119 +413,84 @@
     </Expand>
   </Type>
 
-  <!-- NIds::NIntrusive::TCDLinkListAggregate<*> -->
-  <Type Name="NIds::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;">
+  <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMem::CAllocator_Heap&gt;,*,*,*&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>(($T3 *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
+        <HeadPointer>((NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMem::CAllocator_Heap&gt; *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNextPtr.m_pPtr
-          )
-          &amp;
-          ~mint(1)
-          )
-          *
-          (
-          mint(1)
-          -
-          (
-          (
-          (mint)
-          (
-          (CThis *)
-          (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
-          )
-          )->m_pNextPtr.m_pPtr
-          |
-          (mint)
-          (
-          (CThis *)
-          (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
-          )
-          )->m_pPrevPtr.m_pPtr
-          )
-          &amp;
-          mint(1)
-          )
-          )
-          )
+            (CThis *)
+            (
+              (
+                ((mint)m_pNextPtr.m_pPtr)&amp;~mint(1))
+                *
+                (
+                  mint(1)
+                  -
+                  (
+                    (
+                      (mint)
+                      ((CThis *)((mint)m_pNextPtr.m_pPtr &amp; ~mint(1)))->m_pNextPtr.m_pPtr
+                      |
+                      (mint)((CThis *)((mint)m_pNextPtr.m_pPtr &amp; ~mint(1))
+                    )->m_pPrevPtr.m_pPtr
+                  )
+                  &amp;
+                  mint(1)
+                )
+              )
+            )
           )
         </NextPointer>
         <ValueNode>
-          *(($T1 *)((mint)this - NIds::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,$T3,$T4,$T5,$T6&gt;::COffset::mc_Offset))
+          *(($T1 *)((mint)this - NMib::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMem::CAllocator_Heap&gt;,$T3,$T4,$T5&gt;::COffset::mc_Offset))
         </ValueNode>
       </LinkedListItems>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
     </Expand>
   </Type>
+
   <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;">
     <Expand>
-      <LinkedListItems>
+      <LinkedListItems Condition="(mint)m_Link.m_pNextPtr.m_pPtr &amp; ~mint(1) != ((mint)(void*)&amp;m_Link)">
         <HeadPointer>(($T3 *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNextPtr.m_pPtr
-          )
-          &amp;
-          ~mint(1)
-          )
-          *
-          (
-          mint(1)
-          -
-          (
-          (
-          (mint)
-          (
-          (CThis *)
-          (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
-          )
-          )->m_pNextPtr.m_pPtr
-          |
-          (mint)
-          (
-          (CThis *)
-          (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
-          )
-          )->m_pPrevPtr.m_pPtr
-          )
-          &amp;
-          mint(1)
-          )
-          )
-          )
+            (CThis *)
+            (
+              (
+                ((mint)m_Data.m_pNextPtr)&amp;~mint(1))
+                *
+                (
+                  mint(1)
+                  -
+                  (
+                    (
+                      (mint)
+                      ((CThis *)((mint)m_Data.m_pNextPtr &amp; ~mint(1)))->m_Data.m_pNextPtr
+                      |
+                      (mint)((CThis *)((mint)m_Data.m_pNextPtr &amp; ~mint(1))
+                    )->m_Data.m_pPrevPtr
+                  )
+                  &amp;
+                  mint(1)
+                )
+              )
+            )
           )
         </NextPointer>
         <ValueNode>
           *(($T1 *)((mint)this - NMib::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,$T3,$T4,$T5,$T6&gt;::COffset::mc_Offset))
         </ValueNode>
       </LinkedListItems>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
     </Expand>
   </Type>
 
-  <Type Name="NIds::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;">
-    <Expand>
-      <LinkedListItems>
-        <HeadPointer>m_Data.m_First.m_pNext.m_pPtr</HeadPointer>
-        <NextPointer>m_pNext.m_pPtr</NextPointer>
-        <ValueNode>
-          *(($T1 *)((mint)this - NIds::NIntrusive::TCSLinkListAggregate&lt;$T1,$T2,$T3,$T4,$T5&gt;::COffset::mc_Offset))
-        </ValueNode>
-      </LinkedListItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;">
     <Expand>
       <LinkedListItems>
@@ -621,20 +503,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;::CIterator">
-    <AlternativeType Name="NIds::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;::CIteratorConst"></AlternativeType>
-    <DisplayString Condition="m_pCurrent != 0">
-      {*(($T1 *)((mint)m_pCurrent - COffset::mc_Offset))}
-    </DisplayString>
-    <DisplayString>
-      Invalid
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_pCurrent != 0">
-        *(($T1 *)((mint)m_pCurrent - COffset::mc_Offset))
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;::CIterator">
     <AlternativeType Name="NMib::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;::CIteratorConst"></AlternativeType>
     <DisplayString Condition="m_pCurrent != 0">
@@ -651,21 +519,6 @@
   </Type>
 
 
-  <!-- NIds::NContainer::TCLinkedList<*,*>::CIterator -->
-  <Type Name="NIds::NContainer::TCLinkedList&lt;*,*&gt;::CIterator">
-    <AlternativeType Name="NIds::NContainer::TCLinkedList&lt;*,*&gt;::CIteratorConst"></AlternativeType>
-    <DisplayString Condition="m_Iter.m_pCurrent != 0">
-      {((CMember *)((mint)m_Iter.m_pCurrent - COffset::mc_Offset))->m_Object}
-    </DisplayString>
-    <DisplayString>
-      Invalid
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_Iter.m_pCurrent != 0">
-        ((CMember *)((mint)m_Iter.m_pCurrent - COffset::mc_Offset))->m_Object
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;::CIterator">
     <AlternativeType Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;::CIteratorConst"></AlternativeType>
     <DisplayString Condition="m_Iter.m_pCurrent != 0">
@@ -681,61 +534,9 @@
     </Expand>
   </Type>
 
-
-  <!-- NIds::NContainer::TCLinkedList<*,*> -->
-  <Type Name="NIds::NContainer::TCLinkedList&lt;*,*&gt;">
-    <Expand>
-      <LinkedListItems>
-        <HeadPointer>((CLink *)(((mint)m_Data.m_List.m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
-        <NextPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNextPtr.m_pPtr
-          )
-          &amp;
-          ~mint(1)
-          )
-          *
-          (
-          mint(1)
-          -
-          (
-          (
-          (mint)
-          (
-          (CThis *)
-          (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
-          )
-          )->m_pNextPtr.m_pPtr
-          |
-          (mint)
-          (
-          (CThis *)
-          (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
-          )
-          )->m_pPrevPtr.m_pPtr
-          )
-          &amp;
-          mint(1)
-          )
-          )
-          )
-          )
-        </NextPointer>
-        <ValueNode>
-          ((NIds::NContainer::TCLinkedList&lt;$T1,$T2&gt;::CMember *)((mint)this - NIds::NContainer::TCLinkedList&lt;$T1,$T2&gt;::COffset::mc_Offset))->m_Object
-        </ValueNode>
-      </LinkedListItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;">
     <Expand>
-      <LinkedListItems>
+      <LinkedListItems Condition="(mint)m_Data.m_List.m_Link.m_pNextPtr.m_pPtr &amp; mint(1) != ((mint)(void *)&amp;m_Data.m_List.m_Link)">
         <HeadPointer>((CLink *)(((mint)m_Data.m_List.m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
@@ -743,7 +544,7 @@
           (
           (
           (
-          (mint)m_pNextPtr.m_pPtr
+          (mint)m_Data.m_pNextPtr
           )
           &amp;
           ~mint(1)
@@ -758,17 +559,17 @@
           (
           (CThis *)
           (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
+          (mint)m_Data.m_pNextPtr &amp; ~mint(1)
           )
-          )->m_pNextPtr.m_pPtr
+          )->m_Data.m_pNextPtr
           |
           (mint)
           (
           (CThis *)
           (
-          (mint)m_pNextPtr.m_pPtr &amp; ~mint(1)
+          (mint)m_Data.m_pNextPtr &amp; ~mint(1)
           )
-          )->m_pPrevPtr.m_pPtr
+          )->m_Data.m_pPrevPtr
           )
           &amp;
           mint(1)
@@ -781,24 +582,12 @@
           ((NMib::NContainer::TCLinkedList&lt;$T1,$T2&gt;::CMember *)((mint)this - NMib::NContainer::TCLinkedList&lt;$T1,$T2&gt;::COffset::mc_Offset))->m_Object
         </ValueNode>
       </LinkedListItems>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
     </Expand>
   </Type>
 
-  <!-- NIds::NContainer::TCVector<t_CData, t_CAllocator, t_CBoundsChecker, t_CInternalData, t_CStaticData> -->
-  <Type Name="NIds::NContainer::TCVector&lt;*,*,*,*,*&gt;">
-    <Expand>
-      <Item Name="[Size]" Condition="m_StaticData.m_pData.m_pPtr != 0">m_StaticData.m_pData.m_pPtr->m_InternalData.m_Length</Item>
-      <Item Name="[Size]" Condition="m_StaticData.m_pData.m_pPtr == 0">0</Item>
-      <Item Name="[Capacity]" Condition="m_StaticData.m_pData.m_pPtr != 0">m_StaticData.m_pData.m_pPtr->m_AllocSize</Item>
-      <Synthetic Name="[Capacity]" Condition="m_StaticData.m_pData.m_pPtr == 0">
-        <DisplayString>Not allocated</DisplayString>
-      </Synthetic>
-      <ArrayItems Condition="m_StaticData.m_pData.m_pPtr != 0">
-        <Size>m_StaticData.m_pData.m_pPtr->m_InternalData.m_Length</Size>
-        <ValuePointer>($T1 *)(m_StaticData.m_pData.m_pPtr + 1)</ValuePointer>
-      </ArrayItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCVector&lt;*,*,*,*,*&gt;">
     <Expand>
       <Item Name="[Size]" Condition="m_StaticData.m_pData.m_pPtr != 0">m_StaticData.m_pData.m_pPtr->m_InternalData.m_Length</Item>
@@ -814,21 +603,6 @@
     </Expand>
   </Type>
 
-  <!-- NIds::NContainer::TCVectorIterator<t_CData> -->
-  <Type Name="NIds::NContainer::TCVectorIterator&lt;*&gt;">
-    <DisplayString Condition="m_Begin != m_End">
-      {(*m_Begin)}
-    </DisplayString>
-    <DisplayString>
-      Invalid
-    </DisplayString>
-    <StringView Condition="m_Begin != m_End">
-      (*m_Begin)
-    </StringView>
-    <Expand>
-      <ExpandedItem Condition="m_Begin != m_End">*m_Begin</ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCVectorIterator&lt;*&gt;">
     <DisplayString Condition="m_Begin != m_End">
       {(*m_Begin)}
@@ -846,44 +620,6 @@
 
 
 
-  <Type Name="NIds::NContainer::TCMap&lt;*,NIds::NContainer::CMapSet,*,*&gt;">
-    <Expand>
-      <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
-        <LeftPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[0].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </LeftPointer>
-        <RightPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[1].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </RightPointer>
-        <ValueNode>
-          ((NIds::NContainer::TCMap&lt;$T1,NIds::NContainer::CMapSet,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NIds::NContainer::TCMap&lt;$T1,NIds::NContainer::CMapSet,$T2,$T3&gt;::COffset::mc_Offset))->m_Key
-        </ValueNode>
-      </TreeItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapSet,*,*&gt;">
     <Expand>
       <TreeItems>
@@ -923,44 +659,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NContainer::TCMap&lt;*,NIds::NContainer::CMapNoData,*,*&gt;">
-    <Expand>
-      <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
-        <LeftPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[0].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </LeftPointer>
-        <RightPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[1].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </RightPointer>
-        <ValueNode>
-          ((NIds::NContainer::TCMap&lt;$T1,NIds::NContainer::CMapNoData,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NIds::NContainer::TCMap&lt;$T1,NIds::NContainer::CMapNoData,$T2,$T3&gt;::COffset::mc_Offset))->m_Key
-        </ValueNode>
-      </TreeItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapNoData,*,*&gt;">
     <Expand>
       <TreeItems>
@@ -1000,16 +698,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NContainer::TCMapTreeMember&lt;*,*&gt;">
-    <Expand>
-      <Item Name ="Key">
-        m_Key
-      </Item>
-      <Item Name ="Value">
-        m_Data
-      </Item>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCMapTreeMember&lt;*,*&gt;">
     <Expand>
       <Item Name ="Key">
@@ -1021,17 +709,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NContainer::TCMapTreeMember&lt;*,NIds::NContainer::CMapSet&gt;">
-    <AlternativeType Name="NIds::NContainer::TCMapTreeMember&lt;*,NIds::NContainer::CMapNoData&gt;"></AlternativeType>
-    <DisplayString>
-      {m_Key}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem>
-        m_Key
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCMapTreeMember&lt;*,NMib::NContainer::CMapSet&gt;">
     <AlternativeType Name="NMib::NContainer::TCMapTreeMember&lt;*,NMib::NContainer::CMapNoData&gt;"></AlternativeType>
     <DisplayString>
@@ -1044,44 +721,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NContainer::TCMap&lt;*,*,*,*&gt;">
-    <Expand>
-      <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
-        <LeftPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[0].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </LeftPointer>
-        <RightPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[1].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </RightPointer>
-        <ValueNode>
-          *((NIds::NContainer::TCMapTreeMember&lt;$T1,$T2&gt; *)((mint)this - NIds::NContainer::TCMap&lt;$T1,$T2,$T3,$T4&gt;::COffset::mc_Offset))
-        </ValueNode>
-      </TreeItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
@@ -1122,45 +761,6 @@
   </Type>
 
 
-  <!-- NIds::NIntrusive::TCAVLTreeAggregate<t_CLinkTraits, t_CCompare, t_CAllocator> -->
-  <Type Name="NIds::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;">
-    <Expand>
-      <TreeItems>
-        <HeadPointer>(CLink *)((mint)m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
-        <LeftPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[0].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </LeftPointer>
-        <RightPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[1].m_pPtr
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </RightPointer>
-        <ValueNode>
-          *(($T1::CNode *)((mint)this - (NIds::NIntrusive::TCAVLTreeAggregate&lt;$T1,$T2,$T3&gt;::COffset::mc_Offset)))
-        </ValueNode>
-      </TreeItems>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;">
     <Expand>
       <TreeItems>
@@ -1200,19 +800,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;::TIterator&lt;*&gt;">
-    <DisplayString Condition="m_iStack >= 0">
-      {*((CNode *)((mint)m_pStack[m_iStack] - COffset::mc_Offset))}
-    </DisplayString>
-    <DisplayString>
-      Invalid
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_iStack >= 0">
-        *((CNode *)((mint)m_pStack[m_iStack] - COffset::mc_Offset))
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;::TIterator&lt;*&gt;">
     <DisplayString Condition="m_iStack >= 0">
       {*((CNode *)((mint)m_pStack[m_iStack] - COffset::mc_Offset))}
@@ -1227,19 +814,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
-    <DisplayString Condition="mp_Iter.m_iStack >= 0">
-      {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - COffset::mc_Offset))}
-    </DisplayString>
-    <DisplayString>
-      Invalid
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="mp_Iter.m_iStack >= 0">
-        *((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - COffset::mc_Offset))
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
     <DisplayString Condition="mp_Iter.m_iStack >= 0">
       {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - COffset::mc_Offset))}
@@ -1254,16 +828,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NAggregate::TCAggregateSimple&lt;*&gt;">
-    <DisplayString>
-      {*((CData *)&amp;m_ObjectSpace)}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem>
-        *((CData *)&amp;m_ObjectSpace)
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NAggregate::TCAggregateSimple&lt;*&gt;">
     <DisplayString>
       {*((CData *)&amp;m_ObjectSpace)}
@@ -1275,22 +839,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NAggregate::TCAggregate&lt;*,*,*&gt;">
-    <DisplayString Condition="m_bConstructed &amp;&amp; !m_bDestructed">
-      {*((CData *)&amp;m_ObjectSpace)}
-    </DisplayString>
-    <DisplayString Condition="m_bDestructed">
-      Destructed
-    </DisplayString>
-    <DisplayString Condition="!m_bConstructed">
-      Not constructed
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_bConstructed &amp;&amp; !m_bDestructed">
-        *((CData *)&amp;m_ObjectSpace)
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NAggregate::TCAggregate&lt;*,*,*&gt;">
     <DisplayString Condition="m_bConstructed &amp;&amp; !m_bDestructed">
       {*((CData *)&amp;m_ObjectSpace)}
@@ -1309,19 +857,6 @@
   </Type>
 
 
-  <Type Name="NIds::NRegistry::TCRegistry&lt;*,*,*&gt;">
-    <DisplayString Condition="(((mint)m_Children.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
-      + {m_Key.m_Name}   {m_Data}
-    </DisplayString>
-    <DisplayString>
-      {m_Key.m_Name}   {m_Data}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="(((mint)m_Children.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
-        m_Children
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NRegistry::TCRegistry&lt;*,*,*&gt;">
     <DisplayString Condition="(((mint)m_Children.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
       + {m_Key.m_Name}   {m_Data}
@@ -1336,44 +871,20 @@
     </Expand>
   </Type>
 
-
-  <Type Name="NIds::NThread::TCThreadStorage&lt;*,*,*,*&gt;">
-    <DisplayString Condition="m_ThreadStorageLocal != 0">
-      {*(($T1 *)*(*((void ***)(fs + g_OffsetThreadStorageOffset)) + m_ThreadStorageLocal))}
+  <Type Name="NMib::NThread::TCThreadLocal&lt;*,*,*&gt;">
+    <DisplayString Condition="m_ThreadLocalLocal != 0">
+      {*(($T1 *)*(*((void ***)(g_DebugTIB + g_OffsetThreadLocalOffset)) + m_ThreadLocalLocal))}
     </DisplayString>
     <DisplayString>
       Not initialized on this thread
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_ThreadStorageLocal != 0">
-        *(($T1 *)*(*((void ***)(fs + g_OffsetThreadStorageOffset)) + m_ThreadStorageLocal))
-      </ExpandedItem>
-    </Expand>
-  </Type>
-  <Type Name="NMib::NThread::TCThreadStorage&lt;*,*,*,*&gt;">
-    <DisplayString Condition="m_ThreadStorageLocal != 0">
-      {*(($T1 *)*(*((void ***)(fs + g_OffsetThreadStorageOffset)) + m_ThreadStorageLocal))}
-    </DisplayString>
-    <DisplayString>
-      Not initialized on this thread
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_ThreadStorageLocal != 0">
-        *(($T1 *)*(*((void ***)(fs + g_OffsetThreadStorageOffset)) + m_ThreadStorageLocal))
+      <ExpandedItem Condition="m_ThreadLocalLocal != 0">
+        *(($T1 *)*(*((void ***)(g_DebugTIB + g_OffsetThreadLocalOffset)) + m_ThreadLocalLocal))
       </ExpandedItem>
     </Expand>
   </Type>
 
-  <Type Name="NIds::TCDynamicPtr&lt;*,*&gt;">
-    <DisplayString Condition="m_pPtr != 0">
-      {*(($T2 *)m_pPtr)}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_pPtr != 0">
-        *(($T2 *)m_pPtr)
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::TCDynamicPtr&lt;*,*&gt;">
     <DisplayString Condition="m_pPtr != 0">
       {*(($T2 *)m_pPtr)}
@@ -1385,17 +896,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NReference::TCReference&lt;*,*&gt;">
-    <AlternativeType Name="NIds::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
-    <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
-      {*(($T1 *)m_Data.m_pPointTo.m_pPtr)}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_Data.m_pPointTo.m_pPtr != 0">
-        *(($T1 *)m_Data.m_pPointTo.m_pPtr)
-      </ExpandedItem>
-    </Expand>
-  </Type>
   <Type Name="NMib::NReference::TCReference&lt;*,*&gt;">
     <AlternativeType Name="NMib::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
     <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
@@ -1410,11 +910,6 @@
 
 
 
-  <Type Name="NIds::CVoidTag">
-    <DisplayString>
-      void
-    </DisplayString>
-  </Type>
   <Type Name="NMib::CVoidTag">
     <DisplayString>
       void
@@ -1445,55 +940,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NException::CExceptionBase">
-    <DisplayString Condition="m_Magic != 0xE538CB10">
-      Invalid
-    </DisplayString>
-    <DisplayString Condition="m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr != 0">
-      {*m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr}
-    </DisplayString>
-    <DisplayString Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr != 0">
-      {*m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr}
-    </DisplayString>
-    <DisplayString>
-      {m_ErrorNoAlloc}
-    </DisplayString>
-    <Expand>
-      <Item Name ="Message" Condition="m_Magic != 0xE538CB10">
-        "Invalid"
-      </Item>
-      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr != 0 &amp;&amp; m_Magic == 0xE538CB10">
-        *m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr
-      </Item>
-      <Item Name ="Message" Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr != 0 &amp;&amp; m_Magic == 0xE538CB10">
-        *m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr
-      </Item>
-      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr == 0 &amp;&amp; m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr == 0 &amp;&amp; m_Magic == 0xE538CB10">
-        m_ErrorNoAlloc
-      </Item>
-      <Item Name ="Class" Condition="m_pClass != 0">
-        m_pClass
-      </Item>
-      <Item Name ="Function" Condition="m_pFunction != 0">
-        m_pFunction
-      </Item>
-      <Item Name ="File" Condition="m_pFile != 0">
-        m_pFile
-      </Item>
-      <Item Name ="Line" Condition="m_pFile != 0">
-        m_Line
-      </Item>
-      <Item Name ="Callstack" Condition="m_pCallstack.m_Data.m_pPointTo.m_pPtr != 0">
-        m_pCallstack.m_Data.m_pPointTo.m_pPtr->m_Callstack,[m_pCallstack.m_Data.m_pPointTo.m_pPtr->m_CallstackLen]
-      </Item>
-      <Item Name ="Callstack" Condition="m_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr != 0">
-        m_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr->m_Callstack,[m_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr->m_CallstackLen]
-      </Item>
-      <Item Name ="[Raw View]">
-        *this,!
-      </Item>
-    </Expand>
-  </Type>
   <Type Name="NMib::NException::CExceptionBase">
     <DisplayString Condition="m_Magic != 0xE538CB10">
       Invalid
@@ -1544,109 +990,17 @@
     </Expand>
   </Type>
 
-  <Type Name="NIds::NContainer::TCStreamableVariant&lt;*&gt;">
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member0">
-      {*((CDbgConstructType0 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member1">
-      {*((CDbgConstructType1 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member2">
-      {*((CDbgConstructType2 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member3">
-      {*((CDbgConstructType3 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member4">
-      {*((CDbgConstructType4 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member5">
-      {*((CDbgConstructType5 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member6">
-      {*((CDbgConstructType6 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member7">
-      {*((CDbgConstructType7 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member8">
-      {*((CDbgConstructType8 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member9">
-      {*((CDbgConstructType9 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member10">
-      {*((CDbgConstructType10 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member11">
-      {*((CDbgConstructType11 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member12">
-      {*((CDbgConstructType12 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member13">
-      {*((CDbgConstructType13 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member14">
-      {*((CDbgConstructType14 *)&amp;m_Storage)}
-    </DisplayString>
-    <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member15">
-      {*((CDbgConstructType15 *)&amp;m_Storage)}
-    </DisplayString>
+  <Type Name="NMib::NException::CCallstack">
     <Expand>
-      <Item Name ="Type">
-        ((CIndexType)m_Storage.m_CurrentType)
-      </Item>
-      <Item Name ="Value" Condition="m_Storage.m_CurrentType == EDebugHelper_Member0">
-        (*((CDbgConstructType0 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value" Condition="m_Storage.m_CurrentType == EDebugHelper_Member1">
-        (*((CDbgConstructType1 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value" Condition="m_Storage.m_CurrentType == EDebugHelper_Member2">
-        (*((CDbgConstructType2 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member3">
-        (*((CDbgConstructType3 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member4">
-        (*((CDbgConstructType4 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member5">
-        (*((CDbgConstructType5 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member6">
-        (*((CDbgConstructType6 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member7">
-        (*((CDbgConstructType7 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member8">
-        (*((CDbgConstructType8 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member9">
-        (*((CDbgConstructType9 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member10">
-        (*((CDbgConstructType10 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member11">
-        (*((CDbgConstructType11 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member12">
-        (*((CDbgConstructType12 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member13">
-        (*((CDbgConstructType13 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member14">
-        (*((CDbgConstructType14 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member15">
-        (*((CDbgConstructType15 *)&amp;m_Storage))
+      <ExpandedItem>
+        m_Callstack,[m_CallstackLen]
+      </ExpandedItem>
+      <Item Name ="[Raw Callstack]">
+        *this,!
       </Item>
     </Expand>
   </Type>
+
   <Type Name="NMib::NContainer::TCStreamableVariant&lt;*&gt;">
     <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member0">
       {*((CDbgConstructType0 *)&amp;m_Storage)}
