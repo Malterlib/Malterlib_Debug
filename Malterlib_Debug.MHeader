@@ -3,6 +3,14 @@
 
 Import "../Core/Lib_Malterlib.MTarget"
 
+%Repository "elftoolchain"
+{
+	Repository
+	{
+		Type External
+	}
+}
+
 %Group "{Malterlib}/{Lib_Malterlib_Debug}"
 {
 	%Group Debug
@@ -32,7 +40,6 @@ Import "../Core/Lib_Malterlib.MTarget"
 		}
 	}
 }
-
 
 Property
 {
