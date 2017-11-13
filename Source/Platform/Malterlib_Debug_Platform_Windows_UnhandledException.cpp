@@ -11,7 +11,6 @@
 
 #include <Windows.h>
 #include <winnt.h>
-#include <AUX_ULIB.h>
 #include <Psapi.h>
 
 namespace NMib
@@ -890,10 +889,7 @@ namespace NMib
 					}
 				;
 		
-				BOOL bDllHeld;
-				AuxUlibIsDLLSynchronizationHeld(&bDllHeld);
-
-				if (bDllHeld  || g_bDoneMalterlibInitAll.f_Load() < 3)
+				if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				{
 					// If Dll lock is held we will get a deadlock here
 					return fl_GenerateException(nullptr);
@@ -998,10 +994,7 @@ namespace NMib
 						}
 						void f_Run()
 						{
-							BOOL bDllHeld;
-							AuxUlibIsDLLSynchronizationHeld(&bDllHeld);
-
-							if (bDllHeld  || g_bDoneMalterlibInitAll.f_Load() < 3)
+							if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 								f_Main();
 							else
 							{

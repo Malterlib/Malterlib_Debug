@@ -11,7 +11,6 @@
 #include "Malterlib_Debug_Platform_Windows.h"
 
 #include <Windows.h>
-#include <AUX_ULIB.h>
 
 namespace NMib
 {
@@ -161,8 +160,6 @@ namespace NMib
 	}
 }
 			
-
-
 void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib::NStr::CStr const &_Message)
 {
 	class CMessageBoxThread : public NMib::NThread::CThread
@@ -188,10 +185,7 @@ void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib
 		}
 		void f_Run()
 		{
-			BOOL bDllHeld;
-			AuxUlibIsDLLSynchronizationHeld(&bDllHeld);
-
-			if (bDllHeld  || g_bDoneMalterlibInitAll.f_Load() < 3)
+			if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				f_Main();
 			else
 			{
@@ -414,10 +408,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 		}
 	;
 
-	BOOL bDllHeld;
-	AuxUlibIsDLLSynchronizationHeld(&bDllHeld);
-
-	if (bDllHeld || g_bDoneMalterlibInitAll.f_Load() < 3)
+	if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 	{
 		fl_DisplayMessage(nullptr);
 	}

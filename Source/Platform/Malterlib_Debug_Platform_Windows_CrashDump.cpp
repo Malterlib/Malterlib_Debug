@@ -12,7 +12,6 @@
 #include <Windows.h>
 #include <winnt.h>
 #include <winternl.h>
-#include <AUX_ULIB.h>
 
 namespace NMib
 {
@@ -234,10 +233,7 @@ namespace NMib
 					}
 				;
 		
-				BOOL bDllHeld;
-				AuxUlibIsDLLSynchronizationHeld(&bDllHeld);
-
-				if (bDllHeld  || g_bDoneMalterlibInitAll.f_Load() < 3)
+				if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				{
 					// If Dll lock is held we will get a deadlock here
 					return fl_GenerateException(nullptr);
