@@ -60,7 +60,7 @@ namespace NMib
 
 		// If trace enable has not been specifically set, enable it
 #		ifndef DMibEnableTrace
-#			ifdef DConfig_Release
+#			if defined(DConfig_Release) && !defined(DMibConfig_Tests_Enable)
 #				define DMibEnableTrace 0
 #			else
 #				define DMibEnableTrace 1
