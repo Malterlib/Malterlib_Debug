@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -18,6 +18,8 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
+			static constexpr mint gc_SymbolSize = sizeof(IMAGEHLP_SYMBOL64) + 4096;
+
 			CStackTraceContext::CStackTraceContext()
 			{
 				m_bInitialized = false;
@@ -45,7 +47,7 @@ namespace NMib
 				}
 
 				if (m_pSymbolInfo)
-					NMem::CAllocator_NonTrackedHeap::f_Free(m_pSymbolInfo);
+					NMem::CAllocator_NonTrackedHeap::f_Free(m_pSymbolInfo, gc_SymbolSize);
 
 				if (m_hDbgHelp)
 					FreeLibrary(m_hDbgHelp);
@@ -58,11 +60,11 @@ namespace NMib
 				{
 					CLocalStackTraceInfo *pInfo = m_TraceInfoTree.f_GetRoot();
 					if (pInfo->m_pFunctionName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, fg_StrLen(pInfo->m_pFunctionName) + 1);
 					if (pInfo->m_pModuleName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, fg_StrLen(pInfo->m_pModuleName) + 1);
 					if (pInfo->m_pSourceFileName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
 					m_TraceInfoTree.f_Remove(pInfo);
 
@@ -249,8 +251,7 @@ namespace NMib
 
 						if (!m_pSymbolInfo)
 						{
-							mint Size = sizeof(IMAGEHLP_SYMBOL64) + 4096;
-							m_pSymbolInfo = (IMAGEHLP_SYMBOL64 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(Size);
+							m_pSymbolInfo = (IMAGEHLP_SYMBOL64 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(gc_SymbolSize);
 						}
 
 						this->SymRefreshModuleList(m_hProcess);
@@ -417,11 +418,11 @@ namespace NMib
 					m_TraceInfoTree.f_Remove(pInfo);
 
 					if (pInfo->m_pFunctionName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, fg_StrLen(pInfo->m_pFunctionName) + 1);
 					if (pInfo->m_pModuleName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, fg_StrLen(pInfo->m_pModuleName) + 1);
 					if (pInfo->m_pSourceFileName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
 					NPtr::TCUniquePointer<CLocalStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfoDel = fg_Explicit(pInfo);
 				}			

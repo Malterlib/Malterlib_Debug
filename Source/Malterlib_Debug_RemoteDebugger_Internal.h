@@ -56,33 +56,18 @@ namespace NMib
 		{
 			typedef NMem::TCStaticPool<t_CType, t_GrowSize, NMib::NMem::CAllocator_VirtualNoTracking> CSuper;
 		public:
-			static t_CType *fs_New()
+			template <typename ...tfp_CParams>
+			static t_CType *fs_New(tfp_CParams &&...p_Params)
 			{
-				return new(NMem::CAllocator_NonTrackedHeap::f_Alloc(sizeof(t_CType))) t_CType();
+				auto Memory = NMem::CAllocator_NonTrackedHeap::f_AllocSafe(sizeof(t_CType), NTraits::TCAlignmentOf<t_CType>::mc_Value);
+				auto pReturn = new(Memory.m_pMemory) t_CType(fg_Forward<tfp_CParams>(p_Params)...);
+				Memory.f_Claim();
+				return pReturn;
 			}
-
-			template <typename t_CP0>
-			static t_CType *fs_New(t_CP0 && _P0)
-			{
-				return new(NMem::CAllocator_NonTrackedHeap::f_Alloc(sizeof(t_CType))) t_CType (fg_Forward<t_CP0>(_P0));
-			}
-
-			template <typename t_CP0, typename t_CP1>
-			static t_CType *fs_New(t_CP0 && _P0, t_CP1 && _P1)
-			{
-				return new(NMem::CAllocator_NonTrackedHeap::f_Alloc(sizeof(t_CType))) t_CType(fg_Forward<t_CP0>(_P0), fg_Forward<t_CP1>(_P1));
-			}
-
-			template <typename t_CP0, typename t_CP1, typename t_CP2>
-			static t_CType *fs_New(t_CP0 && _P0, t_CP1 && _P1, t_CP2 && _P2)
-			{
-				return new(NMem::CAllocator_NonTrackedHeap::f_Alloc(sizeof(t_CType))) t_CType(fg_Forward<t_CP0>(_P0), fg_Forward<t_CP1>(_P1), fg_Forward<t_CP2>(_P2));
-			}
-
 			static void fs_Delete(t_CType *_pObject)
 			{
 				_pObject->~t_CType();
-				NMem::CAllocator_NonTrackedHeap::f_Free(_pObject);
+				NMem::CAllocator_NonTrackedHeap::f_Free(_pObject, sizeof(t_CType));
 			}
 		};
 

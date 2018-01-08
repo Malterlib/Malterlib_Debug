@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include "Malterlib_Debug_Platform_OSX_Symbols.h"
@@ -111,16 +111,6 @@ namespace NMib
 				fp_Unload();
 			}
 			
-			void *CSymbols::f_Alloc(mint _Size)
-			{
-				return NMem::CAllocator_NonTrackedHeap::f_Alloc(_Size);
-			}
-			
-			void CSymbols::f_Free(void *_pMemory)
-			{
-				NMem::CAllocator_NonTrackedHeap::f_Free(_pMemory);
-			}
-
 			void CSymbols::f_SetSymbolsFile(char const* _pFilename)
 			{
 				DMibLock(mp_Lock);

@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 /*
@@ -159,9 +159,6 @@ namespace NMib
 				CSymbols();
 				~CSymbols();
 			
-				void *f_Alloc(mint _Size);
-				void f_Free(void *_pMemory);
-				
 				void f_SetSymbolsFile(char const* _pFilename);
 
 				bint f_Lookup(mint _Address, CAddressInfo& _oInfo);
