@@ -60,11 +60,11 @@ namespace NMib
 				{
 					CLocalStackTraceInfo *pInfo = m_TraceInfoTree.f_GetRoot();
 					if (pInfo->m_pFunctionName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, fg_StrLen(pInfo->m_pFunctionName) + 1);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, NStr::fg_StrLen(pInfo->m_pFunctionName) + 1);
 					if (pInfo->m_pModuleName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, fg_StrLen(pInfo->m_pModuleName) + 1);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, NStr::fg_StrLen(pInfo->m_pModuleName) + 1);
 					if (pInfo->m_pSourceFileName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, fg_StrLen(pInfo->m_pSourceFileName) + 1);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
 					m_TraceInfoTree.f_Remove(pInfo);
 
@@ -418,11 +418,11 @@ namespace NMib
 					m_TraceInfoTree.f_Remove(pInfo);
 
 					if (pInfo->m_pFunctionName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, fg_StrLen(pInfo->m_pFunctionName) + 1);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, NStr::fg_StrLen(pInfo->m_pFunctionName) + 1);
 					if (pInfo->m_pModuleName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, fg_StrLen(pInfo->m_pModuleName) + 1);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, NStr::fg_StrLen(pInfo->m_pModuleName) + 1);
 					if (pInfo->m_pSourceFileName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, fg_StrLen(pInfo->m_pSourceFileName) + 1);
+						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
 					NPtr::TCUniquePointer<CLocalStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfoDel = fg_Explicit(pInfo);
 				}			
