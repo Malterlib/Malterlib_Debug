@@ -11,6 +11,11 @@ Import "../Core/Lib_Malterlib.MTarget"
 	}
 }
 
+Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules)"
+{
+	!!MalterlibMemoryManager_Stats_EnableCallstack true
+}
+
 %Group "{Malterlib}/{Lib_Malterlib_Debug}"
 {
 	%Group Debug

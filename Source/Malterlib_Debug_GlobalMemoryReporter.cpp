@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -6,12 +6,12 @@
 #include <Mib/Debug/RemoteDebugger>
 
 #if DMibConfig_MemoryManager_Stats_Enable
-#	include "Malterlib_Memory_Reporter_Stats.hpp"
+#	include "../../Memory/Source/Malterlib_Memory_Reporter_Stats.hpp"
 DMibCompilerMessage("---- Stats memory reporter enabled");
 #endif
 
 #if DMibConfig_MemoryManager_Stats_EnableCallstack
-#	include "Malterlib_Memory_Reporter_Callstack.hpp"
+#	include "../../Memory/Source/Malterlib_Memory_Reporter_Callstack.hpp"
 DMibCompilerMessage("---- Callstack memory reporter enabled");
 #endif
 
