@@ -1116,6 +1116,17 @@
     </Expand>
   </Type>
 
+  <Type Name="TCTaggedInteger&lt;*,*,*&gt;">
+    <DisplayString>
+      {m_Data}
+    </DisplayString>
+    <Expand>
+      <ExpandedItem>
+        m_Data
+      </ExpandedItem>
+    </Expand>
+  </Type>
+
 
   <!--
 -		TCIntNoAutoConvertAggregate<long,NAOCC::NPrivate::CAOUniqueIDTag,-1>	{m_Data=33995 }	TCIntNoAutoConvertAggregate<long,NAOCC::NPrivate::CAOUniqueIDTag,-1>
