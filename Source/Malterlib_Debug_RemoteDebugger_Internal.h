@@ -71,7 +71,7 @@ namespace NMib
 			}
 		};
 
-		typedef NContainer::TCVector<uint8, NMem::CAllocator_NonTrackedHeap, NContainer::CVectorBoundsCheckDefault, NContainer::CVectorData, NContainer::TCVectorStaticData_GrowDouble<64, false>> CDataBuffer;
+		typedef NContainer::TCVector<uint8, NMem::CAllocator_NonTrackedHeap, NContainer::TCVectorOptions<64, false>> CDataBuffer;
 
 		struct CPacket
 		{

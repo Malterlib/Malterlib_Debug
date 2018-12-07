@@ -588,33 +588,33 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NContainer::TCVector&lt;*,*,*,*,*&gt;">
+  <Type Name="NMib::NContainer::TCVector&lt;*,*,*&gt;">
     <Expand>
-      <Item Name="[Size]" Condition="m_StaticData.m_pData.m_pPtr != 0">m_StaticData.m_pData.m_pPtr->m_InternalData.m_Length</Item>
-      <Item Name="[Size]" Condition="m_StaticData.m_pData.m_pPtr == 0">0</Item>
-      <Item Name="[Capacity]" Condition="m_StaticData.m_pData.m_pPtr != 0">m_StaticData.m_pData.m_pPtr->m_AllocSize</Item>
-      <Synthetic Name="[Capacity]" Condition="m_StaticData.m_pData.m_pPtr == 0">
+      <Item Name="[Size]" Condition="mp_StaticData.m_pData != 0">mp_StaticData.m_pData->m_Length</Item>
+      <Item Name="[Size]" Condition="mp_StaticData.m_pData == 0">0</Item>
+      <Item Name="[Capacity]" Condition="mp_StaticData.m_pData != 0">mp_StaticData.m_pData->m_AllocSize</Item>
+      <Synthetic Name="[Capacity]" Condition="mp_StaticData.m_pData == 0">
         <DisplayString>Not allocated</DisplayString>
       </Synthetic>
-      <ArrayItems Condition="m_StaticData.m_pData.m_pPtr != 0">
-        <Size>m_StaticData.m_pData.m_pPtr->m_InternalData.m_Length</Size>
-        <ValuePointer>($T1 *)(m_StaticData.m_pData.m_pPtr + 1)</ValuePointer>
+      <ArrayItems Condition="mp_StaticData.m_pData != 0">
+        <Size>mp_StaticData.m_pData->m_Length</Size>
+        <ValuePointer>($T1 *)(mp_StaticData.m_pData + 1)</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
 
   <Type Name="NMib::NContainer::TCVectorIterator&lt;*&gt;">
-    <DisplayString Condition="m_Begin != m_End">
-      {(*m_Begin)}
+    <DisplayString Condition="m_pBegin != m_pEnd">
+      {(*m_pBegin)}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
-    <StringView Condition="m_Begin != m_End">
-      (*m_Begin)
+    <StringView Condition="m_pBegin != m_pEnd">
+      (*m_pBegin)
     </StringView>
     <Expand>
-      <ExpandedItem Condition="m_Begin != m_End">*m_Begin</ExpandedItem>
+      <ExpandedItem Condition="m_pBegin != m_pEnd">*m_pBegin</ExpandedItem>
     </Expand>
   </Type>
 

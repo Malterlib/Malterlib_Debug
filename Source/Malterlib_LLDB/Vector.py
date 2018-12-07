@@ -1,4 +1,4 @@
-﻿# Copyright © 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb
@@ -18,7 +18,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 			if not self.fp_ExtractType():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_pData = fg_ChildPath(self.m_ValueObject, 'm_StaticData.m_pData.m_pPtr')
+			self.m_pData = fg_ChildPath(self.m_ValueObject, 'mp_StaticData.m_pData')
 			
 			if self.m_pData.GetValueAsUnsigned() == 0:
 				self.m_pDataAddress = 0
@@ -51,7 +51,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 
 	def fp_ContainerNumChildren(self):
 		Data = self.m_pData.Dereference()
-		nChildren = Data.GetValueForExpressionPath('.m_InternalData.m_Length').GetValueAsUnsigned()
+		nChildren = Data.GetValueForExpressionPath('.m_Length').GetValueAsUnsigned()
 		return nChildren
 
 
@@ -64,7 +64,7 @@ class CSynthProvider_TCVector_CIterator(CSynthProvider_Common):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_Current = self.m_ValueObject.GetChildMemberWithName('m_Begin')
+			self.m_Current = self.m_ValueObject.GetChildMemberWithName('m_pBegin')
 			self.m_NumExtraChildren = 0
 			self.m_Value = None
 			if self.m_Current.GetValueAsUnsigned() != 0:
