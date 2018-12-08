@@ -284,7 +284,7 @@ namespace NMib
 				}
 			}
 			
-			extern NMib::NAggregate::TCAggregateSimple<CSymbols> g_Symbols;
+			extern NMib::NStorage::TCAggregateSimple<CSymbols> g_Symbols;
 
 			/*
 			// TODO: Move into TVector

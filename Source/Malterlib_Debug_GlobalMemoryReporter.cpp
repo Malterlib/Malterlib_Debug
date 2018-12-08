@@ -26,11 +26,11 @@ namespace NMib
 #error "Can only use one memory reporter at a time"
 #endif
 #if DMibConfig_MemoryManager_Stats_Enable
-	NMib::NAggregate::TCAggregateSimple<NMem::CStatsMemoryReporter> g_MainReporter = {DAggregateInit};
+	NMib::NStorage::TCAggregateSimple<NMemory::CStatsMemoryReporter> g_MainReporter = {DAggregateInit};
 #elif DMibConfig_MemoryManager_Stats_EnableCallstack
-	NMib::NAggregate::TCAggregateSimple<NMem::CCallstackMemoryReporter> g_MainReporter = {DAggregateInit};
+	NMib::NStorage::TCAggregateSimple<NMemory::CCallstackMemoryReporter> g_MainReporter = {DAggregateInit};
 #elif DMibConfig_MemoryManager_Stats_EnableCategories
-	NMib::NAggregate::TCAggregateSimple<NMem::CCategoriesMemoryReporter> g_MainReporter = {DAggregateInit};
+	NMib::NStorage::TCAggregateSimple<NMemory::CCategoriesMemoryReporter> g_MainReporter = {DAggregateInit};
 #endif
 
 #if DMibConfig_Memory_Shims_EnableGlobal

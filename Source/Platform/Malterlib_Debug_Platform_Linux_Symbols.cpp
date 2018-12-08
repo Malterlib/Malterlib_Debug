@@ -175,7 +175,7 @@ namespace NMib
 								}
 							}
 
-							NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfo
+							NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
 								= fg_Construct(std::move(FunctionName), std::move(ModuleName), std::move(FileName), LineNumber);
 
 							return pInfo.f_Detach();
@@ -188,7 +188,9 @@ namespace NMib
 
 			void CSymbolsIndex::f_Return(CStackTraceInfo* _pInfo)
 			{
-				NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfo = NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap>((CLinuxStackTraceInfo*)_pInfo);
+				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
+					= NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap>((CLinuxStackTraceInfo*)_pInfo)
+				;
 			}
 
 			//
@@ -596,10 +598,10 @@ namespace NMib
 			{
 	#if 1
 				Dl_info Info;
-				NMem::fg_MemClear(Info);
+				NMemory::fg_MemClear(Info);
 				if (!dladdr((void*)_Address, &Info))
 				{
-					NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pTemp = fg_Construct(CSymStr("dladdr failed"), CSymStr(), CSymStr(), 0);
+					NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp = fg_Construct(CSymStr("dladdr failed"), CSymStr(), CSymStr(), 0);
 					return pTemp.f_Detach();
 				}
 
@@ -623,7 +625,9 @@ namespace NMib
 						FunctionName = Info.dli_sname;
 				}
 				
-				NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pTemp = fg_Construct(fg_Move(FunctionName), CSymStr(Info.dli_fname ? Info.dli_fname : ""), CSymStr(), 0);
+				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp
+					= fg_Construct(fg_Move(FunctionName), CSymStr(Info.dli_fname ? Info.dli_fname : ""), CSymStr(), 0)
+				;
 				return pTemp.f_Detach();
 	#else
 				DMibLock(mp_Lock);
@@ -633,7 +637,7 @@ namespace NMib
 
 				// Find out which module the address is in (exe or shared lib)
 				Dl_info Info;
-				NMem::fg_MemClear(Info);
+				NMemory::fg_MemClear(Info);
 				if (dladdr((void*)_Address, &Info))
 				{
 					ModuleFilename = Info.dli_fname;
@@ -644,12 +648,12 @@ namespace NMib
 				{
 					ModuleFilename = Info.dli_fname;
 					ModuleBase = reinterpret_cast<mint>(Info.dli_fbase);
-					NMem::fg_MemClear(Info);
+					NMemory::fg_MemClear(Info);
 				}
 
 				CSymbolsIndex* pIndex = nullptr;
 
-				NPtr::TCUniquePointer<CSymbolsIndex, NMem::CAllocator_NonTrackedHeap>* pStoredIndex
+				NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>* pStoredIndex
 					= mp_IndexLookup.f_FindEqual(ModuleFilename);
 
 				if (pStoredIndex)
@@ -657,7 +661,7 @@ namespace NMib
 				else
 				{
 	//				DMibTrace("Creating index for {}\n", ModuleFilename);
-					NPtr::TCUniquePointer<CSymbolsIndex, NMem::CAllocator_NonTrackedHeap> pNewIndex = fg_Construct(ModuleFilename.f_GetStr(), ModuleBase);
+					NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap> pNewIndex = fg_Construct(ModuleFilename.f_GetStr(), ModuleBase);
 
 					if (!pNewIndex->f_OK())
 						pNewIndex.f_Clear();
@@ -679,7 +683,9 @@ namespace NMib
 					
 					if (!pInfo)
 					{
-						NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pTemp = fg_Construct(CSymStr(Info.dli_sname ? Info.dli_sname : ""), CSymStr(ModuleFilename), CSymStr(""), 0);
+						NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp
+							= fg_Construct(CSymStr(Info.dli_sname ? Info.dli_sname : ""), CSymStr(ModuleFilename), CSymStr(""), 0)
+						;
 						pInfo = pTemp.f_Detach();
 					}
 
@@ -692,7 +698,7 @@ namespace NMib
 					CSymStr FileName = "<unknown>";
 					int LineNumber = -1;
 
-					NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfo
+					NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
 						= fg_Construct(std::move(FunctionName), std::move(ModuleName), std::move(FileName), LineNumber);
 					
 					return pInfo.f_Detach();
@@ -704,7 +710,7 @@ namespace NMib
 			{
 				DMibLock(mp_Lock);
 
-				NPtr::TCUniquePointer<CLinuxStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfo = fg_Explicit((CLinuxStackTraceInfo*)_pInfo);
+				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo = fg_Explicit((CLinuxStackTraceInfo*)_pInfo);
 			}
 		}
 	}

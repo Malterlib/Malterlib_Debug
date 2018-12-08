@@ -139,7 +139,7 @@ namespace NMib
 				void *mp_pSymbols;
 				
 				NThread::CSpinLock mp_CacheLock;
-				NContainer::TCMap<mint, CAddressInfoCache, CSort_Default, NMib::NMem::CAllocator_NonTrackedHeap> mp_Cache;
+				NContainer::TCMap<mint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
 
 			private:
 

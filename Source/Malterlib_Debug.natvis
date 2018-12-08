@@ -219,25 +219,25 @@
   </Type>
 
   <!-- TCFloat -->
-  <Type Name="NMib::NMath::TCFloat&lt;1,15,112,NMib::NMath::CNoImplicit,*,NMib::NMath::TCInt&lt;__int64,unsigned __int64&gt; &gt;">
+  <Type Name="NMib::NNumeric::TCFloat&lt;1,15,112,NMib::NNumeric::CNoImplicit,*,NMib::NNumeric::TCInt&lt;__int64,unsigned __int64&gt; &gt;">
     <DisplayString LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_fp128">
       fp128
     </DisplayString>
   </Type>
 
-  <Type Name="NMib::NMath::TCFloat&lt;*,*,*,float,*,*&gt;">
+  <Type Name="NMib::NNumeric::TCFloat&lt;*,*,*,float,*,*&gt;">
     <DisplayString>
       {*((float const *)&amp;m_Data)}
     </DisplayString>
   </Type>
 
-  <Type Name="NMib::NMath::TCFloat&lt;*,*,*,double,*,*&gt;">
+  <Type Name="NMib::NNumeric::TCFloat&lt;*,*,*,double,*,*&gt;">
     <DisplayString>
       {*((double const *)&amp;m_Data)}
     </DisplayString>
   </Type>
 
-  <Type Name="NMib::NPtr::TCUniquePointer&lt;*,*,*,*&gt;">
+  <Type Name="NMib::NStorage::TCUniquePointer&lt;*,*,*,*&gt;">
     <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
       {*m_Data.m_pPointTo.m_pPtr}
     </DisplayString>
@@ -254,7 +254,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NPtr::TCSharedPointer&lt;*&gt;">
+  <Type Name="NMib::NStorage::TCSharedPointer&lt;*&gt;">
     <DisplayString Condition="m_Data.m_pPointTo != 0">
       {*m_Data.m_pPointTo}
     </DisplayString>
@@ -413,10 +413,10 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMem::CAllocator_Heap&gt;,*,*,*&gt;">
+  <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMemory::CAllocator_Heap&gt;,*,*,*&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>((NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMem::CAllocator_Heap&gt; *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
+        <HeadPointer>((NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMemory::CAllocator_Heap&gt; *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
             (CThis *)
@@ -443,7 +443,7 @@
           )
         </NextPointer>
         <ValueNode>
-          *(($T1 *)((mint)this - NMib::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMem::CAllocator_Heap&gt;,$T3,$T4,$T5&gt;::COffset::mc_Offset))
+          *(($T1 *)((mint)this - NMib::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMemory::CAllocator_Heap&gt;,$T3,$T4,$T5&gt;::COffset::mc_Offset))
         </ValueNode>
       </LinkedListItems>
       <Item Name ="[Raw View]">
@@ -653,7 +653,7 @@
           )
         </RightPointer>
         <ValueNode>
-          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::COffset::mc_Offset))->m_Key
+          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::ms_OffsetTCAVLTreeAggregate))->m_Key
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -692,7 +692,7 @@
           )
         </RightPointer>
         <ValueNode>
-          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::COffset::mc_Offset))->m_Key
+          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::ms_OffsetTCAVLTreeAggregate))->m_Key
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -754,7 +754,7 @@
           )
         </RightPointer>
         <ValueNode>
-          *((NMib::NContainer::TCMapTreeMember&lt;$T1,$T2&gt; *)((mint)this - NMib::NContainer::TCMap&lt;$T1,$T2,$T3,$T4&gt;::COffset::mc_Offset))
+          *((NMib::NContainer::TCMapTreeMember&lt;$T1,$T2&gt; *)((mint)this - NMib::NContainer::TCMap&lt;$T1,$T2,$T3,$T4&gt;::ms_OffsetTCAVLTreeAggregate))
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -794,7 +794,7 @@
           )
         </RightPointer>
         <ValueNode>
-          *(($T1::CNode *)((mint)this - (NMib::NIntrusive::TCAVLTreeAggregate&lt;$T1,$T2,$T3&gt;::COffset::mc_Offset)))
+          *(($T1::CNode *)((mint)this - (NMib::NIntrusive::TCAVLTreeAggregate&lt;$T1,$T2,$T3&gt;::ms_OffsetTCAVLTreeAggregate)))
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -802,33 +802,33 @@
 
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;::TIterator&lt;*&gt;">
     <DisplayString Condition="m_iStack >= 0">
-      {*((CNode *)((mint)m_pStack[m_iStack] - COffset::mc_Offset))}
+      {*((CNode *)((mint)m_pStack[m_iStack] - ms_OffsetTCAVLTreeAggregate))}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="m_iStack >= 0">
-        *((CNode *)((mint)m_pStack[m_iStack] - COffset::mc_Offset))
+        *((CNode *)((mint)m_pStack[m_iStack] - ms_OffsetTCAVLTreeAggregate))
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
     <DisplayString Condition="mp_Iter.m_iStack >= 0">
-      {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - COffset::mc_Offset))}
+      {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - ms_OffsetTCAVLTreeAggregate))}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="mp_Iter.m_iStack >= 0">
-        *((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - COffset::mc_Offset))
+        *((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - ms_OffsetTCAVLTreeAggregate))
       </ExpandedItem>
     </Expand>
   </Type>
 
-  <Type Name="NMib::NAggregate::TCAggregateSimple&lt;*&gt;">
+  <Type Name="NMib::NStorage::TCAggregateSimple&lt;*&gt;">
     <DisplayString>
       {*((CData *)&amp;m_ObjectSpace)}
     </DisplayString>
@@ -839,7 +839,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NAggregate::TCAggregate&lt;*,*,*&gt;">
+  <Type Name="NMib::NStorage::TCAggregate&lt;*,*,*&gt;">
     <DisplayString Condition="m_bConstructed &amp;&amp; !m_bDestructed">
       {*((CData *)&amp;m_ObjectSpace)}
     </DisplayString>
@@ -857,7 +857,7 @@
   </Type>
 
 
-  <Type Name="NMib::NRegistry::TCRegistry&lt;*,*,*&gt;">
+  <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
     <DisplayString Condition="(((mint)m_Children.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
       + {m_Key.m_Name}   {m_Data}
     </DisplayString>
@@ -896,8 +896,8 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NReference::TCReference&lt;*,*&gt;">
-    <AlternativeType Name="NMib::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
+  <Type Name="NMib::NStorage::NReference::TCReference&lt;*,*&gt;">
+    <AlternativeType Name="NMib::NStorage::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
     <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
       {*(($T1 *)m_Data.m_pPointTo.m_pPtr)}
     </DisplayString>
@@ -1001,7 +1001,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NContainer::TCStreamableVariant&lt;*&gt;">
+  <Type Name="NMib::NStorage::TCStreamableVariant&lt;*&gt;">
     <DisplayString Condition="m_Storage.m_CurrentType == EDebugHelper_Member0">
       {*((CDbgConstructType0 *)&amp;m_Storage)}
     </DisplayString>

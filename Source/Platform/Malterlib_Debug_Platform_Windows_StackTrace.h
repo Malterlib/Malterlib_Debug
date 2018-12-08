@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -28,7 +28,7 @@ namespace NMib
 				public:
 					CLocalStackTraceInfo();
 
-					DMibIntrusiveLink(CLocalStackTraceInfo, NIntrusive::TCAVLLink<>, m_AvlLink);
+					NIntrusive::TCAVLLink<> m_AvlLink;
 					DMibListLinkD_Link(CLocalStackTraceInfo, m_UnusedList);
 					mint m_Address;
 					mint m_RefCount;
@@ -67,7 +67,7 @@ namespace NMib
 
 				NTime::CClock m_Timer;
 
-				NIntrusive::TCAVLTree<CLocalStackTraceInfo::CLinkTraits_m_AvlLink, CAVLCompare_CLocalStackTraceInfo> m_TraceInfoTree;
+				NIntrusive::TCAVLTree<&CLocalStackTraceInfo::m_AvlLink, CAVLCompare_CLocalStackTraceInfo> m_TraceInfoTree;
 				DMibListLinkD_List(CLocalStackTraceInfo, m_UnusedList) m_Usused;
 
 				NThread::CMutual m_Lock;

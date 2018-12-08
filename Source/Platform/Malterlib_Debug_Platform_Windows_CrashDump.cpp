@@ -66,14 +66,14 @@ namespace NMib
 			class CSubSystem_Debug_Platform_Windows::CExceptionMemoryData
 			{
 			public:
-				NMib::NContainer::TCVector<void*, NMem::CAllocator_NonTrackedHeap> const& m_Locations;
-				NMib::NContainer::TCVector<mint, NMib::NMem::CAllocator_NonTrackedHeap> const& m_Sizes;
+				NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& m_Locations;
+				NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& m_Sizes;
 				mint m_iCurrentLocation;
 
 				CExceptionMemoryData
 					(
-						NMib::NContainer::TCVector<void*, NMem::CAllocator_NonTrackedHeap> const& _Locations
-						, NMib::NContainer::TCVector<mint, NMib::NMem::CAllocator_NonTrackedHeap> const& _Sizes
+						NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
+						, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 					) 
 					: m_Locations(_Locations)
 					, m_Sizes(_Sizes)
@@ -92,8 +92,8 @@ namespace NMib
 
 			void CSubSystem_Debug_Platform_Windows::f_GenerateMemoryDump
 				(
-					NMib::NContainer::TCVector<void*, NMem::CAllocator_NonTrackedHeap> const& _Locations
-					, NMib::NContainer::TCVector<mint, NMib::NMem::CAllocator_NonTrackedHeap> const& _Sizes
+					NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
+					, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 				)
 			{
 				CExceptionMemoryData Data(_Locations, _Sizes);
@@ -240,7 +240,9 @@ namespace NMib
 				}
 				else
 				{
-					NPtr::TCUniquePointer<NThread::CThreadObjectNonTracked, NMem::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread(fl_GenerateException, "DumpExceptionsThread");
+					NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> pThread
+						= NThread::CThreadObjectNonTracked::fs_StartThread(fl_GenerateException, "DumpExceptionsThread")
+					;
 					pThread->f_Stop();
 					return pThread->f_GetReturnValue();
 				}

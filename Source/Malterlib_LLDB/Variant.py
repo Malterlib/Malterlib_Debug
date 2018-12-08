@@ -24,7 +24,7 @@ class CSynthProvider_TCStreamableVariant(CSynthProvider_Common):
 
 	def fp_ExtractType(self):
 
-		ContainerType = fg_GetInheritedType(self.m_ValueObjectDeref.GetType(), "NMib::NContainer::TCStreamableVariant")
+		ContainerType = fg_GetInheritedType(self.m_ValueObjectDeref.GetType(), "NMib::NStorage::TCStreamableVariant")
 		if not ContainerType.IsValid():
 			return False
 		
@@ -96,9 +96,9 @@ def fg_MibLLDBInit_Variant(_Debugger):
 	
 	# TCVariant
 	
-	fg_AddSynth(_Debugger, CSynthProvider_TCStreamableVariant, "(^|^const )NMib::NContainer::TCVariant<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCStreamableVariant, "(^|^const )NMib::NContainer::TCStreamableVariant<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NContainer::TCVariant<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NContainer::TCStreamableVariant<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCStreamableVariant, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCStreamableVariant, "(^|^const )NMib::NStorage::TCStreamableVariant<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCStreamableVariant<.*>$", True)
 	
 	return

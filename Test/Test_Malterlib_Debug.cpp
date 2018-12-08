@@ -221,7 +221,7 @@ public:
 			using namespace NMib::NContainer;
 			using namespace NMib::NIntrusive;
 			using namespace NMib::NAtomic;
-			using namespace NMib::NPtr;
+			using namespace NMib::NStorage;
 			using namespace NMib;
 			
 			CStr Str0(str_utf8("CStr 実際にあっ 24bit:𠀀"));
@@ -364,7 +364,7 @@ public:
 			LinkedList.f_Insert(3);
 			
 			TCLinkedList<CTest2> LinkedListForTree;
-			TCAVLTree<CTest2::CLinkTraits_m_AVLLink, CTest2::CCompare> AVLTree;
+			TCAVLTree<&CTest2::m_AVLLink, CTest2::CCompare> AVLTree;
 
 			DMibListLinkS_List(CTest2, m_LinkSingle) IntrusiveSingleList;
 			
@@ -434,7 +434,7 @@ public:
 			fp32 Float32 = 5.5f;
 			fp64 Float64 = 6.8;
 			
-			NAggregate::TCAggregate<int32> Aggregate = { DAggregateInit };
+			NStorage::TCAggregate<int32> Aggregate = { DAggregateInit };
 			
 			auto CleanupAggregate
 			= fg_OnScopeExit
@@ -448,7 +448,7 @@ public:
 			
 			*Aggregate = 55;
 
-			NAggregate::TCAggregateSimple<int32> AggregateSimple = { DAggregateInit };
+			NStorage::TCAggregateSimple<int32> AggregateSimple = { DAggregateInit };
 			
 			AggregateSimple.f_Construct(55);
 			
@@ -464,16 +464,16 @@ public:
 			
 			TCVariant<int32, fp32, fp16> Variant0;
 			TCVariant<int32, fp32, fp16> Variant1;
-			TCVariant<int32, fp32, NMib::NMath::TCFloat<1, 5, 10, NMib::NMath::CNoImplicit, 1, short>> Variant2;
+			TCVariant<int32, fp32, NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>> Variant2;
 			
-			NMib::NMath::TCFloat<1, 5, 10, NMib::NMath::CNoImplicit, 1, short> FloatWhat(fp32(3.4f));
+			NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short> FloatWhat(fp32(3.4f));
 			Variant0 = 3;
 			Variant1.f_Set<1>(3.3f);
 			Variant2.f_Set<2>(fp32(3.4f));
 
 			TCStreamableVariant<int, int32, 0, fp32, 1, fp16, 2> StreamableVariant0;
 			TCStreamableVariant<int, int32, 0, fp32, 1, fp16, 2> StreamableVariant1;
-			TCStreamableVariant<int, int32, 0, fp32, 1, NMib::NMath::TCFloat<1, 5, 10, NMib::NMath::CNoImplicit, 1, short>, 2> StreamableVariant2;
+			TCStreamableVariant<int, int32, 0, fp32, 1, NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>, 2> StreamableVariant2;
 			
 			StreamableVariant0 = 3;
 			StreamableVariant1.f_Set<1>(3.3f);
@@ -558,34 +558,34 @@ public:
 			
 			CTest2 Test2(665);
 			
-			NPtr::TCAutoClearPtr<CTest2> pAutoClear(&Test2);
-			NPtr::TCAutoClearPtrDebug<CTest2> pAutoClearDebug(&Test2);
-			NPtr::TCDebugPointer<CTest2> pDebugPointer(&Test2);
-			NPtr::TCPointer<CTest2> pPointer(&Test2);
-			NPtr::TCSharedPointer<CTest2> pSharedPointer(fg_Construct(667));
-			NPtr::TCUniquePointer<CTest2> pUniquePointer(fg_Construct(668));
+			NStorage::TCAutoClearPtr<CTest2> pAutoClear(&Test2);
+			NStorage::TCAutoClearPtrDebug<CTest2> pAutoClearDebug(&Test2);
+			NStorage::TCDebugPointer<CTest2> pDebugPointer(&Test2);
+			NStorage::TCPointer<CTest2> pPointer(&Test2);
+			NStorage::TCSharedPointer<CTest2> pSharedPointer(fg_Construct(667));
+			NStorage::TCUniquePointer<CTest2> pUniquePointer(fg_Construct(668));
 
-			NPtr::TCAutoClearPtr<CTest2> pAutoClearNull;
-			NPtr::TCAutoClearPtrDebug<CTest2> pAutoClearDebugNull;
-			NPtr::TCDebugPointer<CTest2> pDebugPointerNull;
-			NPtr::TCPointer<CTest2> pPointerNull;
-			NPtr::TCSharedPointer<CTest2> pSharedPointerNull;
- 			NPtr::TCUniquePointer<CTest2> pUniquePointerNull;
+			NStorage::TCAutoClearPtr<CTest2> pAutoClearNull;
+			NStorage::TCAutoClearPtrDebug<CTest2> pAutoClearDebugNull;
+			NStorage::TCDebugPointer<CTest2> pDebugPointerNull;
+			NStorage::TCPointer<CTest2> pPointerNull;
+			NStorage::TCSharedPointer<CTest2> pSharedPointerNull;
+ 			NStorage::TCUniquePointer<CTest2> pUniquePointerNull;
 			
 			int32 Data = 664;
 
-			NPtr::TCDebugPointer<int32> pDebugPointerInt(&Data);
-			NPtr::TCPointer<int32> pPointerInt(&Data);
-			NPtr::TCSharedPointer<int32> pSharedPointerInt(fg_Construct(3));
-			NPtr::TCUniquePointer<int32> pUniquePointerInt(fg_Construct(4));
+			NStorage::TCDebugPointer<int32> pDebugPointerInt(&Data);
+			NStorage::TCPointer<int32> pPointerInt(&Data);
+			NStorage::TCSharedPointer<int32> pSharedPointerInt(fg_Construct(3));
+			NStorage::TCUniquePointer<int32> pUniquePointerInt(fg_Construct(4));
 			
 			CStr *pStrNullPtr = nullptr;
 						
-			NMib::NReference::TCReference<int32> Reference(Data);
+			NMib::NStorage::TCReference<int32> Reference(Data);
 
-			NMib::NIndirection::TCIndirection<int32> Indirection(5);
+			NMib::NStorage::TCIndirection<int32> Indirection(5);
 			
-			NMib::NRegistry::TCRegistry<CStr, CStr> Registry;
+			NMib::NContainer::TCRegistry<CStr, CStr> Registry;
 			Registry.f_SetThisValue("ValueRoot");
 			Registry.f_SetValue("Path0", "ValuePath0");
 			Registry.f_SetValue("Path0/Key1", "Value1");

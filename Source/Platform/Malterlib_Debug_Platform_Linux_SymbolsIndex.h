@@ -86,8 +86,8 @@ namespace NMib
 				Dwarf_Die m_pDie;
 				Dwarf_Signed m_nLines;			
 				Dwarf_Line* m_lLines;
-				NContainer::TCVector<CLineEntry, NMem::CAllocator_NonTrackedHeap> m_lSortedLines;
-				NContainer::TCVector<CFunction, NMem::CAllocator_NonTrackedHeap> m_lSortedFunctions;
+				NContainer::TCVector<CLineEntry, NMemory::CAllocator_NonTrackedHeap> m_lSortedLines;
+				NContainer::TCVector<CFunction, NMemory::CAllocator_NonTrackedHeap> m_lSortedFunctions;
 			};
 
 			class CSymbolsIndex
@@ -104,7 +104,7 @@ namespace NMib
 				Elf* mp_pElf;
 				Dwarf_Debug mp_Dwarf;
 
-				NContainer::TCVector<CUnit, NMem::CAllocator_NonTrackedHeap> mp_lUnits;
+				NContainer::TCVector<CUnit, NMemory::CAllocator_NonTrackedHeap> mp_lUnits;
 
 				CSymStr mp_ModuleFilename;
 				mint mp_BaseAddress;

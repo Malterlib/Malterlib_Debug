@@ -47,7 +47,7 @@ namespace NMib
 				}
 
 				if (m_pSymbolInfo)
-					NMem::CAllocator_NonTrackedHeap::f_Free(m_pSymbolInfo, gc_SymbolSize);
+					NMemory::CAllocator_NonTrackedHeap::f_Free(m_pSymbolInfo, gc_SymbolSize);
 
 				if (m_hDbgHelp)
 					FreeLibrary(m_hDbgHelp);
@@ -60,15 +60,15 @@ namespace NMib
 				{
 					CLocalStackTraceInfo *pInfo = m_TraceInfoTree.f_GetRoot();
 					if (pInfo->m_pFunctionName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, NStr::fg_StrLen(pInfo->m_pFunctionName) + 1);
+						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, NStr::fg_StrLen(pInfo->m_pFunctionName) + 1);
 					if (pInfo->m_pModuleName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, NStr::fg_StrLen(pInfo->m_pModuleName) + 1);
+						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, NStr::fg_StrLen(pInfo->m_pModuleName) + 1);
 					if (pInfo->m_pSourceFileName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
+						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
 					m_TraceInfoTree.f_Remove(pInfo);
 
-					NPtr::TCUniquePointer<CLocalStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfoDelete = fg_Explicit(pInfo);
+					NStorage::TCUniquePointer<CLocalStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfoDelete = fg_Explicit(pInfo);
 				}
 
 			}
@@ -251,7 +251,7 @@ namespace NMib
 
 						if (!m_pSymbolInfo)
 						{
-							m_pSymbolInfo = (IMAGEHLP_SYMBOL64 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(gc_SymbolSize);
+							m_pSymbolInfo = (IMAGEHLP_SYMBOL64 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(gc_SymbolSize);
 						}
 
 						this->SymRefreshModuleList(m_hProcess);
@@ -343,14 +343,14 @@ namespace NMib
 				if (!SymGetSymFromAddr64(m_hProcess, _Address, &Displacement, m_pSymbolInfo))
 					return nullptr;
 
-				pLocalInfo = new(NMem::CAllocator_NonTrackedHeap::f_Alloc(sizeof(CLocalStackTraceInfo))) CLocalStackTraceInfo();
+				pLocalInfo = new(NMemory::CAllocator_NonTrackedHeap::f_Alloc(sizeof(CLocalStackTraceInfo))) CLocalStackTraceInfo();
 				pLocalInfo->m_Address = _Address;
 				m_TraceInfoTree.f_Insert(pLocalInfo);
 
 				int Len = NStr::fg_StrLen(m_pSymbolInfo->Name);
 				ch8 *pStr;
-				pLocalInfo->m_pFunctionName = pStr = (ch8 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(Len + 1);
-				NMem::fg_MemCopy(pStr, m_pSymbolInfo->Name, Len);
+				pLocalInfo->m_pFunctionName = pStr = (ch8 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(Len + 1);
+				NMemory::fg_MemCopy(pStr, m_pSymbolInfo->Name, Len);
 				pStr[Len] = 0;
 
 				{
@@ -379,14 +379,14 @@ namespace NMib
 						}
 
 						int Len = NStr::fg_StrLen(pName);
-						pLocalInfo->m_pSourceFileName = pStr = (ch8 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(Len + 1);
-						NMem::fg_MemCopy(pStr, pName, Len);
+						pLocalInfo->m_pSourceFileName = pStr = (ch8 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(Len + 1);
+						NMemory::fg_MemCopy(pStr, pName, Len);
 						pStr[Len] = 0;
 						pLocalInfo->m_SourceLine = LineInfo.LineNumber;
 					}
 					else
 					{
-						pLocalInfo->m_pSourceFileName = pStr = (ch8 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(1);
+						pLocalInfo->m_pSourceFileName = pStr = (ch8 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(1);
 						pStr[0] = 0;
 					}
 				}
@@ -396,13 +396,13 @@ namespace NMib
 					if (SymGetModuleInfo64(m_hProcess, _Address, &ModuleInfo))
 					{
 						int Len = NStr::fg_StrLen(ModuleInfo.ImageName);
-						pLocalInfo->m_pModuleName = pStr = (ch8 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(Len + 1);
-						NMem::fg_MemCopy(pStr, ModuleInfo.ImageName, Len);
+						pLocalInfo->m_pModuleName = pStr = (ch8 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(Len + 1);
+						NMemory::fg_MemCopy(pStr, ModuleInfo.ImageName, Len);
 						pStr[Len] = 0;
 					}
 					else
 					{
-						pLocalInfo->m_pModuleName = pStr = (ch8 *)NMem::CAllocator_NonTrackedHeap::f_Alloc(1);
+						pLocalInfo->m_pModuleName = pStr = (ch8 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(1);
 						pStr[0] = 0;
 					}
 				}
@@ -418,13 +418,13 @@ namespace NMib
 					m_TraceInfoTree.f_Remove(pInfo);
 
 					if (pInfo->m_pFunctionName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, NStr::fg_StrLen(pInfo->m_pFunctionName) + 1);
+						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pFunctionName, NStr::fg_StrLen(pInfo->m_pFunctionName) + 1);
 					if (pInfo->m_pModuleName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, NStr::fg_StrLen(pInfo->m_pModuleName) + 1);
+						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pModuleName, NStr::fg_StrLen(pInfo->m_pModuleName) + 1);
 					if (pInfo->m_pSourceFileName)
-						NMem::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
+						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
-					NPtr::TCUniquePointer<CLocalStackTraceInfo, NMem::CAllocator_NonTrackedHeap> pInfoDel = fg_Explicit(pInfo);
+					NStorage::TCUniquePointer<CLocalStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfoDel = fg_Explicit(pInfo);
 				}			
 			}
 

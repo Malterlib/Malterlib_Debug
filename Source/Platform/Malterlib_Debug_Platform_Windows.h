@@ -35,8 +35,8 @@ namespace NMib
 				static LONG fsp_ExceptionGenerateHandlerMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_GenerateMemoryDump
 					(
-						NMib::NContainer::TCVector<void*, NMem::CAllocator_NonTrackedHeap> const& _Locations
-						, NMib::NContainer::TCVector<mint, NMib::NMem::CAllocator_NonTrackedHeap> const& _Sizes
+						NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
+						, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 					)
 				;
 	

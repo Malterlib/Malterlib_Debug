@@ -1,4 +1,4 @@
-﻿// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 class CTestClass 
@@ -13,7 +13,7 @@ public:
 	DMibListLinkDS_Link(CTestClass, m_Link);
 };
 
-class CTest2 : public NMib::NPtr::TCSharedPointerIntrusiveBase<>
+class CTest2 : public NMib::NStorage::TCSharedPointerIntrusiveBase<>
 {
 public:
 	CTest2(int _Value)
@@ -31,7 +31,7 @@ public:
 		}
 	};
 
-	DMibIntrusiveLink(CTest2, NMib::NIntrusive::TCAVLLink<>, m_AVLLink);
+	NMib::NIntrusive::TCAVLLink<> m_AVLLink;
 	DMibListLinkS_Link(CTestClass, m_LinkSingle);
 	DMibAutoClearPtrDeclare;
 	DMibAutoClearPtrDeclareDebug(CTestClass);

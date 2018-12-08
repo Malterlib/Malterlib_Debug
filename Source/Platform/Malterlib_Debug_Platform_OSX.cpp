@@ -50,14 +50,14 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 			(
 				TempDir
 				, CStr::CFormat("{}-{}-{}.txt")
-				<< FirstName << FirstExt << NMib::NDataProcessing::fg_GetHashedUuidString(_FirstStr, NMib::NDataProcessing::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
+				<< FirstName << FirstExt << NMib::NCryptography::fg_GetHashedUuidString(_FirstStr, NMib::NCryptography::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
 			)
 		;
 		CStr SecondFile = NMib::NFile::CFile::fs_AppendPath
 			(
 				TempDir
 				, CStr::CFormat("{}-{}-{}.txt")
-				<< SecondName << SecondExt << NMib::NDataProcessing::fg_GetHashedUuidString(_SecondStr, NMib::NDataProcessing::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
+				<< SecondName << SecondExt << NMib::NCryptography::fg_GetHashedUuidString(_SecondStr, NMib::NCryptography::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
 			)
 		;
 		NMib::NFile::CFile::fs_WriteStringToFile(FirstFile, _FirstStr);
@@ -78,7 +78,11 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, co
 	
 }
 
-void NMib::NSys::fg_Debug_GenerateMemoryDump(NMib::NContainer::TCVector<void*, NMib::NMem::CAllocator_NonTrackedHeap> const& _Locations, NMib::NContainer::TCVector<mint, NMib::NMem::CAllocator_NonTrackedHeap> const& _Sizes)
+void NMib::NSys::fg_Debug_GenerateMemoryDump
+	(
+	 	NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
+	 	, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
+	)
 {
 
 }

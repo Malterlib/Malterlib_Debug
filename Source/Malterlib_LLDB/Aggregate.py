@@ -56,10 +56,10 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 
 def fg_MibLLDBInit_Aggregate(_Debugger):
 	
-	fg_AddSynth(_Debugger, CSynthProvider_TCAggregate, "(^|^const )NMib::NAggregate::TCAggregate<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NAggregate::TCAggregate<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCAggregate, "(^|^const )NMib::NStorage::TCAggregate<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCAggregate<.*>$", True)
 
-	fg_AddSynth(_Debugger, CSynthProvider_TCAggregate, "(^|^const )NMib::NAggregate::TCAggregateSimple<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NAggregate::TCAggregateSimple<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCAggregate, "(^|^const )NMib::NStorage::TCAggregateSimple<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCAggregateSimple<.*>$", True)
 		
 	return

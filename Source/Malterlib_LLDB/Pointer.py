@@ -106,7 +106,7 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 			if self.m_Value.GetValueAsUnsigned() != 0:
 				self.m_RefCount = self.m_Value.GetValueForExpressionPath('->m_RefCount.__a_')
 				self.m_WeakRefCount = self.m_Value.GetValueForExpressionPath('->m_WeakRefCount.__a_')
-				if self.m_DataType.GetCanonicalType().GetName().startswith('NMib::NPtr::NPrivate::TCSharedPointerCounter'):
+				if self.m_DataType.GetCanonicalType().GetName().startswith('NMib::NStorage::NPrivate::TCSharedPointerCounter'):
 					Data = self.m_Value.GetChildMemberWithName('m_Data')
 					self.m_DataType = fg_GetValueType(Data)
 					fg_PrecacheType(self.m_DataType)
@@ -241,24 +241,24 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 def fg_MibLLDBInit_Pointer(_Debugger):
 	
 	# Pointers
-	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NPtr::TCAutoClearPtr<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NPtr::TCAutoClearPtrDebug<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NPtr::TCDebugPointer<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NPtr::TCPointer<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCSharedPointer, "(^|^const )NMib::NPtr::TCSharedPointer<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCSharedPointer, "(^|^const )NMib::NPtr::TCWeakPointer<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NPtr::TCUniquePointer<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NReference::TCReference<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NIndirection::TCIndirection<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtr<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtrDebug<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NStorage::TCDebugPointer<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NStorage::TCPointer<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCSharedPointer, "(^|^const )NMib::NStorage::TCSharedPointer<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCSharedPointer, "(^|^const )NMib::NStorage::TCWeakPointer<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NStorage::TCUniquePointer<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NStorage::NReference::TCReference<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NStorage::NIndirection::TCIndirection<.*>$", True)
 	
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NPtr::TCAutoClearPtr<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NPtr::TCAutoClearPtrDebug<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NPtr::TCDebugPointer<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NPtr::TCPointer<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NPtr::TCUniquePointer<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NReference::TCReference<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NIndirection::TCIndirection<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_TCSharedPointer, "(^|^const )NMib::NPtr::TCSharedPointer<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_TCSharedPointer, "(^|^const )NMib::NPtr::TCWeakPointer<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtr<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtrDebug<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCDebugPointer<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCPointer<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCUniquePointer<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::NReference::TCReference<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::NIndirection::TCIndirection<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCSharedPointer, "(^|^const )NMib::NStorage::TCSharedPointer<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCSharedPointer, "(^|^const )NMib::NStorage::TCWeakPointer<.*>$", True)
 	
 	return

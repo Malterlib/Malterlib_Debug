@@ -79,7 +79,7 @@ namespace NMib
 						NStr::CStrNonTracked Ret = "\r\n\r\nDump of GDI and User Objects\r\n\r\n";
 						const ch8 * pFormatStr = "{sj128,a-}{sj18,a-}{sj18,a-}\r\n";
 						Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Process" << "GDI Objects" << "User Objects";
-						NContainer::TCVector<DWORD, NMem::CAllocator_NonTrackedHeap> ProcessIDs;
+						NContainer::TCVector<DWORD, NMemory::CAllocator_NonTrackedHeap> ProcessIDs;
 
 						ProcessIDs.f_SetLen(65536);
 
@@ -132,7 +132,7 @@ namespace NMib
 			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::f_DumpModules()
 			{
 				HANDLE hProcess = GetCurrentProcess();
-				NContainer::TCVector<HMODULE, NMem::CAllocator_NonTrackedHeap> Modules;
+				NContainer::TCVector<HMODULE, NMemory::CAllocator_NonTrackedHeap> Modules;
 				Modules;
 				DWORD NeededBytes = 0;
 				EnumProcessModules(hProcess, 0, 0, &NeededBytes);
@@ -835,10 +835,10 @@ namespace NMib
 						NStr::CStrNonTracked SupportEmail = fg_GetSys()->f_GetSupportEmailNonTracked();
 						if (SupportEmail.f_IsEmpty())
 							SupportEmail = "unknown@example.com";
-						bint bService = fg_GetSys()->f_GetRunningAsService();
+						bint bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
 		
 						bint bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
-						if (!bService)
+						if (!bDaemon)
 						{
 							for (mint i = 0; i < nCache; ++i)
 							{
@@ -896,7 +896,9 @@ namespace NMib
 				}
 				else
 				{
-					NPtr::TCUniquePointer<NThread::CThreadObjectNonTracked, NMem::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread(fl_GenerateException, "DumpExceptionsThread");
+					NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> pThread
+						= NThread::CThreadObjectNonTracked::fs_StartThread(fl_GenerateException, "DumpExceptionsThread")
+					;
 					pThread->f_Stop();
 					return pThread->f_GetReturnValue();
 				}

@@ -303,7 +303,11 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, co
 	return SubSystem.f_GenerateCrashDump(_Message, _ExtraLog, _GeneratedLogs, _bDisplayGUI);
 }
 
-void NMib::NSys::fg_Debug_GenerateMemoryDump(NMib::NContainer::TCVector<void*, NMib::NMem::CAllocator_NonTrackedHeap> const& _Locations, NMib::NContainer::TCVector<mint, NMib::NMem::CAllocator_NonTrackedHeap> const& _Sizes)
+void NMib::NSys::fg_Debug_GenerateMemoryDump
+	(
+	 	NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
+	 	, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
+	)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	SubSystem.f_GenerateMemoryDump(_Locations, _Sizes);
@@ -376,7 +380,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 				return 0;
 			}
 
-			if (fg_GetSys()->f_GetRunningAsService())
+			if (fg_GetSys()->f_GetRunningAsDaemon())
 			{
 				Ret = EDebugContractFailureAction_Break;
 				return 0;
@@ -414,7 +418,9 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 	}
 	else
 	{
-		NPtr::TCUniquePointer<NThread::CThreadObjectNonTracked, NMib::NMem::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread(fl_DisplayMessage, "Report assert display message thread");
+		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMib::NMemory::CAllocator_NonTrackedHeap> pThread
+			= NThread::CThreadObjectNonTracked::fs_StartThread(fl_DisplayMessage, "Report assert display message thread")
+		;
 	}
 
 	return Ret;

@@ -51,9 +51,9 @@ namespace NMib
 
 				NContainer::TCMap<
 							CSymStr
-						,	NPtr::TCUniquePointer<CSymbolsIndex, NMem::CAllocator_NonTrackedHeap>
+						,	NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>
 						,	NMib::CSort_Default
-						,	NMem::CAllocator_NonTrackedHeap> mp_IndexLookup;
+						,	NMemory::CAllocator_NonTrackedHeap> mp_IndexLookup;
 						
 			public:
 				CSymbols();

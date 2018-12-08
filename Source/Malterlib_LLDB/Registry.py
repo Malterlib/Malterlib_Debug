@@ -110,7 +110,7 @@ def fg_MibLLDBInit_Registry(_Debugger):
 	
 	# TCRegistry
 
-	fg_AddSynth(_Debugger, CSynthProvider_TCRegistry, "(^|^const )NMib::NRegistry::TCRegistry<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_TCRegistry, "(^|^const )NMib::NRegistry::TCRegistry<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCRegistry, "(^|^const )NMib::NContainer::TCRegistry<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCRegistry, "(^|^const )NMib::NContainer::TCRegistry<.*>$", True)
 	
 	return

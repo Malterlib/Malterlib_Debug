@@ -80,8 +80,8 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 
 def fg_MibLLDBInit_Float(_Debugger):
 	
-	fg_AddSummary(_Debugger, fg_SummaryProvider_fp32, "(^|^const )NMib::NMath::TCFloat<1, 8, 23, float, 1, int>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_fp64, "(^|^const )NMib::NMath::TCFloat<1, 11, 52, double, 1, long long>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_TCFloat, "(^|^const )NMib::NMath::TCFloat<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_fp32, "(^|^const )NMib::NNumeric::TCFloat<1, 8, 23, float, 1, int>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_fp64, "(^|^const )NMib::NNumeric::TCFloat<1, 11, 52, double, 1, long long>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCFloat, "(^|^const )NMib::NNumeric::TCFloat<.*>$", True)
 	
 	return
