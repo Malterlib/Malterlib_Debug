@@ -9,10 +9,16 @@
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrNonTracked&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrNonTracked&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrNonTracked&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrSecure&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrSecure&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrSecure&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrVMem&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrVMem&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrVMem&gt;"></AlternativeType>
-    <DisplayString Condition="(m_pData.m_pPtr == 0)">
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Dynamic&lt;*&gt; &gt; &gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrAnsi&gt;"></AlternativeType>
+        
+        <DisplayString Condition="(m_pData.m_pPtr == 0)">
       ""
     </DisplayString>
     <DisplayString Condition="(((uint32)(mint)m_pData.m_pPtr) == 0xcccccccc)">
@@ -28,13 +34,13 @@
       {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
-      {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
+      {((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
-      {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
+      {((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData.m_pPtr != 0)" LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CUStr">
-      ch32
+    <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData.m_pPtr != 0)">
+      {((ch32 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s32}
     </DisplayString>
     <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
       ((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s8
@@ -43,10 +49,10 @@
       ((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s
     </StringView>
     <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
-      ((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su
+      ((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su
     </StringView>
     <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
-      ((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su
+      ((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su
     </StringView>
     <Expand>
       <Synthetic Name="Type">
@@ -96,48 +102,49 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrPtr&gt;">
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrPtr&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrPtr&gt;"></AlternativeType>
+    <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraitsPtr_CStr&gt;">
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraitsPtr_CWStr&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraitsPtr_CUStr&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Ptr&lt;*&gt; &gt; &gt;"></AlternativeType>
     <DisplayString Condition="(m_pData == 0)">
       ""
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
       {m_pData,s8}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 1)">
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 1)">
       {m_pData,s}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 1">
       {m_pData,s}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
+    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
       {m_pData,su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
+    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
       {m_pData,su}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 4">
-      (Cannot Display)
+      {m_pData,s32}
     </DisplayString>
     <Expand>
       <Synthetic Name="Type">
         <DisplayString Condition="(((uint32)(mint)m_pData) == 0xcccccccc)">
           Not Initialized
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
           utf8
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 1)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 1)">
           ch8 (unicode)
         </DisplayString>
         <DisplayString Condition="EDebug_CharSize == 1">
           ansi
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
           utf16
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
           ch16 (unicode)
         </DisplayString>
         <DisplayString Condition="EDebug_CharSize == 4">
@@ -148,52 +155,54 @@
   </Type>
 
   <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Fixed&lt;*,*&gt; &gt; &gt;">
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
       {m_lData,s8}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 1)">
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 1)">
       {m_lData,s}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 1">
       {m_lData,s}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
+    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
       {m_lData,su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
+    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
       {m_lData,su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4" LegacyAddin="Malterlib_Debug_VSE.dll" Export ="VSE_CFUStr" />
-    <DisplayString>
-      ""
+    <DisplayString Condition="EDebug_CharSize == 4">
+      {m_lData,s32}
     </DisplayString>
-    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
+    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
       m_lData,s8
     </StringView>
-    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; !(m_Type == 2)">
+    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; !(EDebug_Type == 2)">
       m_lData,s
     </StringView>
-    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
+    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
       m_lData,su
     </StringView>
-    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
+    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
       m_lData,su
+    </StringView>
+    <StringView Condition="EDebug_CharSize == 4">
+      m_lData,s32
     </StringView>
     <Expand>
       <Synthetic Name="Type">
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
           utf8
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_Type == 1)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 1)">
           ch8 (unicode)
         </DisplayString>
         <DisplayString Condition="EDebug_CharSize == 1">
           ansi
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
           utf16
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(m_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
           ch16 (unicode)
         </DisplayString>
         <DisplayString Condition="EDebug_CharSize == 4">
@@ -254,7 +263,85 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NStorage::TCSharedPointer&lt;*&gt;">
+  <Type Name="NMib::NStorage::TCPointer&lt;*&gt;">
+    <AlternativeType Name="NMib::NStorage::TCDebugPointer&lt;*&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStorage::TCAutoClearPtr&lt;*&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStorage::TCAutoClearPtrDebug&lt;*&gt;"></AlternativeType>
+    <DisplayString Condition="m_pPointTo != 0">
+      {*m_pPointTo}
+    </DisplayString>
+    <DisplayString>
+      nullptr
+    </DisplayString>
+    <Expand>
+      <ExpandedItem Condition="m_pPointTo != 0">
+        *m_pPointTo
+      </ExpandedItem>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
+  <Type Name="NMib::TCAutoClear&lt;*&gt;">
+    <DisplayString>
+      {m_Value}
+    </DisplayString>
+    <Expand>
+      <Item Name ="[Value]">
+        m_Value
+      </Item>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
+  <Type Name="NMib::NEncoding::NPrivate::TCObjectEntry&lt;*&gt;">
+    <DisplayString>
+      {mp_Name} = {mp_Value}
+    </DisplayString>
+    <Expand>
+      <Item Name ="Key">
+        mp_Name
+      </Item>
+      <Item Name ="Value">
+        mp_Value
+      </Item>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="NMib::NEncoding::TCJSONObject&lt;*&gt;">
+    <DisplayString>
+      {mp_Objects}
+    </DisplayString>
+    <Expand>
+      <ExpandedItem>
+        mp_Objects
+      </ExpandedItem>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+  <Type Name="NMib::NEncoding::TCJSONValue&lt;*&gt;">
+    <DisplayString>
+      {mp_Value}
+    </DisplayString>
+    <Expand>
+      <ExpandedItem>
+        mp_Value
+      </ExpandedItem>
+      <Item Name ="[Raw View]">
+        *this,!
+      </Item>
+    </Expand>
+  </Type>
+
+    <Type Name="NMib::NStorage::TCSharedPointer&lt;*&gt;">
     <DisplayString Condition="m_Data.m_pPointTo != 0">
       {*m_Data.m_pPointTo}
     </DisplayString>
@@ -275,9 +362,6 @@
   <Type Name="NMib::NConcurrency::TCActor&lt;*&gt;">
     <DisplayString>
       {m_pInternalActor}
-    </DisplayString>
-    <DisplayString>
-      nullptr
     </DisplayString>
     <Expand>
       <ExpandedItem>
@@ -653,7 +737,7 @@
           )
         </RightPointer>
         <ValueNode>
-          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::ms_OffsetTCAVLTreeAggregate))->m_Key
+          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::CMapTreeMember *)((mint)this))->m_Key
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -692,7 +776,7 @@
           )
         </RightPointer>
         <ValueNode>
-          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::CMapTreeMember *)((mint)this - NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::ms_OffsetTCAVLTreeAggregate))->m_Key
+          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::CMapTreeMember *)((mint)this))->m_Key
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -754,14 +838,14 @@
           )
         </RightPointer>
         <ValueNode>
-          *((NMib::NContainer::TCMapTreeMember&lt;$T1,$T2&gt; *)((mint)this - NMib::NContainer::TCMap&lt;$T1,$T2,$T3,$T4&gt;::ms_OffsetTCAVLTreeAggregate))
+          *((NMib::NContainer::TCMapTreeMember&lt;$T1,$T2&gt; *)(this))
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
 
-  <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;">
+  <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
         <HeadPointer>(CLink *)((mint)m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
@@ -794,36 +878,36 @@
           )
         </RightPointer>
         <ValueNode>
-          *(($T1::CNode *)((mint)this - (NMib::NIntrusive::TCAVLTreeAggregate&lt;$T1,$T2,$T3&gt;::ms_OffsetTCAVLTreeAggregate)))
+          *(($T4 *)((mint)this - $T1))
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*&gt;::TIterator&lt;*&gt;">
+  <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;::TIterator&lt;*&gt;">
     <DisplayString Condition="m_iStack >= 0">
-      {*((CNode *)((mint)m_pStack[m_iStack] - ms_OffsetTCAVLTreeAggregate))}
+      {*((CNode *)((mint)m_pStack[m_iStack] - $T1))}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="m_iStack >= 0">
-        *((CNode *)((mint)m_pStack[m_iStack] - ms_OffsetTCAVLTreeAggregate))
+        *((CNode *)((mint)m_pStack[m_iStack] - $T1))
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
     <DisplayString Condition="mp_Iter.m_iStack >= 0">
-      {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - ms_OffsetTCAVLTreeAggregate))}
+      {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack]))}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="mp_Iter.m_iStack >= 0">
-        *((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack] - ms_OffsetTCAVLTreeAggregate))
+        *((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack]))
       </ExpandedItem>
     </Expand>
   </Type>
@@ -858,15 +942,15 @@
 
 
   <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
-    <DisplayString Condition="(((mint)m_Children.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
+    <DisplayString Condition="(((mint)m_Children.m_Tree.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
       + {m_Key.m_Name}   {m_Data}
     </DisplayString>
     <DisplayString>
       {m_Key.m_Name}   {m_Data}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="(((mint)m_Children.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
-        m_Children
+      <ExpandedItem Condition="(((mint)m_Children.m_Tree.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
+        m_Children.m_Tree
       </ExpandedItem>
     </Expand>
   </Type>
@@ -896,8 +980,11 @@
     </Expand>
   </Type>
 
+
+
   <Type Name="NMib::NStorage::NReference::TCReference&lt;*,*&gt;">
     <AlternativeType Name="NMib::NStorage::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStorage::NIndirection::TCIndirection&lt;*,*,*&gt;"></AlternativeType>
     <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
       {*(($T1 *)m_Data.m_pPointTo.m_pPtr)}
     </DisplayString>
@@ -1054,54 +1141,54 @@
       <Item Name ="Type">
         ((CIndexType)m_Storage.m_CurrentType)
       </Item>
-      <Item Name ="Value" Condition="m_Storage.m_CurrentType == EDebugHelper_Member0">
+      <ExpandedItem Condition="m_Storage.m_CurrentType == EDebugHelper_Member0">
         (*((CDbgConstructType0 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value" Condition="m_Storage.m_CurrentType == EDebugHelper_Member1">
+      </ExpandedItem>
+      <ExpandedItem Condition="m_Storage.m_CurrentType == EDebugHelper_Member1">
         (*((CDbgConstructType1 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value" Condition="m_Storage.m_CurrentType == EDebugHelper_Member2">
+      </ExpandedItem>
+      <ExpandedItem Condition="m_Storage.m_CurrentType == EDebugHelper_Member2">
         (*((CDbgConstructType2 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member3">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member3">
         (*((CDbgConstructType3 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member4">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member4">
         (*((CDbgConstructType4 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member5">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member5">
         (*((CDbgConstructType5 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member6">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member6">
         (*((CDbgConstructType6 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member7">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member7">
         (*((CDbgConstructType7 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member8">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member8">
         (*((CDbgConstructType8 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member9">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member9">
         (*((CDbgConstructType9 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member10">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member10">
         (*((CDbgConstructType10 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member11">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member11">
         (*((CDbgConstructType11 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member12">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member12">
         (*((CDbgConstructType12 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member13">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member13">
         (*((CDbgConstructType13 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member14">
+      </ExpandedItem>
+      <ExpandedItem  Condition="m_Storage.m_CurrentType == EDebugHelper_Member14">
         (*((CDbgConstructType14 *)&amp;m_Storage))
-      </Item>
-      <Item Name ="Value"  Condition="m_Storage.m_CurrentType == EDebugHelper_Member15">
+      </ExpandedItem>
+      <ExpandedItem Condition="m_Storage.m_CurrentType == EDebugHelper_Member15">
         (*((CDbgConstructType15 *)&amp;m_Storage))
-      </Item>
+      </ExpandedItem>
     </Expand>
   </Type>
 
