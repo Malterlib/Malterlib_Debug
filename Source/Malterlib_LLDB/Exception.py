@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -19,6 +19,7 @@ class CSynthProvider_NException_CCallstack(CSynthProvider_Common):
 				return
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -52,6 +53,7 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 				return
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -81,9 +83,9 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 			if self.m_pErrorAlloc.GetValueAsUnsigned():
 				Value = self.m_pErrorAlloc.Dereference()
 				return self.m_ValueObject.CreateValueFromAddress('[Message]', self.m_pErrorAlloc.GetValueAsUnsigned(), Value.GetType());
-			return self.m_ValueObject.CreateValueFromAddress('[Message]', self.m_ErrorNoAlloc.AddressOf().GetValueAsUnsigned(), self.m_ErrorNoAlloc.GetType());
+			return self.m_ValueObject.CreateValueFromAddress('[Message]', fg_GetAddressOf(self.m_ErrorNoAlloc), self.m_ErrorNoAlloc.GetType());
 		elif _iChild == 1:
-			return self.m_ValueObject.CreateValueFromAddress('[Type]', self.m_pClass.AddressOf().GetValueAsUnsigned(), self.m_pClass.GetType());
+			return self.m_ValueObject.CreateValueFromAddress('[Type]', fg_GetAddressOf(self.m_pClass), self.m_pClass.GetType());
 		elif _iChild == 2:
 			if self.m_pCallstackNonTracked.GetValueAsUnsigned():
 				Value = self.m_pCallstackNonTracked.Dereference()
@@ -116,6 +118,7 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 			return Summary;
 		return None
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_CExceptionBase) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 

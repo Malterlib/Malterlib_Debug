@@ -1,11 +1,9 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
-
-
 
 class CSynthProvider_Pointer(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -25,17 +23,18 @@ class CSynthProvider_Pointer(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if _Name == '[Value]':
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			return self.m_ValueObject.CreateValueFromAddress('[Current]', self.m_Value.AddressOf().GetValueAsUnsigned(), self.m_DataType)
+			return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', fg_GetAddressOf(self.m_Value), self.m_DataType)
 		elif _iChild < self.m_NumExtraChildren:
 			return self.m_Value.GetChildAtIndex(_iChild)
 		return None
@@ -61,17 +60,18 @@ class CSynthProvider_TCUniquePointer(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if _Name == '[Value]':
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			return self.m_ValueObject.CreateValueFromAddress('[Current]', self.m_Value.AddressOf().GetValueAsUnsigned(), self.m_DataType)
+			return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', fg_GetAddressOf(self.m_Value), self.m_DataType)
 		elif _iChild < self.m_NumExtraChildren:
 			return self.m_Value.GetChildAtIndex(_iChild)
 		return None
@@ -106,7 +106,7 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 			if self.m_Value.GetValueAsUnsigned() != 0:
 				self.m_RefCount = self.m_Value.GetValueForExpressionPath('->m_RefCount.__a_')
 				self.m_WeakRefCount = self.m_Value.GetValueForExpressionPath('->m_WeakRefCount.__a_')
-				if self.m_DataType.GetCanonicalType().GetName().startswith('NMib::NStorage::NPrivate::TCSharedPointerCounter'):
+				if fg_GetValidCanonicalType(self.m_DataType).GetName().startswith('NMib::NStorage::NPrivate::TCSharedPointerCounter'):
 					Data = self.m_Value.GetChildMemberWithName('m_Data')
 					self.m_DataType = fg_GetValueType(Data)
 					fg_PrecacheType(self.m_DataType)
@@ -114,11 +114,12 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if _Name == '[Value]':
 			return self.m_NumExtraChildren
 		if _Name == '[Count]':
 			return self.m_NumExtraChildren + 1
@@ -128,7 +129,7 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			return self.m_ValueObject.CreateValueFromAddress('[Current]', fg_GetValueAddress(self.m_Value), self.m_DataType)
+			return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', fg_GetValueAddress(self.m_Value), self.m_DataType)
 		elif _iChild == self.m_NumExtraChildren + 1:
 			if self.m_RefCount != None:
 				Data = lldb.SBData.CreateDataFromSInt64Array(self.m_Endianness, self.m_PointerSize, [int(1 + self.m_RefCount.GetValueAsSigned())])
@@ -154,7 +155,7 @@ def fg_SummaryProvider_Pointer(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
-		Current = _Value.GetChildMemberWithName('[Current]')
+		Current = _Value.GetChildMemberWithName('[Value]')
 		if not fg_IsValidSBValue(Current):
 			return None
 
@@ -179,6 +180,7 @@ def fg_SummaryProvider_Pointer(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Pointer) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -188,7 +190,7 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
-		Current = _Value.GetChildMemberWithName('[Current]')
+		Current = _Value.GetChildMemberWithName('[Value]')
 		pValue = fg_ChildPath(_Value, 'm_Data.m_pPointTo')
 		PointerValue = pValue.GetValueAsUnsigned()
 		if PointerValue == 0:
@@ -234,6 +236,7 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCSharedPointer) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 

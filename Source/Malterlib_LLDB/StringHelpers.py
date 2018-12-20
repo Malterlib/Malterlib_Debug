@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 
 def fg_MakeStringFromData_ch8(_Value, _Length, _Type):
 
@@ -30,11 +30,11 @@ def fg_MakeStringFromData_ch8(_Value, _Length, _Type):
 				Ret = Ret + chr(Char)
 
 		if _Type == 0:		# EStrType_Ansi
-			return 'a8   "' + Ret.decode('cp1252').encode('utf-8') + '"'
+			return '"' + Ret.decode('cp1252').encode('utf-8') + '" a8'
 		elif _Type == 1:	# EStrType_Unicode
-			return 'u8   "' + Ret.encode('utf-8') + '"'
+			return '"' + Ret.encode('utf-8') + '" u8'
 		elif _Type == 2:	# EStrType_UTF
-			return 'utf8   "' + Ret.decode('utf-8').encode('utf-8') + '"'
+			return '"' + Ret.decode('utf-8').encode('utf-8') + '"'
 	except Exception as error:
 		if _Type == 0:		# EStrType_Ansi
 			return 'a8(invalid)   "' + Ret + '"'
@@ -115,18 +115,18 @@ def fg_MakeStringFromData_ch16(_Value, _Length, _Type):
 		#u'\U000ee816'
 		
 		if _Type == 0:		# EStrType_Ansi
-			return 'ansi(INVALID for ch16)   "' + Ret.decode('utf-16').encode('utf-8') + '"'
+			return '"' + Ret.decode('utf-16').encode('utf-8') + '" ansi(INVALID for ch16)'
 		elif _Type == 1:	# EStrType_Unicode
-			return 'u16   "' + Ret.encode('utf-8') + '"'
+			return '"' + Ret.encode('utf-8') + '" u16'
 		elif _Type == 2:	# EStrType_UTF
-			return 'utf16   "' + Ret.encode('utf-8') + '"'
+			return '"' + Ret.encode('utf-8') + '" utf16'
 	except Exception as error:
 		if _Type == 0:		# EStrType_Ansi
-			return 'ansi(invalid)   "' + Ret + '"'
+			return '"' + Ret + '" ansi(invalid)'
 		elif _Type == 1:	# EStrType_Unicode
-			return 'u16(invalid)   "' + Ret + '"'
+			return '"' + Ret + '" u16(invalid)'
 		elif _Type == 2:	# EStrType_UTF
-			return 'utf16(invalid)   "' + Ret + '"'
+			return '"' + Ret + '" utf16(invalid)'
 
 	return "Internal error"
 
@@ -191,18 +191,18 @@ def fg_MakeStringFromData_ch32(_Value, _Length, _Type):
 			Ret = Ret + (r'\U' + format(Char, '08x')).decode('unicode-escape')
 
 		if _Type == 0:		# EStrType_Ansi
-			return 'ansi(INVALID for ch32)   "' + Ret.encode('utf-8') + '"'
+			return '"' + Ret.encode('utf-8') + '" ansi(INVALID for ch32)'
 		elif _Type == 1:	# EStrType_Unicode
-			return 'u32   "' + Ret.encode('utf-8') + '"'
+			return '"' + Ret.encode('utf-8') + '" u32'
 		elif _Type == 2:	# EStrType_UTF
-			return 'utf32   "' + Ret.encode('utf-8') + '"'
+			return '"' + Ret.encode('utf-8') + '" utf32'
 	except Exception as error:
 		if _Type == 0:		# EStrType_Ansi
-			return 'ansi(invalid)   "' + Ret + '"'
+			return '"' + Ret + '" ansi(invalid)'
 		elif _Type == 1:	# EStrType_Unicode
-			return 'u32(invalid)   "' + Ret + '"'
+			return '"' + Ret + '" u32(invalid)'
 		elif _Type == 2:	# EStrType_UTF
-			return 'utf32(invalid)   "' + Ret + '"'
+			return '"' + Ret + '" utf32(invalid)'
 
 	return "Internal error"
 

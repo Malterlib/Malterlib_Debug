@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -28,6 +28,7 @@ class CSynthProvider_TCIntNoAutoConvert(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -37,13 +38,13 @@ class CSynthProvider_TCIntNoAutoConvert(CSynthProvider_Common):
 		return True
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if _Name == '[Value]':
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			return self.m_ValueObject.CreateValueFromAddress('[Current]', self.m_Value.AddressOf().GetValueAsUnsigned(), self.m_DataType)
+			return self.m_ValueObject.CreateValueFromAddress('[Value]', fg_GetAddressOf(self.m_Value), self.m_DataType)
 		elif _iChild < self.m_NumExtraChildren:
 			return self.m_Value.GetChildAtIndex(_iChild)
 		return None

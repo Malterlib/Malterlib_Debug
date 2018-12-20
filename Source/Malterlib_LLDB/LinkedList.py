@@ -1,13 +1,13 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
 class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 	def __init__(self, _ValueObject, _Dictionary):
-		CSynthProvider_Container.__init__(self, _ValueObject, _Dictionary)
+		CSynthProvider_Container.__init__(self, _ValueObject, _Dictionary, "NMib::NIntrusive::TCDLinkListAggregate")
 
 	def update(self):
 		CSynthProvider_Container.update(self)
@@ -18,77 +18,67 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
 			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Link.m_pNextPtr.m_pPtr')
-			self.m_pThisLink = self.m_ListLink.AddressOf().GetValueAsUnsigned()
+			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
 			self.m_bValid = True
-		 
+			self.m_bLooped = False
+
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_ExtractType(self):
 
-		ContainerType = fg_GetInheritedType(self.m_ValueObjectDeref.GetType(), "NMib::NIntrusive::TCDLinkListAggregate")
+		ContainerType = self.m_ValueObjectType
 		if not ContainerType.IsValid():
 			return False
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 		
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
-			LinkType = ContainerType.GetTemplateArgumentType(2)
-			LinkType = LinkType.GetCanonicalType()
+ 			LinkType = ContainerType.GetTemplateArgumentType(2)
+			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
-		
+
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(LinkType)
 
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
 
-		Offset = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_OffsetTCDLinkListAggregate", ContainerType)
-		if not fg_IsValidSBValue(Offset):
+		MemberFunctionHelper = fg_GetMemberFunction(ContainerType, 'fs_Debug_GetOffset')
+		if not MemberFunctionHelper:
 			return False
-		self.m_Offset = Offset.GetValueAsUnsigned()
+
+		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
+		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
+
 		return True
 
 	def fp_GetNodePointer(self, _pNode):
-		return (_pNode.GetValueAsUnsigned(0) >> 2) << 2
+		return (fg_GetValueAsUnsigned(_pNode) >> 2) << 2
 
 	def fp_GetNode(self, _pNodePointer):
 		return self.m_ValueObject.CreateValueFromAddress("[TempData]", _pNodePointer, self.m_LinkType)
 
 	def fp_GetData(self, _pNodePointer, _Name):
-		return self.m_ValueObject.CreateValueFromAddress(_Name, _pNodePointer - self.m_Offset, self.m_DataType)
+		if _pNodePointer < self.m_Offset:
+			return None
+		return fg_CreateDynamicValue(self.m_ValueObject, _Name, _pNodePointer - self.m_Offset, self.m_DataType)
 
 	def fp_GetNext(self, _pNode):
 		pNext = _pNode.GetValueForExpressionPath('.m_Data.m_pNextPtr')
+		if not pNext:
+			pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr.m_pPtr')
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
-
-	# Floyd's cyle-finding algorithm
-	# try to detect if this list has a loop
-	def fp_HasLoop(self):
-		pSlow = self.m_pFirst
-		pFast1 = self.m_pFirst
-		pFast2 = self.m_pFirst
-		while pSlow.AddressOf().GetValueAsUnsigned(0) != self.m_pThisLink:
-			SlowAddress = pSlow.AddressOf().GetValueAsUnsigned(0)
-			pFast1 = self.fp_GetNext(pFast2)
-			if pFast1.AddressOf().GetValueAsUnsigned(0) == self.m_pThisLink:
-				return False
-			pFast2 = self.fp_GetNext(pFast1)
-			if pFast2.AddressOf().GetValueAsUnsigned(0) == self.m_pThisLink:
-				return False
-			if pFast1.AddressOf().GetValueAsUnsigned(0) == SlowAddress or pFast2.AddressOf().GetValueAsUnsigned(0) == SlowAddress:
-				return True
-			pSlow = self.fp_GetNext(pSlow)
-		return False
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		NodeAddress = self.m_ChildMap[_iChild]
@@ -97,25 +87,38 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
 			
+	def fp_ContainerGetError(self):
+		if not self.m_bValid:
+			return "Failed to extract type"
+		if self.m_bLooped:
+			return "Linked list is corrupted (looped)"
+		return None
+
 	def fp_ContainerNumChildren(self):
 		global g_MaxSynthChildren
 		if self.m_First == 0:
 			return 0
-		#if self.fp_HasLoop():
-		#	return 0
-		# We handle loops by simply aborting after g_MaxSynthChildren
 
 		self.m_ChildMap = []
 		
+		ChildDict = {}
+		self.m_bLooped = False
+
 		pNode = self.m_pFirst
+		pFirst = fg_GetAddressOf(pNode)
 		iChild = 0
-		NodeAddress = pNode.AddressOf().GetValueAsUnsigned(0)
-		while NodeAddress != self.m_pThisLink:
+		NodeAddress = fg_GetAddressOf(pNode)
+		while NodeAddress != self.m_pThisLink and NodeAddress != 0:
+			if NodeAddress in ChildDict:
+				self.m_bLooped = True
+				break
+			ChildDict[NodeAddress] = True
+
 			self.m_ChildMap.append(NodeAddress)
 			iChild = iChild + 1
 			pNode = self.fp_GetNext(pNode)
-			NodeAddress = pNode.AddressOf().GetValueAsUnsigned(0)
-			if iChild >= g_MaxSynthChildren:
+			NodeAddress = fg_GetAddressOf(pNode)
+			if iChild >= g_MaxSynthChildren or NodeAddress == pFirst:
 				break
 		return iChild;
 
@@ -134,33 +137,40 @@ class CSynthProvider_TCDLinkListAggregate_CIterator(CSynthProvider_Common):
 			if not self.fp_ExtractType():
 				return
 			self.m_Current = self.m_ValueObject.GetChildMemberWithName('m_pCurrent')
-			if self.m_Current.GetValueAsUnsigned() != 0:
-				self.m_Value = self.m_ValueObject.CreateValueFromAddress('[Current]', self.m_Current.GetValueAsUnsigned() - self.m_Offset, self.m_DataType)
+			CurrentValue = self.m_Current.GetValueAsUnsigned()
+			self.m_bEmpty = True
+			if CurrentValue != 0 and CurrentValue >= self.m_Offset:
+				self.m_bEmpty = False
+				self.m_Value = fg_CreateDynamicValue(self.m_ValueObject, '[Value]', CurrentValue - self.m_Offset, self.m_DataType)
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_ExtractType(self):
-		
-		List = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pList", self.m_ValueObject.GetType())
-		if not fg_IsValidSBValue(List):
+
+		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
+
+		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_List')
+		if not MemberFunctionHelper:
 			return False
 
-		ContainerType = fg_GetInheritedType(fg_GetPointerValueType(List), "NMib::NIntrusive::TCDLinkListAggregate")
+		ContainerType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType().GetPointeeType())
 		if not ContainerType.IsValid():
 			return False
+
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 		
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
-			LinkType = LinkType.GetCanonicalType()
+			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
 
@@ -169,31 +179,32 @@ class CSynthProvider_TCDLinkListAggregate_CIterator(CSynthProvider_Common):
 		
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
-		
-		Offset = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pList->ms_OffsetTCDLinkListAggregate", ContainerType, "ms_OffsetTCDLinkListAggregate")
-		if not fg_IsValidSBValue(Offset):
+
+		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetOffset')
+		if not MemberFunctionHelper:
 			return False
-		
-		self.m_Offset = Offset.GetValueAsUnsigned()
+
+		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
+		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
 
 		return True
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if (not self.m_bEmpty and _Name == '[Value]') or (self.m_bEmpty and _Name == '[Empty]'):
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if self.m_Value != None:
-			if _iChild == self.m_NumExtraChildren:
+		if _iChild == self.m_NumExtraChildren:
+			if self.m_bEmpty:
+				return fg_GetEmptyValue(self.m_ValueObject)
+			else:
 				return self.m_Value
-			elif _iChild < self.m_NumExtraChildren:
-				return self.m_Value.GetChildAtIndex(_iChild)
+		elif _iChild < self.m_NumExtraChildren:
+			return self.m_Value.GetChildAtIndex(_iChild)
 		return None
 
 	def fp_NumChildren(self):
-		if self.m_Current.GetValueAsUnsigned() == 0:
-			return 0
 		return 1 + self.m_NumExtraChildren
 
 class CSynthProvider_TCLinkedList(CSynthProvider_Container):
@@ -211,11 +222,13 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
 			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_List.m_Link.m_pNextPtr.m_pPtr')
-			self.m_pThisLink = self.m_ListLink.AddressOf().GetValueAsUnsigned()
+			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
 			self.m_bValid = True
+			self.m_bLooped = False
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -224,7 +237,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 
@@ -241,13 +254,13 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 			return False
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
-			LinkType = LinkType.GetCanonicalType()
+			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
 		
@@ -257,14 +270,17 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
 		
-		Offset = fg_GetStaticFromSBValue(self.m_ValueObject, "m_Data.m_List.ms_OffsetTCDLinkListAggregate", ContainerType, "ms_OffsetTCDLinkListAggregate")
-		if not fg_IsValidSBValue(Offset):
+		MemberFunctionHelper = fg_GetMemberFunction(ContainerType, 'fs_Debug_GetOffset')
+		if not MemberFunctionHelper:
 			return False
-		self.m_Offset = Offset.GetValueAsUnsigned()
+
+		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
+		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
+
 		return True
 
 	def fp_GetNodePointer(self, _pNode):
-		return (_pNode.GetValueAsUnsigned(0) >> 2) << 2
+		return (fg_GetValueAsUnsigned(_pNode) >> 2) << 2
 
 	def fp_GetNode(self, _pNodePointer):
 		return self.m_ValueObject.CreateValueFromAddress("[TempData]", _pNodePointer, self.m_LinkType)
@@ -272,33 +288,16 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 	def fp_GetData(self, _pNodePointer, _Name):
 		if self.m_ValueType == None:
 			return None;
+		if _pNodePointer < self.m_Offset:
+			return None
 		Data = self.m_ValueObject.CreateValueFromAddress('[TempData]', _pNodePointer - self.m_Offset, self.m_DataType)
-		MemberAddress = Data.GetChildMemberWithName('m_Object').AddressOf().GetValueAsUnsigned()
-		return self.m_ValueObject.CreateValueFromAddress(_Name, MemberAddress, self.m_ValueType)
+		MemberAddress = fg_GetAddressOf(Data.GetChildMemberWithName('m_Object'))
+		return fg_CreateDynamicValue(self.m_ValueObject, _Name, MemberAddress, self.m_ValueType)
 
 	def fp_GetNext(self, _pNode):
 		pNext = _pNode.GetValueForExpressionPath('.m_Data.m_pNextPtr')
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
-
-	# Floyd's cyle-finding algorithm
-	# try to detect if this list has a loop
-	def fp_HasLoop(self):
-		pSlow = self.m_pFirst
-		pFast1 = self.m_pFirst
-		pFast2 = self.m_pFirst
-		while pSlow.AddressOf().GetValueAsUnsigned(0) != self.m_pThisLink:
-			SlowAddress = pSlow.AddressOf().GetValueAsUnsigned(0)
-			pFast1 = self.fp_GetNext(pFast2)
-			if pFast1.AddressOf().GetValueAsUnsigned(0) == self.m_pThisLink:
-				return False
-			pFast2 = self.fp_GetNext(pFast1)
-			if pFast2.AddressOf().GetValueAsUnsigned(0) == self.m_pThisLink:
-				return False
-			if pFast1.AddressOf().GetValueAsUnsigned(0) == SlowAddress or pFast2.AddressOf().GetValueAsUnsigned(0) == SlowAddress:
-				return True
-			pSlow = self.fp_GetNext(pSlow)
-		return False
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		NodeAddress = self.m_ChildMap[_iChild]
@@ -307,24 +306,36 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
 
+	def fp_ContainerGetError(self):
+		if not self.m_bValid:
+			return "Failed to extract type"
+		if self.m_bLooped:
+			return "Linked list is corrupted (looped)"
+		return None
+
 	def fp_ContainerNumChildren(self):
 		global g_MaxSynthChildren
 		if self.m_First == 0:
 			return 0
-		#if self.fp_HasLoop():
-		#	return 0
-		# We handle loops by simply aborting after g_MaxSynthChildren
 
 		self.m_ChildMap = []
 
+		ChildDict = {}
+		self.m_bLooped = False
+
 		pNode = self.m_pFirst
 		iChild = 0
-		NodeAddress = pNode.AddressOf().GetValueAsUnsigned(0)
+		NodeAddress = fg_GetAddressOf(pNode)
 		while NodeAddress != self.m_pThisLink:
+			if NodeAddress in ChildDict:
+				self.m_bLooped = True
+				break
+			ChildDict[NodeAddress] = True
+
 			self.m_ChildMap.append(NodeAddress)
 			iChild = iChild + 1
 			pNode = self.fp_GetNext(pNode)
-			NodeAddress = pNode.AddressOf().GetValueAsUnsigned(0)
+			NodeAddress = fg_GetAddressOf(pNode)
 			if iChild >= g_MaxSynthChildren:
 				break
 
@@ -348,37 +359,42 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 			if not self.fp_ExtractType2():
 				return
 			self.m_Current = fg_ChildPath(self.m_ValueObject, 'm_Iter.m_pCurrent')
-			if self.m_Current.GetValueAsUnsigned() != 0:
+			CurrentValue = self.m_Current.GetValueAsUnsigned()
+			self.m_bEmpty = True
+			if CurrentValue != 0 and CurrentValue >= self.m_Offset:
+				self.m_bEmpty = False
 				Data = self.m_ValueObject.CreateValueFromAddress('[TempData]', self.m_Current.GetValueAsUnsigned() - self.m_Offset, self.m_DataType)
-				MemberAddress = Data.GetChildMemberWithName('m_Object').AddressOf().GetValueAsUnsigned()
-				self.m_Value = self.m_ValueObject.CreateValueFromAddress('[Current]', MemberAddress, self.m_ValueType)
+				MemberAddress = fg_GetAddressOf(Data.GetChildMemberWithName('m_Object'))
+				self.m_Value = fg_CreateDynamicValue(self.m_ValueObject, '[Value]', MemberAddress, self.m_ValueType)
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_ExtractType(self):
-		
+
 		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
-		List = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pIntrusiveList", ValueType)
-		if not fg_IsValidSBValue(List):
+
+		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_IntrusiveList')
+		if not MemberFunctionHelper:
 			return False
 
-		ContainerType = fg_GetInheritedType(fg_GetPointerValueType(List), "NMib::NIntrusive::TCDLinkListAggregate")
+		ContainerType = fg_GetInheritedType(fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType().GetPointeeType()), "NMib::NIntrusive::TCDLinkListAggregate")
 		if not ContainerType.IsValid():
 			return False
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 		
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
-			LinkType = LinkType.GetCanonicalType()
+			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
 
@@ -387,24 +403,31 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 		
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
-		
-		Offset = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pIntrusiveList->ms_OffsetTCDLinkListAggregate", ContainerType, "ms_OffsetTCDLinkListAggregate")
-		if not fg_IsValidSBValue(Offset):
+
+		MemberFunctionHelper = fg_GetMemberFunction(ContainerType, 'fs_Debug_GetOffset')
+		if not MemberFunctionHelper:
 			return False
-		
-		self.m_Offset = Offset.GetValueAsUnsigned()
+
+		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
+		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
+
 		return True
 
 	def fp_ExtractType2(self):
 
 		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
-		List = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pList", ValueType)
-		if not fg_IsValidSBValue(List):
+
+		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_List')
+		if not MemberFunctionHelper:
 			return False
-		ContainerType = fg_GetPointerValueType(List)
+
+		ContainerType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType().GetPointeeType())
+		if not ContainerType.IsValid():
+			return False
+
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 
@@ -413,21 +436,21 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 		return True
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if (not self.m_bEmpty and _Name == '[Value]') or (self.m_bEmpty and _Name == '[Empty]'):
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if self.m_Value != None:
-			if _iChild == self.m_NumExtraChildren:
+		if _iChild == self.m_NumExtraChildren:
+			if self.m_bEmpty:
+				return fg_GetEmptyValue(self.m_ValueObject)
+			else:
 				return self.m_Value
-			elif _iChild < self.m_NumExtraChildren:
-				return self.m_Value.GetChildAtIndex(_iChild)
+		elif _iChild < self.m_NumExtraChildren:
+			return self.m_Value.GetChildAtIndex(_iChild)
 		return None
 
 	def fp_NumChildren(self):
-		if self.m_Current.GetValueAsUnsigned() == 0:
-			return 0
 		return 1 + self.m_NumExtraChildren
 
 
@@ -447,7 +470,9 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 			self.m_DataSize = self.m_DataType.GetByteSize()
 			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_First.m_pNext.m_pPtr')
 			self.m_bValid = True
+			self.m_bLooped = False
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -457,13 +482,13 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 		
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
-			LinkType = LinkType.GetCanonicalType()
+			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
 		
@@ -472,38 +497,24 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 		
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
-		
-		Offset = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_OffsetTCSLinkListAggregate", ContainerType)
-		if not fg_IsValidSBValue(Offset):
+
+		MemberFunctionHelper = fg_GetMemberFunction(ContainerType, 'fs_Debug_GetOffset')
+		if not MemberFunctionHelper:
 			return False
-		self.m_Offset = Offset.GetValueAsUnsigned()
+
+		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
+		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
+
 		return True
 
 	def fp_GetData(self, _pNodePointer, _Name):
-		return self.m_ValueObject.CreateValueFromAddress(_Name, _pNodePointer - self.m_Offset, self.m_DataType)
+		if _pNodePointer < self.m_Offset:
+			return None
+		return fg_CreateDynamicValue(self.m_ValueObject, _Name, _pNodePointer - self.m_Offset, self.m_DataType)
 
 	def fp_GetNext(self, _pNode):
 		pNext = _pNode.GetValueForExpressionPath('->m_pNext.m_pPtr')
 		return pNext
-
-	# Floyd's cyle-finding algorithm
-	# try to detect if this list has a loop
-	def fp_HasLoop(self):
-		pSlow = self.m_ListLink
-		pFast1 = self.m_ListLink
-		pFast2 = self.m_ListLink
-		while pSlow.GetValueAsUnsigned(0) != 0:
-			SlowAddress = pSlow.GetValueAsUnsigned(0)
-			pFast1 = self.fp_GetNext(pFast2)
-			if pFast1.GetValueAsUnsigned(0) == 0:
-				return False
-			pFast2 = self.fp_GetNext(pFast1)
-			if pFast2.GetValueAsUnsigned(0) == 0:
-				return False
-			if pFast1.GetValueAsUnsigned(0) == SlowAddress or pFast2.GetValueAsUnsigned(0) == SlowAddress:
-				return True
-			pSlow = self.fp_GetNext(pSlow)
-		return False
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		NodeAddress = self.m_ChildMap[_iChild]
@@ -512,24 +523,36 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
 			
+	def fp_ContainerGetError(self):
+		if not self.m_bValid:
+			return "Failed to extract type"
+		if self.m_bLooped:
+			return "Linked list is corrupted (looped)"
+		return None
+
 	def fp_ContainerNumChildren(self):
 		global g_MaxSynthChildren
 		if self.m_ListLink.GetValueAsUnsigned() == 0:
 			return 0
-		#if self.fp_HasLoop():
-		#	return 0
-		# We handle loops by simply aborting after g_MaxSynthChildren
 
 		self.m_ChildMap = []
 
+		ChildDict = {}
+		self.m_bLooped = False
+
 		pNode = self.m_ListLink
 		iChild = 0
-		NodeAddress = pNode.GetValueAsUnsigned(0)
+		NodeAddress = fg_GetValueAsUnsigned(pNode)
 		while NodeAddress != 0:
+			if NodeAddress in ChildDict:
+				self.m_bLooped = True
+				break
+			ChildDict[NodeAddress] = True
+
 			self.m_ChildMap.append(NodeAddress)
 			iChild = iChild + 1
 			pNode = self.fp_GetNext(pNode)
-			NodeAddress = pNode.GetValueAsUnsigned(0)
+			NodeAddress = fg_GetValueAsUnsigned(pNode)
 			if iChild >= g_MaxSynthChildren:
 				break
 		return iChild;
@@ -549,28 +572,38 @@ class CSynthProvider_TCSLinkListAggregate_CIterator(CSynthProvider_Common):
 			self.m_NumExtraChildren = 0
 			self.m_Value = None
 			self.m_Current = self.m_ValueObject.GetChildMemberWithName('m_pCurrent')
-			if self.m_Current.GetValueAsUnsigned():
-				self.m_Value = self.m_ValueObject.CreateValueFromAddress('[Current]', self.m_Current.GetValueAsUnsigned() - self.m_Offset, self.m_DataType)
+			CurrentValue = self.m_Current.GetValueAsUnsigned()
+			self.m_bEmpty = True
+			if CurrentValue != 0 and CurrentValue >= self.m_Offset:
+				self.m_bEmpty = False
+				self.m_Value = fg_CreateDynamicValue(self.m_ValueObject, '[Value]', CurrentValue - self.m_Offset, self.m_DataType)
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_ExtractType(self):
-		List = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pList", fg_GetValueType(self.m_ValueObjectDeref), "ms_OffsetTCSLinkListAggregate")
-		if not fg_IsValidSBValue(List):
+		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
+
+		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_List')
+		if not MemberFunctionHelper:
 			return False
-		ContainerType = fg_GetPointerValueType(List)
+
+		ContainerType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType().GetPointeeType())
+		if not ContainerType.IsValid():
+			return False
+
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 		
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
-			LinkType = LinkType.GetCanonicalType()
+			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
 
@@ -579,28 +612,32 @@ class CSynthProvider_TCSLinkListAggregate_CIterator(CSynthProvider_Common):
 		
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
-		Offset = fg_GetStaticFromSBValue(self.m_ValueObject, "ms_pList->ms_OffsetTCSLinkListAggregate", ContainerType, "ms_OffsetTCSLinkListAggregate")
-		if not fg_IsValidSBValue(Offset):
+
+		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetOffset')
+		if not MemberFunctionHelper:
 			return False
-		self.m_Offset = Offset.GetValueAsUnsigned()
+		
+		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
+		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
+
 		return True
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if (not self.m_bEmpty and _Name == '[Value]') or (self.m_bEmpty and _Name == '[Empty]'):
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if self.m_Value != None:
-			if _iChild == self.m_NumExtraChildren:
+		if _iChild == self.m_NumExtraChildren:
+			if self.m_bEmpty:
+				return fg_GetEmptyValue(self.m_ValueObject)
+			else:
 				return self.m_Value
-			elif _iChild < self.m_NumExtraChildren:
-				return self.m_Value.GetChildAtIndex(_iChild)
+		elif _iChild < self.m_NumExtraChildren:
+			return self.m_Value.GetChildAtIndex(_iChild)
 		return None
 
 	def fp_NumChildren(self):
-		if self.m_Current.GetValueAsUnsigned() == 0:
-			return 0
 		return 1 + self.m_NumExtraChildren
 
 

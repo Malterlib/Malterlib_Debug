@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -16,11 +16,14 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_bConstructed = self.m_ValueObject.GetChildMemberWithName('m_bConstructed')
+			if fg_IsValidSBValue(self.m_bConstructed):
+				self.m_bEmpty = self.m_bConstructed.GetValueAsUnsigned() == 0
 			self.m_Data = fg_ChildPath(self.m_ValueObject, 'm_ObjectSpace.m_Aligned')
 			if not self.fp_ExtractType():
 				return
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -29,7 +32,7 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 
@@ -39,19 +42,19 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 		return True
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if (not self.m_bEmpty and _Name == '[Value]') or (self.m_bEmpty and _Name == '[Empty]'):
 			return 0
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == 0:
-			Address = self.m_Data.AddressOf().GetValueAsUnsigned()
-			return self.m_ValueObject.CreateValueFromAddress('[Current]', Address, self.m_DataType)
+			if self.m_bEmpty:
+				return fg_GetEmptyValue(self.m_ValueObject, "Not constructed")
+			Address = fg_GetAddressOf(self.m_Data)
+			return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', Address, self.m_DataType)
 		return None
 
 	def fp_NumChildren(self):
-		if self.m_bConstructed.IsValid() and self.m_bConstructed.GetValueAsUnsigned() == 0:
-			return 0
 		return 1
 
 def fg_MibLLDBInit_Aggregate(_Debugger):

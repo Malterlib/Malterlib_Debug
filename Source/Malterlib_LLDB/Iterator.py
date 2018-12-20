@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 from String import *
@@ -19,6 +19,7 @@ class CSynthProvider_TCRange(CSynthProvider_Common):
 			self.m_Back = self.m_ValueObject.GetChildMemberWithName('mp_Back')
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -48,7 +49,7 @@ class CSynthProvider_TCIterator(CSynthProvider_Common):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			Parent = self.m_ValueObject.GetChildAtIndex(0)
+			Parent = self.m_ValueObject.GetNonSyntheticValue().GetChildAtIndex(0)
 			ParentType = Parent.GetType()
 			while ParentType.GetName().startswith("NMib::NIterator::TCIterator"):
 				Parent = Parent.GetChildAtIndex(0)
@@ -58,6 +59,7 @@ class CSynthProvider_TCIterator(CSynthProvider_Common):
 			self.m_ParentType = ParentType
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -68,7 +70,7 @@ class CSynthProvider_TCIterator(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == 0:
-			return self.m_ValueObject.CreateValueFromAddress('[Imp]', self.m_Parent.AddressOf().GetValueAsUnsigned(), self.m_ParentType)
+			return fg_CreateDynamicValue(self.m_ValueObject, '[Imp]', fg_GetAddressOf(self.m_Parent), self.m_ParentType)
 		return None
 
 	def fp_NumChildren(self):
@@ -86,6 +88,7 @@ def fg_SummaryProvider_TCIterator(_Value, dict):
 		Summary = Imp.GetSummary()
 		return Summary
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCIterator) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -125,13 +128,13 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 			FrontArray = Front.GetChildMemberWithName('mp_pArray')
 			Parent = Front
 			while not fg_IsValidSBValue(FrontArray) and fg_IsValidSBValue(Parent):
-				Parent = Parent.GetChildAtIndex(0)
+				Parent = Parent.GetNonSyntheticValue().GetChildAtIndex(0)
 				FrontArray = Parent.GetChildMemberWithName('mp_pArray')
 			
 			BackArray = Back.GetChildMemberWithName('mp_pArray')
 			Parent = Back
 			while not fg_IsValidSBValue(BackArray) and fg_IsValidSBValue(Parent):
-				Parent = Parent.GetChildAtIndex(0)
+				Parent = Parent.GetNonSyntheticValue().GetChildAtIndex(0)
 				BackArray = Parent.GetChildMemberWithName('mp_pArray')
 			
 			if fg_IsValidSBValue(FrontArray) and fg_IsValidSBValue(BackArray):
@@ -172,6 +175,7 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 		Summary = Front.GetSummary()
 		return Summary
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCRange) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -187,6 +191,7 @@ def fg_SummaryProvider_TCArrayIterator(_Value, dict):
 		Summary = Array.GetSummary()
 		return Summary
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -199,8 +204,7 @@ def fg_SummaryProvider_TCIterator_UTFAdaptor(_Value, dict):
 		Parent = _Value
 		Current = Parent.GetChildMemberWithName('mp_iCurrent')
 		while not fg_IsValidSBValue(Current) and fg_IsValidSBValue(Parent):
-			print "Parent: ", Parent
-			Parent = Parent.GetChildAtIndex(0)
+			Parent = Parent.GetNonSyntheticValue().GetChildAtIndex(0)
 			Current = Parent.GetChildMemberWithName('mp_iCurrent')
 		
 		if not fg_IsValidSBValue(Current):
@@ -209,6 +213,7 @@ def fg_SummaryProvider_TCIterator_UTFAdaptor(_Value, dict):
 		Summary = Current.GetSummary()
 		return Summary
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -220,6 +225,7 @@ def fg_SummaryProvider_CNullTerminatedBackIterator(_Value, dict):
 		
 		return "Null terminated sentinel"
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 

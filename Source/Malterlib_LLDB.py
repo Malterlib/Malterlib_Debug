@@ -10,10 +10,9 @@ def fg_ImportModule(_Debugger, _Module):
 	globals()[FunctionName](_Debugger)
 
 def __lldb_init_module(_Debugger,dict):
-	
+
 	#try:
 		Module = __import__(__name__ + '_LLDBLib')
-		reload(Module)
 		
 		fg_ImportModule(_Debugger, 'Common')
 		fg_SetModuleName(__name__)
@@ -34,9 +33,11 @@ def __lldb_init_module(_Debugger,dict):
 		fg_ImportModule(_Debugger, 'ThreadLocal')
 		fg_ImportModule(_Debugger, 'Time')
 		fg_ImportModule(_Debugger, 'Variant')
+		fg_ImportModule(_Debugger, 'Json')
 		fg_ImportModule(_Debugger, 'Vector')
 		fg_ImportModule(_Debugger, 'Iterator')
-		
+		fg_ImportModule(_Debugger, 'Function')
+
 		
 		# Enable
 		_Debugger.HandleCommand("type category enable MibLLDB")

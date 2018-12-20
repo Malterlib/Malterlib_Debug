@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -25,6 +25,7 @@ def fg_SummaryProvider_fp32(_Value, dict):
 			
 		return None
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_fp32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -48,6 +49,7 @@ def fg_SummaryProvider_fp64(_Value, dict):
 
 		return None
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_fp64) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -55,13 +57,27 @@ def fg_SummaryProvider_fp64(_Value, dict):
 def fg_SummaryProvider_TCFloat(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
+		if ValueType.GetName() == "NMib::NNumeric::TCFloat<1, 8, 23, float, true, int>":
+			return fg_SummaryProvider_fp32(_Value, dict)
+		elif ValueType.GetName() == "NMib::NNumeric::TCFloat<1, 11, 52, double, true, long long>":
+			return fg_SummaryProvider_fp32(_Value, dict)
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
-		ExpressionPath = "ms_pHelper->fs_GetAsDouble((void *)(size_t)" + hex(fg_GetValueAddress(_Value)) + ")";
-		ValueType = fg_GetValueType(_Value)
-		Current = fg_GetStaticFromSBValue(_Value, ExpressionPath, ValueType)
+
+		Stream = lldb.SBStream()
+		_Value.GetExpressionPath(Stream, True)
+
+		ExpressionPath = Stream.GetData() + ".f_Debug_GetAsDouble()";
+
+		Frame = _Value.GetProcess().GetSelectedThread().GetSelectedFrame()
+
+		Current = Frame.EvaluateExpression(ExpressionPath)
 		if not fg_IsValidSBValue(Current):
-			return None
+			ExpressionPath = "((" + ValueType.GetName() + " *)" + hex(fg_GetValueAddress(_Value)) + ")->f_Debug_GetAsDouble()";
+			Current = Frame.EvaluateExpression(ExpressionPath)
+			if not fg_IsValidSBValue(Current):
+				return None
+
 		Summary = Current.GetSummary()
 		if Summary == None:
 			Value = Current.GetValue()
@@ -75,13 +91,14 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 
 		return None
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCFloat) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
 def fg_MibLLDBInit_Float(_Debugger):
-	
-	fg_AddSummary(_Debugger, fg_SummaryProvider_fp32, "(^|^const )NMib::NNumeric::TCFloat<1, 8, 23, float, 1, int>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_fp64, "(^|^const )NMib::NNumeric::TCFloat<1, 11, 52, double, 1, long long>$", True)
+
+	fg_AddSummary(_Debugger, fg_SummaryProvider_fp32, "(^|^const )NMib::NNumeric::TCFloat<1, 8, 23, float, true, int>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_fp64, "(^|^const )NMib::NNumeric::TCFloat<1, 11, 52, double, true, long long>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCFloat, "(^|^const )NMib::NNumeric::TCFloat<.*>$", True)
-	
+
 	return

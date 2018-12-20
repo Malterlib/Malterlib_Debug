@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -26,6 +26,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 				self.m_pDataAddress = self.m_pData.GetValueAsUnsigned() + self.m_pData.GetType().GetPointeeType().GetByteSize()
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -40,7 +41,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
-			DataType = DataType.GetCanonicalType()
+			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
 
@@ -65,32 +66,36 @@ class CSynthProvider_TCVector_CIterator(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_Current = self.m_ValueObject.GetChildMemberWithName('m_pBegin')
+			self.m_End = self.m_ValueObject.GetChildMemberWithName('m_pEnd')
 			self.m_NumExtraChildren = 0
 			self.m_Value = None
-			if self.m_Current.GetValueAsUnsigned() != 0:
-				self.m_Value = self.m_ValueObject.CreateValueFromAddress('[Current]', self.m_Current.GetValueAsUnsigned(), self.m_Current.GetType().GetPointeeType())
+			self.m_bEmpty = True
+			if self.m_Current.GetValueAsUnsigned() != 0 and self.m_Current.GetValueAsUnsigned() != self.m_End.GetValueAsUnsigned():
+				self.m_bEmpty = False
+				self.m_Value = self.m_ValueObject.CreateValueFromAddress('[Value]', self.m_Current.GetValueAsUnsigned(), self.m_Current.GetType().GetPointeeType())
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
 	def fp_GetChildIndex(self, _Name):
-		if _Name == '[Current]':
+		if (not self.m_bEmpty and _Name == '[Value]') or (self.m_bEmpty and _Name == '[Empty]'):
 			return self.m_NumExtraChildren
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if self.m_Value != None:
-			if _iChild == self.m_NumExtraChildren:
+		if _iChild == self.m_NumExtraChildren:
+			if self.m_bEmpty:
+				return fg_GetEmptyValue(self.m_ValueObject)
+			else:
 				return self.m_Value
-			elif _iChild < self.m_NumExtraChildren:
-				return self.m_Value.GetChildAtIndex(_iChild)
+		elif _iChild < self.m_NumExtraChildren:
+			return self.m_Value.GetChildAtIndex(_iChild)
 		return None
 
 	def fp_NumChildren(self):
-		if self.m_Current.GetValueAsUnsigned() == 0:
-			return 0
 		return 1 + self.m_NumExtraChildren
 
 

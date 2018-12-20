@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 from AVLTree import *
@@ -43,6 +43,7 @@ class CSynthProvider_TCRegistry(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_ChildrenSynth.fp_ContainerNumChildren()
 			self.m_bValid = True
 		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
 			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
 			return
 
@@ -55,10 +56,10 @@ class CSynthProvider_TCRegistry(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			Ret = self.m_ValueObject.CreateValueFromAddress('[Key]', self.m_Name.AddressOf().GetValueAsUnsigned(), self.m_NameType)
+			Ret = self.m_ValueObject.CreateValueFromAddress('[Key]', fg_GetAddressOf(self.m_Name), self.m_NameType)
 			return Ret
 		elif _iChild == self.m_NumExtraChildren + 1:
-			return self.m_ValueObject.CreateValueFromAddress('[Value]', self.m_Data.AddressOf().GetValueAsUnsigned(), self.m_DataType)
+			return self.m_ValueObject.CreateValueFromAddress('[Value]', fg_GetAddressOf(self.m_Data), self.m_DataType)
 		elif _iChild < self.m_NumExtraChildren:
 			return self.m_ChildrenSynth.fp_ContainerGetChildAtIndex(_iChild)
 		return None
@@ -85,10 +86,8 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		
 		bLeaf = pRootChild.GetValueAsUnsigned() >> 1 == 0
 
-		bOldRawSummary = fg_SetRawSummary(True)
-		Name = ValueName.GetSummary()
-		Data = ValueData.GetSummary()
-		fg_SetRawSummary(bOldRawSummary)
+		Name = fg_GetValueRawSummary(ValueName)
+		Data = fg_GetValueRawSummary(ValueData)
 		if Name == None:
 			Name = ""
 		if Data == None:
@@ -103,6 +102,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_TCRegistry) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 

@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -18,6 +18,7 @@ def fg_SummaryProvider_CTime(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_CTime) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -33,6 +34,7 @@ def fg_SummaryProvider_CTimeSpan(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_CTimeSpan) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 

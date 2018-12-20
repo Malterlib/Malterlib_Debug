@@ -1,7 +1,7 @@
 # Copyright (C) 2015 Hansoft AB 
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-import lldb
+import lldb, traceback, sys
 from Common import *
 from StringHelpers import *
 
@@ -10,6 +10,17 @@ def fg_BoundStrLen(_StrLen):
 		return 4096
 	return _StrLen
 
+def fg_GetStringType(_Value, _Default = 2):
+	StrType = fg_GetInheritedType(fg_GetValidCanonicalType(_Value.GetType()), "NMib::NStr::TCStrAggregate")
+	if StrType == None:
+		return _Default
+	MemberFunctionHelper = fg_GetMemberFunction(StrType, 'fs_TypeDebugHelper')
+	if not MemberFunctionHelper:
+		return _Default
+	DataType = MemberFunctionHelper.GetReturnType()
+	if DataType == None:
+		return _Default
+	return int(fg_GetValidCanonicalType(DataType).GetName().split('<')[1].split('>')[0])
 
 def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 	try:
@@ -31,11 +42,7 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 		Data = pData.Dereference()
 		
 		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 2 # Assume UTF8
+		Type = fg_GetStringType(_Value)
 		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
 		
 		DataType = Data.GetType()
@@ -50,6 +57,7 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 				return fg_MakeStringFromData_ch8(pStrData.GetPointeeData(0, StrLen + 1), StrLen, Type)
 
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Dynamic_ch8) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -72,11 +80,7 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 		Data = pData.Dereference()
 		
 		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 2 # Assume UTF16
+		Type = fg_GetStringType(_Value)
 		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
 		
 		DataType = Data.GetType()
@@ -88,6 +92,7 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch16(pStrData.GetPointeeData(0, (StrLen + 1)*2), StrLen, Type)
 		return fg_MakeStringFromData_ch16(pStrData.GetPointeeData(0, (StrLen + 1)*2), StrLen, Type)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Dynamic_ch16) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -111,11 +116,7 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 		Data = pData.Dereference()
 		
 		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 1 # Assume Unicode
+		Type = fg_GetStringType(_Value)
 		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
 
 		DataType = Data.GetType()
@@ -127,6 +128,7 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch32(pStrData.GetPointeeData(0, (StrLen + 1) * 4), StrLen, Type)
 		return fg_MakeStringFromData_ch32(pStrData.GetPointeeData(0, (StrLen + 1) * 4), StrLen, Type)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Dynamic_ch32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -138,11 +140,7 @@ def fg_SummaryProvider_Str_Fixed_ch8(_Value, dict):
 			return None
 		
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 2 # Assume UTF8
+		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_lData')
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch8_Raw(lData.GetData(), Len, Type)
@@ -150,6 +148,7 @@ def fg_SummaryProvider_Str_Fixed_ch8(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch8(lData.GetData(), Len, Type)
 		return fg_MakeStringFromData_ch8(lData.GetData(), Len, Type)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Fixed_ch8) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -159,11 +158,7 @@ def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 2 # Assume UTF16
+		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_lData')
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch16_Raw(lData.GetData(), Len, Type)
@@ -171,6 +166,7 @@ def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch16(lData.GetData(), Len, Type)
 		return fg_MakeStringFromData_ch16(lData.GetData(), Len, Type)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Fixed_ch16) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -180,11 +176,7 @@ def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 1 # Assume Unicode
+		Type = fg_GetStringType(_Value, 1)
 		lData = _Value.GetChildMemberWithName('m_lData')
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch32_Raw(lData.GetData(), Len, Type)
@@ -192,6 +184,7 @@ def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch32(lData.GetData(), Len, Type)
 		return fg_MakeStringFromData_ch32(lData.GetData(), Len, Type)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Fixed_ch32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -202,11 +195,7 @@ def fg_SummaryProvider_Str_Ptr_ch8(_Value, dict):
 			return None
 		
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 2 # Assume UTF8
+		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_pData')
 		Error = lldb.SBError()
 		if lData.GetValueAsUnsigned() == 0:
@@ -221,6 +210,7 @@ def fg_SummaryProvider_Str_Ptr_ch8(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Ptr_ch8) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -230,11 +220,7 @@ def fg_SummaryProvider_Str_Ptr_ch16(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 2 # Assume UTF16
+		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_pData')
 		Error = lldb.SBError()
 		if lData.GetValueAsUnsigned() == 0:
@@ -249,6 +235,7 @@ def fg_SummaryProvider_Str_Ptr_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Ptr_ch16) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -258,11 +245,7 @@ def fg_SummaryProvider_Str_Ptr_ch32(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
-		TypeDebugHelper = fg_GetStaticFromSBValue(_Value, "ms_TypeDebugHelper", ValueType)
-		if TypeDebugHelper != None:
-			Type = TypeDebugHelper.GetValueAsUnsigned();
-		else:
-			Type = 1 # Assume Unicode
+		Type = fg_GetStringType(_Value, 1)
 		lData = _Value.GetChildMemberWithName('m_pData')
 		if lData.GetValueAsUnsigned() == 0:
 			if fg_RawSummary():
@@ -276,6 +259,7 @@ def fg_SummaryProvider_Str_Ptr_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Ptr_ch32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -284,21 +268,16 @@ def fg_SummaryProvider_Str_Array_ch8(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
+
 		Len = _Value.GetNumChildren()
-		Address = fg_GetValueAddress(_Value)
-		if Address == 0:
-			if fg_RawSummary():
-				return "Invalid";
-			Value = 'Invalid'
-		else:
-			pStrData = _Value.CreateValueFromAddress("[TempData]", Address, _Value.GetType().GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
-			if fg_RawSummary():
-				return fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(0, Len + 1), Len, 2)
-			Value = '"' + fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(0, Len + 1), Len, 2) + '"'
-		if ValueType.IsPointerType():
-			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
+
+		if fg_RawSummary():
+			return fg_MakeStringFromData_ch8_Raw(_Value.GetData(), Len, 2)
+		Value = '"' + fg_MakeStringFromData_ch8_Raw(_Value.GetData(), Len, 2) + '"'
+
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Array_ch8) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -308,20 +287,14 @@ def fg_SummaryProvider_Str_Array_ch16(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		Len = _Value.GetNumChildren()
-		Address = fg_GetValueAddress(_Value)
-		if Address == 0:
-			if fg_RawSummary():
-				return "Invalid"
-			Value = 'Invalid'
-		else:
-			pStrData = _Value.CreateValueFromAddress("[TempData]", Address, _Value.GetType().GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
-			if fg_RawSummary():
-				return fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(0, (Len + 1)*2), Len, 2)
-			Value = '"' + fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(0, (Len + 1)*2), Len, 2) + '"'
-		if ValueType.IsPointerType():
-			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
+
+		if fg_RawSummary():
+			return fg_MakeStringFromData_ch16_Raw(_Value.GetData(), Len, 2)
+		Value = '"' + fg_MakeStringFromData_ch16_Raw(_Value.GetData(), Len, 2) + '"'
+
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Array_ch16) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -331,20 +304,12 @@ def fg_SummaryProvider_Str_Array_ch32(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		Len = _Value.GetNumChildren()
-		Address = fg_GetValueAddress(_Value)
-		if Address == 0:
-			if fg_RawSummary():
-				return "Invalid"
-			Value = 'Invalid'
-		else:
-			pStrData = _Value.CreateValueFromAddress("[TempData]", Address, _Value.GetType().GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
-			if fg_RawSummary():
-				return fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(0, (Len + 1)*4), Len, 2)
-			Value = '"' + fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(0, (Len + 1)*4), Len, 2) + '"'
-		if ValueType.IsPointerType():
-			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
+		if fg_RawSummary():
+			return fg_MakeStringFromData_ch32_Raw(_Value.GetData(), Len, 2)
+		Value = '"' + fg_MakeStringFromData_ch32_Raw(_Value.GetData(), Len, 2) + '"'
 		return Value
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_Array_ch32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -367,6 +332,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Len = None, _Offset = 0):
 			return fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(0, (Len + 1)*1), Len, 2)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*1), Len, 2) + '"'
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_ArrayPtr_ch8) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -389,6 +355,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Len = None, _Offset = 0)
 			return fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(0, (Len + 1)*2), Len, 2)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*2), Len, 2) + '"'
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_ArrayPtr_ch16) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -411,6 +378,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Len = None, _Offset = 0)
 			return fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(0, (Len + 1)*4), Len, 2)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*4), Len, 2) + '"'
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Str_ArrayPtr_ch32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -428,6 +396,7 @@ def fg_SummaryProvider_Char_ch8(_Value, dict):
 			Ret += unichr(Value);
 		return "'" + Ret + "'   " + str(Value)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Char_ch8) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -440,6 +409,7 @@ def fg_SummaryProvider_Char_ch16(_Value, dict):
 		Ret += unichr(Value);
 		return "'" + Ret + "' = " + str(Value)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Char_ch16) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
@@ -452,6 +422,7 @@ def fg_SummaryProvider_Char_ch32(_Value, dict):
 		Ret += unichr(Value);
 		return "'" + Ret + "' = " + str(Value)
 	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
 		print '(fg_SummaryProvider_Char_ch32) error: ', error, ' path: ', _Value.get_expr_path()
 		return
 
