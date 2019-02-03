@@ -20,6 +20,8 @@ class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 				return
 			if not self.m_ValueObjectType.IsPointerType():
 				return
+			if not fg_IsValidSBValue(self.m_ValueObject):
+				return;
 			#print 'self.m_ValueObjectType: ', self.m_ValueObjectType.GetName()
 			if not self.fp_ExtractType():
 				return

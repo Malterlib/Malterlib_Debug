@@ -127,7 +127,7 @@ def fg_MibLLDBInit_Exception(_Debugger):
 	# Exceptions
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CCallstack, "(^|^const )NMib::NException::CCallstack$", True)
 	
-	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NException::TCException<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NException::CDebugException.*$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NException::CException.*$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NContract::CContractException.*$", True)
 
@@ -169,7 +169,7 @@ def fg_MibLLDBInit_Exception(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NAOUI::CExceptionAOUI$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NBuildServer::CExceptionSlaveProtocol$", True)
 	
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::TCException<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CDebugException.*$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CException.*$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NContract::CContractException.*$", True)
 	
