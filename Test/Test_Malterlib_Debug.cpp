@@ -40,6 +40,7 @@ inline_never mint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, mint _M
 
 #include "Test_Malterlib_Debug.h"
 #include <Mib/Storage/Reference>
+#include <Mib/Storage/Indirection>
 #include <Mib/String/Mixed>
 #include <Mib/Encoding/JSON>
 #include <Mib/Encoding/EJSON>
