@@ -60,10 +60,10 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 	def fp_ExtractType(self):
 		self.m_pClass = self.m_ValueObject.GetChildMemberWithName('m_pClass')
 		self.m_ErrorNoAlloc = self.m_ValueObject.GetChildMemberWithName('m_ErrorNoAlloc')
-		self.m_pErrorAlloc = fg_ChildPath(self.m_ValueObject, 'm_pErrorAlloc.m_Data.m_pPointTo.m_pPtr')
-		self.m_pErrorAllocNonTracked = fg_ChildPath(self.m_ValueObject, 'm_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr')
-		self.m_pCallstack = fg_ChildPath(self.m_ValueObject, 'm_pCallstack.m_Data.m_pPointTo.m_pPtr')
-		self.m_pCallstackNonTracked = fg_ChildPath(self.m_ValueObject, 'm_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr')
+		self.m_pErrorAlloc = fg_ChildPath(self.m_ValueObject, 'm_pErrorAlloc.m_Data.m_pPointTo')
+		self.m_pErrorAllocNonTracked = fg_ChildPath(self.m_ValueObject, 'm_pErrorAllocNonTracked.m_Data.m_pPointTo')
+		self.m_pCallstack = fg_ChildPath(self.m_ValueObject, 'm_pCallstack.m_Data.m_pPointTo')
+		self.m_pCallstackNonTracked = fg_ChildPath(self.m_ValueObject, 'm_pCallstackNonTracked.m_Data.m_pPointTo')
 		return True
 
 	def fp_GetChildIndex(self, _Name):

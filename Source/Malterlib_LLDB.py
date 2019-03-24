@@ -47,7 +47,7 @@ def __lldb_init_module(_Debugger,dict):
 	fg_ImportModule(_Debugger, 'Vector')
 	fg_ImportModule(_Debugger, 'Iterator')
 	fg_ImportModule(_Debugger, 'Function')
-
+	fg_ImportModule(_Debugger, 'Concurrency')
 
 	# Enable
 	_Debugger.HandleCommand("type category enable MibLLDB")

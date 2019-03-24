@@ -8,10 +8,10 @@ from StringHelpers import *
 
 class CSynthProvider_TCAVLTreeAggregate_Node:
 	def fp_Left(self):
-		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(0).GetChildMemberWithName('m_pPtr').GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
+		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(0).GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
 
 	def fp_Right(self):
-		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(1).GetChildMemberWithName('m_pPtr').GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
+		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(1).GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
 
 	def fp_GetNode(self, _pNodePointer):
 		return fg_CreateDynamicValue(self.m_Node, '[TempData]', _pNodePointer, self.m_NodeType)
@@ -244,7 +244,7 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_Tree = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_Tree')
-			self.m_Root = self.m_Tree.GetValueForExpressionPath('.m_Root.m_pPtr')
+			self.m_Root = self.m_Tree.GetValueForExpressionPath('.m_Root')
 			if not self.fp_ExtractType():
 				return
 

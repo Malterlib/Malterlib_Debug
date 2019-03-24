@@ -17,7 +17,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 			if not self.fp_ExtractType():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Link.m_pNextPtr.m_pPtr')
+			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Link.m_pNextPtr')
 			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
@@ -76,7 +76,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 	def fp_GetNext(self, _pNode):
 		pNext = _pNode.GetValueForExpressionPath('.m_Data.m_pNextPtr')
 		if not pNext:
-			pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr.m_pPtr')
+			pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr')
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
 
@@ -221,7 +221,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 			if not self.fp_ExtractType2():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_List.m_Link.m_pNextPtr.m_pPtr')
+			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_List.m_Link.m_pNextPtr')
 			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
@@ -468,7 +468,7 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 			if not self.fp_ExtractType():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_First.m_pNext.m_pPtr')
+			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_First.m_pNext')
 			self.m_bValid = True
 			self.m_bLooped = False
 		except Exception as error:
@@ -513,7 +513,7 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 		return fg_CreateDynamicValue(self.m_ValueObject, _Name, _pNodePointer - self.m_Offset, self.m_DataType)
 
 	def fp_GetNext(self, _pNode):
-		pNext = _pNode.GetValueForExpressionPath('->m_pNext.m_pPtr')
+		pNext = _pNode.GetValueForExpressionPath('->m_pNext')
 		return pNext
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):

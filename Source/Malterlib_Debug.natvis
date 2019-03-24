@@ -18,87 +18,87 @@
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Dynamic&lt;*&gt; &gt; &gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrAnsi&gt;"></AlternativeType>
         
-        <DisplayString Condition="(m_pData.m_pPtr == 0)">
+        <DisplayString Condition="(m_pData == 0)">
       ""
     </DisplayString>
-    <DisplayString Condition="(((uint32)(mint)m_pData.m_pPtr) == 0xcccccccc)">
+    <DisplayString Condition="(((uint32)(mint)m_pData) == 0xcccccccc)">
       Not Initialized
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
-      {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s8}
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 2)">
+      {((ch8 *)(((CImp::CData *)m_pData)+1)),s8}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 1)">
-      {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s}
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 1)">
+      {((ch8 *)(((CImp::CData *)m_pData)+1)),s}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0)">
-      {((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s}
+    <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0)">
+      {((ch8 *)(((CImp::CData *)m_pData)+1)),s}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
-      {((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
+    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 2)">
+      {((ch16 *)(((CImp::CData *)m_pData)+1)),su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
-      {((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su}
+    <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData != 0) &amp;&amp; !(EDebug_Type == 2)">
+      {((ch16 *)(((CImp::CData *)m_pData)+1)),su}
     </DisplayString>
-    <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData.m_pPtr != 0)">
-      {((ch32 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s32}
+    <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData != 0)">
+      {((ch32 *)(((CImp::CData *)m_pData)+1)),s32}
     </DisplayString>
-    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
-      ((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s8
+    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 2)">
+      ((ch8 *)(((CImp::CData *)m_pData)+1)),s8
     </StringView>
-    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
-      ((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1)),s
+    <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0) &amp;&amp; !(EDebug_Type == 2)">
+      ((ch8 *)(((CImp::CData *)m_pData)+1)),s
     </StringView>
-    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
-      ((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su
+    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 2)">
+      ((ch16 *)(((CImp::CData *)m_pData)+1)),su
     </StringView>
-    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
-      ((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1)),su
+    <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData != 0) &amp;&amp; !(EDebug_Type == 2)">
+      ((ch16 *)(((CImp::CData *)m_pData)+1)),su
     </StringView>
     <Expand>
       <Synthetic Name="Type">
-        <DisplayString Condition="(((uint32)(mint)m_pData.m_pPtr) == 0xcccccccc)">
+        <DisplayString Condition="(((uint32)(mint)m_pData) == 0xcccccccc)">
           Not Initialized
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 2)">
           utf8
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 1)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 1)">
           ch8 (unicode)
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData.m_pPtr != 0)">
+        <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (m_pData != 0)">
           ansi
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; (EDebug_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData != 0) &amp;&amp; (EDebug_Type == 2)">
           utf16
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData.m_pPtr != 0) &amp;&amp; !(EDebug_Type == 2)">
+        <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (m_pData != 0) &amp;&amp; !(EDebug_Type == 2)">
           ch16 (unicode)
         </DisplayString>
-        <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData.m_pPtr != 0)">
+        <DisplayString Condition="EDebug_CharSize == 4 &amp;&amp; (m_pData != 0)">
           ch32 (unicode)
         </DisplayString>
       </Synthetic>
-      <ExpandedItem Condition="m_pData.m_pPtr != 0">*m_pData.m_pPtr</ExpandedItem>
+      <ExpandedItem Condition="m_pData != 0">*m_pData</ExpandedItem>
       <Item Name ="[StrPtr]">
-        (void *)((ch32 *)(((CImp::CData *)m_pData.m_pPtr)+1))
+        (void *)((ch32 *)(((CImp::CData *)m_pData)+1))
       </Item>
       <Synthetic Name="[StrData]">
         <Expand>
-          <IndexListItems Condition="EDebug_CharSize == 1 &amp;&amp; m_pData.m_pPtr != 0">
-            <Size>(*((CImp::CData *)m_pData.m_pPtr)).m_Len</Size>
-            <ValueNode>((ch8 *)(((CImp::CData *)m_pData.m_pPtr)+1))[$i]</ValueNode>
+          <IndexListItems Condition="EDebug_CharSize == 1 &amp;&amp; m_pData != 0">
+            <Size>(*((CImp::CData *)m_pData)).m_Len</Size>
+            <ValueNode>((ch8 *)(((CImp::CData *)m_pData)+1))[$i]</ValueNode>
           </IndexListItems>
-          <IndexListItems Condition="EDebug_CharSize == 2 &amp;&amp; m_pData.m_pPtr != 0">
-            <Size>(*((CImp::CData *)m_pData.m_pPtr)).m_Len</Size>
-            <ValueNode>((ch16 *)(((CImp::CData *)m_pData.m_pPtr)+1))[$i]</ValueNode>
+          <IndexListItems Condition="EDebug_CharSize == 2 &amp;&amp; m_pData != 0">
+            <Size>(*((CImp::CData *)m_pData)).m_Len</Size>
+            <ValueNode>((ch16 *)(((CImp::CData *)m_pData)+1))[$i]</ValueNode>
           </IndexListItems>
-          <IndexListItems Condition="EDebug_CharSize == 4 &amp;&amp; m_pData.m_pPtr != 0">
-            <Size>(*((CImp::CData *)m_pData.m_pPtr)).m_Len</Size>
-            <ValueNode>((ch32 *)(((CImp::CData *)m_pData.m_pPtr)+1))[$i]</ValueNode>
+          <IndexListItems Condition="EDebug_CharSize == 4 &amp;&amp; m_pData != 0">
+            <Size>(*((CImp::CData *)m_pData)).m_Len</Size>
+            <ValueNode>((ch32 *)(((CImp::CData *)m_pData)+1))[$i]</ValueNode>
           </IndexListItems>
         </Expand>
       </Synthetic>
-      <Item Name="[m_pData]">m_pData.m_pPtr,!</Item>
+      <Item Name="[m_pData]">m_pData,!</Item>
     </Expand>
   </Type>
 
@@ -246,16 +246,16 @@
     </DisplayString>
   </Type>
 
-  <Type Name="NMib::NStorage::TCUniquePointer&lt;*,*,*,*&gt;">
-    <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
-      {*m_Data.m_pPointTo.m_pPtr}
+  <Type Name="NMib::NStorage::TCUniquePointer&lt;*&gt;">
+    <DisplayString Condition="m_Data.m_pPointTo != 0">
+      {*m_Data.m_pPointTo}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_Data.m_pPointTo.m_pPtr != 0">
-        *m_Data.m_pPointTo.m_pPtr
+      <ExpandedItem Condition="m_Data.m_pPointTo != 0">
+        *m_Data.m_pPointTo
       </ExpandedItem>
       <Item Name ="[Raw View]">
         *this,!
@@ -371,15 +371,15 @@
   </Type>
 
     <Type Name="NMib::NConcurrency::TCActorInternal&lt;*&gt;">
-    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
-      {*(($T1 *)mp_pActor.m_Data.m_pPointTo.m_pPtr)}
+    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo != 0">
+      {*(($T1 *)mp_pActor.m_Data.m_pPointTo)}
     </DisplayString>
     <DisplayString>
       Destroyed
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
-        *(($T1 *)mp_pActor.m_Data.m_pPointTo.m_pPtr)
+      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo != 0">
+        *(($T1 *)mp_pActor.m_Data.m_pPointTo)
       </ExpandedItem>
       <Item Name="[Ref Count]">
         m_RefCount._My_val + 1
@@ -394,15 +394,15 @@
   </Type>
 
   <Type Name="NMib::NConcurrency::CActorHolder">
-    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
-      {*mp_pActor.m_Data.m_pPointTo.m_pPtr}
+    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo != 0">
+      {*mp_pActor.m_Data.m_pPointTo}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo.m_pPtr != 0">
-        *mp_pActor.m_Data.m_pPointTo.m_pPtr
+      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo != 0">
+        *mp_pActor.m_Data.m_pPointTo
       </ExpandedItem>
       <Item Name="[Internal Actor Raw View]">
         *this,!
@@ -442,16 +442,16 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCDLinkAggregate&lt;*&gt;">
+  <Type Name="NMib::NIntrusive::CDLinkAggregate">
     <Expand>
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Next]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pNextPtr.m_pPtr) &amp; ~mint(1)))->m_pPrevPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)m_pNextPtr.m_pPtr)
+      <Item Name ="[Next]" Condition="m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pNextPtr) &amp; ~mint(1)))->m_pPrevPtr) &amp; mint(1)) != mint(1)">
+        *((CThis *)m_pNextPtr)
       </Item>
-      <Item Name ="[Prev]" Condition="m_pNextPtr.m_pPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pPrevPtr.m_pPtr) &amp; ~mint(1)))->m_pPrevPtr.m_pPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)(((mint)m_pPrevPtr.m_pPtr) &amp; ~mint(1)))
+      <Item Name ="[Prev]" Condition="m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pPrevPtr) &amp; ~mint(1)))->m_pPrevPtr) &amp; mint(1)) != mint(1)">
+        *((CThis *)(((mint)m_pPrevPtr) &amp; ~mint(1)))
       </Item>
     </Expand>
   </Type>
@@ -461,11 +461,11 @@
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Left]" Condition="m_Link.m_pNext[0].m_pPtr != 0">
-        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((mint)m_Link.m_pNext[0].m_pPtr) &amp; ~mint(3)))
+      <Item Name ="[Left]" Condition="m_Link.m_pNext[0] != 0">
+        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((mint)m_Link.m_pNext[0]) &amp; ~mint(3)))
       </Item>
-      <Item Name ="[Right]" Condition="m_Link.m_pNext[0].m_pPtr != 0">
-        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((mint)m_Link.m_pNext[1].m_pPtr) &amp; ~mint(3)))
+      <Item Name ="[Right]" Condition="m_Link.m_pNext[0] != 0">
+        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((mint)m_Link.m_pNext[1]) &amp; ~mint(3)))
       </Item>
     </Expand>
   </Type>
@@ -486,27 +486,27 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCSLinkAggr&lt;*&gt;">
+  <Type Name="NMib::NIntrusive::CSLinkAggr;">
     <Expand>
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Next]" Condition="m_pNext.m_pPtr != 0">
-        *((CThis *)m_pNext.m_pPtr)
+      <Item Name ="[Next]" Condition="m_pNext != 0">
+        *((CThis *)m_pNext)
       </Item>
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMemory::CAllocator_Heap&gt;,*,*,*&gt;">
+  <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,NMib::NIntrusive::CDLinkAggregate,*,*,*&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>((NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMemory::CAllocator_Heap&gt; *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
+        <HeadPointer>((NMib::NIntrusive::CDLinkAggregate *)(((mint)m_Link.m_pNextPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
             (CThis *)
             (
               (
-                ((mint)m_pNextPtr.m_pPtr)&amp;~mint(1))
+                ((mint)m_pNextPtr)&amp;~mint(1))
                 *
                 (
                   mint(1)
@@ -514,10 +514,10 @@
                   (
                     (
                       (mint)
-                      ((CThis *)((mint)m_pNextPtr.m_pPtr &amp; ~mint(1)))->m_pNextPtr.m_pPtr
+                      ((CThis *)((mint)m_pNextPtr &amp; ~mint(1)))->m_pNextPtr
                       |
-                      (mint)((CThis *)((mint)m_pNextPtr.m_pPtr &amp; ~mint(1))
-                    )->m_pPrevPtr.m_pPtr
+                      (mint)((CThis *)((mint)m_pNextPtr &amp; ~mint(1))
+                    )->m_pPrevPtr
                   )
                   &amp;
                   mint(1)
@@ -527,7 +527,7 @@
           )
         </NextPointer>
         <ValueNode>
-          *(($T1 *)((mint)this - NMib::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,NMib::NIntrusive::TCDLinkAggregate&lt;NMib::NMemory::CAllocator_Heap&gt;,$T3,$T4,$T5&gt;::COffset::mc_Offset))
+          *(($T1 *)((mint)this - NMib::NIntrusive::TCDLinkListAggregate&lt;$T1,$T2,NMib::NIntrusive::CDLinkAggregate,$T3,$T4,$T5&gt;::COffset::mc_Offset))
         </ValueNode>
       </LinkedListItems>
       <Item Name ="[Raw View]">
@@ -538,8 +538,8 @@
 
   <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;">
     <Expand>
-      <LinkedListItems Condition="(mint)m_Link.m_pNextPtr.m_pPtr &amp; ~mint(1) != ((mint)(void*)&amp;m_Link)">
-        <HeadPointer>(($T3 *)(((mint)m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
+      <LinkedListItems Condition="(mint)m_Link.m_pNextPtr &amp; ~mint(1) != ((mint)(void*)&amp;m_Link)">
+        <HeadPointer>(($T3 *)(((mint)m_Link.m_pNextPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
             (CThis *)
@@ -578,8 +578,8 @@
   <Type Name="NMib::NIntrusive::TCSLinkListAggregate&lt;*,*,*,*,*&gt;">
     <Expand>
       <LinkedListItems>
-        <HeadPointer>m_Data.m_First.m_pNext.m_pPtr</HeadPointer>
-        <NextPointer>m_pNext.m_pPtr</NextPointer>
+        <HeadPointer>m_Data.m_First.m_pNext</HeadPointer>
+        <NextPointer>m_pNext</NextPointer>
         <ValueNode>
           *(($T1 *)((mint)this - NMib::NIntrusive::TCSLinkListAggregate&lt;$T1,$T2,$T3,$T4,$T5&gt;::COffset::mc_Offset))
         </ValueNode>
@@ -620,8 +620,8 @@
 
   <Type Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;">
     <Expand>
-      <LinkedListItems Condition="(mint)m_Data.m_List.m_Link.m_pNextPtr.m_pPtr &amp; mint(1) != ((mint)(void *)&amp;m_Data.m_List.m_Link)">
-        <HeadPointer>((CLink *)(((mint)m_Data.m_List.m_Link.m_pNextPtr.m_pPtr) &amp; ~mint(1)))</HeadPointer>
+      <LinkedListItems Condition="(mint)m_Data.m_List.m_Link.m_pNextPtr &amp; mint(1) != ((mint)(void *)&amp;m_Data.m_List.m_Link)">
+        <HeadPointer>((CLink *)(((mint)m_Data.m_List.m_Link.m_pNextPtr) &amp; ~mint(1)))</HeadPointer>
         <NextPointer>
           (
           (CThis *)
@@ -707,14 +707,14 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapSet,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root &amp; ~mint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
           (
           (
           (
-          (mint)m_pNext[0].m_pPtr
+          (mint)m_pNext[0]
           )
           &amp;
           ~mint(3)
@@ -728,7 +728,7 @@
           (
           (
           (
-          (mint)m_pNext[1].m_pPtr
+          (mint)m_pNext[1]
           )
           &amp;
           ~mint(3)
@@ -746,14 +746,14 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapNoData,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root &amp; ~mint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
           (
           (
           (
-          (mint)m_pNext[0].m_pPtr
+          (mint)m_pNext[0]
           )
           &amp;
           ~mint(3)
@@ -767,7 +767,7 @@
           (
           (
           (
-          (mint)m_pNext[1].m_pPtr
+          (mint)m_pNext[1]
           )
           &amp;
           ~mint(3)
@@ -808,14 +808,14 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root &amp; ~mint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
           (
           (
           (
-          (mint)m_pNext[0].m_pPtr
+          (mint)m_pNext[0]
           )
           &amp;
           ~mint(3)
@@ -829,7 +829,7 @@
           (
           (
           (
-          (mint)m_pNext[1].m_pPtr
+          (mint)m_pNext[1]
           )
           &amp;
           ~mint(3)
@@ -848,14 +848,14 @@
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CLink *)((mint)m_Root.m_pPtr &amp; ~mint(3))</HeadPointer>
+        <HeadPointer>(CLink *)((mint)m_Root &amp; ~mint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
           (
           (
           (
-          (mint)m_pNext[0].m_pPtr
+          (mint)m_pNext[0]
           )
           &amp;
           ~mint(3)
@@ -869,7 +869,7 @@
           (
           (
           (
-          (mint)m_pNext[1].m_pPtr
+          (mint)m_pNext[1]
           )
           &amp;
           ~mint(3)
@@ -942,14 +942,14 @@
 
 
   <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
-    <DisplayString Condition="(((mint)m_Children.m_Tree.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
+    <DisplayString Condition="(((mint)m_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
       + {m_Key.m_Name}   {m_Data}
     </DisplayString>
     <DisplayString>
       {m_Key.m_Name}   {m_Data}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="(((mint)m_Children.m_Tree.m_Root.m_pPtr) &amp; ~mint(3)) != 0">
+      <ExpandedItem Condition="(((mint)m_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
         m_Children.m_Tree
       </ExpandedItem>
     </Expand>
@@ -969,32 +969,18 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::TCDynamicPtr&lt;*,*&gt;">
-    <DisplayString Condition="m_pPtr != 0">
-      {*(($T2 *)m_pPtr)}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="m_pPtr != 0">
-        *(($T2 *)m_pPtr)
-      </ExpandedItem>
-    </Expand>
-  </Type>
-
-
-
-  <Type Name="NMib::NStorage::NReference::TCReference&lt;*,*&gt;">
+  <Type Name="NMib::NStorage::NReference::TCReference&lt;*&gt;">
     <AlternativeType Name="NMib::NStorage::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStorage::NIndirection::TCIndirection&lt;*,*,*&gt;"></AlternativeType>
-    <DisplayString Condition="m_Data.m_pPointTo.m_pPtr != 0">
-      {*(($T1 *)m_Data.m_pPointTo.m_pPtr)}
+    <DisplayString Condition="m_Data.m_pPointTo != 0">
+      {*(($T1 *)m_Data.m_pPointTo)}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_Data.m_pPointTo.m_pPtr != 0">
-        *(($T1 *)m_Data.m_pPointTo.m_pPtr)
+      <ExpandedItem Condition="m_Data.m_pPointTo != 0">
+        *(($T1 *)m_Data.m_pPointTo)
       </ExpandedItem>
     </Expand>
   </Type>
-
 
 
   <Type Name="NMib::CVoidTag">
@@ -1031,11 +1017,11 @@
     <DisplayString Condition="m_Magic != 0xE538CB10">
       Invalid
     </DisplayString>
-    <DisplayString Condition="m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr != 0">
-      {*m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr}
+    <DisplayString Condition="m_pErrorAlloc.m_Data.m_pPointTo != 0">
+      {*m_pErrorAlloc.m_Data.m_pPointTo}
     </DisplayString>
-    <DisplayString Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr != 0">
-      {*m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr}
+    <DisplayString Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo != 0">
+      {*m_pErrorAllocNonTracked.m_Data.m_pPointTo}
     </DisplayString>
     <DisplayString>
       {m_ErrorNoAlloc}
@@ -1044,13 +1030,13 @@
       <Item Name ="Message" Condition="m_Magic != 0xE538CB10">
         "Invalid"
       </Item>
-      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr != 0 &amp;&amp; m_Magic == 0xE538CB10">
-        *m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr
+      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo != 0 &amp;&amp; m_Magic == 0xE538CB10">
+        *m_pErrorAlloc.m_Data.m_pPointTo
       </Item>
-      <Item Name ="Message" Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr != 0 &amp;&amp; m_Magic == 0xE538CB10">
-        *m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr
+      <Item Name ="Message" Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo != 0 &amp;&amp; m_Magic == 0xE538CB10">
+        *m_pErrorAllocNonTracked.m_Data.m_pPointTo
       </Item>
-      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo.m_pPtr == 0 &amp;&amp; m_pErrorAllocNonTracked.m_Data.m_pPointTo.m_pPtr == 0 &amp;&amp; m_Magic == 0xE538CB10">
+      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo == 0 &amp;&amp; m_pErrorAllocNonTracked.m_Data.m_pPointTo == 0 &amp;&amp; m_Magic == 0xE538CB10">
         m_ErrorNoAlloc
       </Item>
       <Item Name ="Class" Condition="m_pClass != 0">
@@ -1065,11 +1051,11 @@
       <Item Name ="Line" Condition="m_pFile != 0">
         m_Line
       </Item>
-      <Item Name ="Callstack" Condition="m_pCallstack.m_Data.m_pPointTo.m_pPtr != 0">
-        m_pCallstack.m_Data.m_pPointTo.m_pPtr->m_Callstack,[m_pCallstack.m_Data.m_pPointTo.m_pPtr->m_CallstackLen]
+      <Item Name ="Callstack" Condition="m_pCallstack.m_Data.m_pPointTo != 0">
+        m_pCallstack.m_Data.m_pPointTo->m_Callstack,[m_pCallstack.m_Data.m_pPointTo->m_CallstackLen]
       </Item>
-      <Item Name ="Callstack" Condition="m_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr != 0">
-        m_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr->m_Callstack,[m_pCallstackNonTracked.m_Data.m_pPointTo.m_pPtr->m_CallstackLen]
+      <Item Name ="Callstack" Condition="m_pCallstackNonTracked.m_Data.m_pPointTo != 0">
+        m_pCallstackNonTracked.m_Data.m_pPointTo->m_Callstack,[m_pCallstackNonTracked.m_Data.m_pPointTo->m_CallstackLen]
       </Item>
       <Item Name ="[Raw View]">
         *this,!

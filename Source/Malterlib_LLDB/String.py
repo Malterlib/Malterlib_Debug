@@ -29,7 +29,6 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 			return None
 	
 		pData = _Value.GetChildMemberWithName('m_pData')
-		pData = pData.GetChildMemberWithName('m_pPtr')
 
 		DataAddress = pData.GetValueAsUnsigned()
 		if DataAddress == 0:
@@ -67,7 +66,6 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		pData = _Value.GetChildMemberWithName('m_pData')
-		pData = pData.GetChildMemberWithName('m_pPtr')
 
 		DataAddress = pData.GetValueAsUnsigned()
 		if DataAddress == 0:
@@ -103,7 +101,6 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 			return None
 		
 		pData = _Value.GetChildMemberWithName('m_pData')
-		pData = pData.GetChildMemberWithName('m_pPtr')
 
 		DataAddress = pData.GetValueAsUnsigned()
 		if DataAddress == 0:

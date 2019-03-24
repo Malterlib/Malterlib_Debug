@@ -109,11 +109,15 @@ class CSynthProvider_TCFunction(CSynthProvider_Common):
 def fg_MibLLDBInit_Function(_Debugger):
 	
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCFunction<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCMutableFunction<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCMovableFunction<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCFunctionFastCall<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCFunctionSmall<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCFunctionNoAlloc<.*>$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NFunction::TCFunction<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NFunction::TCMutableFunction<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NFunction::TCMovableFunction<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NFunction::TCFunctionFastCall<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NFunction::TCFunctionSmall<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NFunction::TCFunctionNoAlloc<.*>$", True)

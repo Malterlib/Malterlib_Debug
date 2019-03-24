@@ -53,7 +53,7 @@ class CSynthProvider_TCUniquePointer(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_NumExtraChildren = 0
-			self.m_Value = fg_ChildPath(self.m_ValueObject, 'm_Data.m_pPointTo.m_pPtr')
+			self.m_Value = fg_ChildPath(self.m_ValueObject, 'm_Data.m_pPointTo')
 			self.m_DataType = self.m_Value.GetType()
 			fg_PrecacheType(self.m_DataType)
 			if self.m_Value.GetValueAsUnsigned() != 0:
