@@ -134,27 +134,22 @@ public:
 		DMibTestSuite("StackTraceInfoExternal")
 		{
 			{
-				CStackTraceInfo *pInfo = NSys::fg_Debug_AquireStackTraceInfo((CMibCodeAddress)&dlopen);
+				CMibCodeAddress pFunction;
+				(void * &)pFunction = NMib::NSys::fg_GetLibrarySymbol(nullptr, "dlopen");
+
+				CStackTraceInfo *pInfo = NSys::fg_Debug_AquireStackTraceInfo(pFunction);
 
 				DMibTest(DMibExpr(pInfo) != DMibExpr(nullptr))(ETest_FailAndStop);
 
 				if (pInfo)
 				{
-//					DMibTrace("pInfo->m_pFunctionName: {}\n", (pInfo->m_pFunctionName ? pInfo->m_pFunctionName : "") );
-//					DMibTrace("pInfo->m_pSourceFileName: {}\n", (pInfo->m_pSourceFileName ? pInfo->m_pSourceFileName : "") );
-//					DMibTrace("pInfo->m_SourceLine; {}\n", pInfo->m_SourceLine);
-
 					DMibTest(DMibExpr((void*)pInfo->m_pFunctionName) != DMibExpr(nullptr));
-					if ( pInfo->m_pFunctionName)
-					{
-						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "dlopen")) != DMibExpr(-1));
-					}
+					if (pInfo->m_pFunctionName)
+						DMibExpect(NStr::CStr(pInfo->m_pFunctionName), ==, "dlopen");
 
 					DMibTest(DMibExpr((void*)pInfo->m_pModuleName) != DMibExpr(nullptr));
-					if ( pInfo->m_pModuleName)
-					{
-						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pModuleName, "libdl")) != DMibExpr(-1));
-					}
+					if (pInfo->m_pModuleName)
+						DMibExpect(NFile::CFile::fs_GetFileNoExt(NFile::CFile::fs_GetFileNoExt(NStr::CStr(pInfo->m_pModuleName))), ==, "libdl");
 
 					NSys::fg_Debug_ReleaseStackTraceInfo(pInfo);
 				}
