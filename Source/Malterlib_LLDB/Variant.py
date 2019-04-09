@@ -21,9 +21,9 @@ def fg_ParseTemplate(_String):
 			if len(stack) == 0:
 				yield _String[lastStart: i].strip()
 
-class CSynthProvider_TCStreamableVariant(CSynthProvider_Common):
+class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
-		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary, "NMib::NStorage::TCStreamableVariant")
+		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary, "NMib::NStorage::TCVariantCommon")
 
 	def update(self):
 		CSynthProvider_Common.update(self)
@@ -44,15 +44,15 @@ class CSynthProvider_TCStreamableVariant(CSynthProvider_Common):
 
 		ContainerType = self.m_ValueObjectType
 
-		self.m_DataAddress = fg_GetAddressOf(fg_ChildPath(self.m_ValueObject, 'm_Storage.m_Aligned'))
-		CurrentType = fg_ChildPath(self.m_ValueObject, 'm_Storage.m_CurrentType')
+		self.m_DataAddress = fg_GetAddressOf(fg_ChildPath(self.m_ValueObject, 'mp_Storage.m_Aligned'))
+		CurrentType = fg_ChildPath(self.m_ValueObject, 'mp_Storage.m_CurrentType')
 		self.m_CurrentTypeType = fg_GetValidCanonicalType(fg_GetValueType(CurrentType))
 		self.m_CurrentType = CurrentType.GetValueAsUnsigned()
 
 		TemplateString = ContainerType.GetName()
 		TemplateParams = list(fg_ParseTemplate(TemplateString))
 
-		nTypes = (len(TemplateParams) - 1) / 2;
+		nTypes = len(TemplateParams) - 1;
 
 		self.m_MemberToIndex = {};
 		self.m_Types = []
@@ -67,7 +67,9 @@ class CSynthProvider_TCStreamableVariant(CSynthProvider_Common):
 				EnumeratorToValue[Member.GetName()] = Member.GetValueAsSigned()
 
 		for iType in range(nTypes):
-			TemplateParam = TemplateParams[2 + iType * 2];
+			MemberParams = list(fg_ParseTemplate(TemplateParams[iType + 1]))
+
+			TemplateParam = MemberParams[2];
 			TemplateParam = TemplateParam.split("::")[-1]
 
 			if fg_IsInteger(TemplateParam):
@@ -76,7 +78,7 @@ class CSynthProvider_TCStreamableVariant(CSynthProvider_Common):
 				EnumValue = EnumeratorToValue.get(TemplateParam);
 
 			self.m_MemberToIndex[EnumValue] = iType
-			self.m_Types.append(fg_GetValidCanonicalType(ContainerType.GetTemplateArgumentType(1 + iType*2)))
+			self.m_Types.append(fg_GetValidCanonicalType(lldb.target.FindFirstType(MemberParams[1])))
 
 		self.m_nTypes = 0
 		VoidType = ContainerType.GetBasicType(lldb.eBasicTypeVoid)
@@ -127,9 +129,9 @@ def fg_MibLLDBInit_Variant(_Debugger):
 	
 	# TCVariant
 	
-	fg_AddSynth(_Debugger, CSynthProvider_TCStreamableVariant, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCStreamableVariant, "(^|^const )NMib::NStorage::TCStreamableVariant<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCVariantCommon, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCVariantCommon, "(^|^const )NMib::NStorage::TCVariantCommon<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCStreamableVariant<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCVariantCommon<.*>$", True)
 
 	return

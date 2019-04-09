@@ -8,13 +8,12 @@ from StringHelpers import *
 #template <aint t_SignBits, aint t_ExponentBits, aint t_MantissaBits, typename t_CImplicitFloat = CNoImplicit, bint t_bDummyOptimize = true, typename t_CIntegerStorage = typename NTraits::TCIntFromSizeLarger<(t_SignBits + t_ExponentBits + t_MantissaBits + 7)/8>::CType>
 def fg_SummaryProvider_TCFloat(_Value, dict):
 	try:
-
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 
 		ImplicitData = _Value.GetChildMemberWithName("m_DataImplicit")
-		if fg_GetValueType(ImplicitData).GetName() != "NMib::NNumeric::CNoImplicit":
+		if fg_GetValidCanonicalType(fg_GetValueType(ImplicitData)).GetName() != "NMib::NNumeric::CNoImplicit":
 			Summary = ImplicitData.GetSummary()
 			if Summary == None:
 				Value = ImplicitData.GetValue()

@@ -1321,4 +1321,3 @@ public:
 };
 
 DMibTestRegister(CDebug_Tests, Malterlib::Debug);
-
