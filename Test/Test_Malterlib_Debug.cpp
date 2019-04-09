@@ -518,9 +518,33 @@ public:
 			Variant2.f_Set<2>(fp32(3.4f));
 			Variant3.f_Set<2>(6);
 
-			TCStreamableVariant<int, int32, 0, fp32, 1, fp16, 2> StreamableVariant0;
-			TCStreamableVariant<int, int32, 0, fp32, 1, fp16, 2> StreamableVariant1;
-			TCStreamableVariant<int, int32, 0, fp32, 1, NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>, 2> StreamableVariant2;
+			TCStreamableVariant
+				<
+					int
+					, NStorage::TCMember<int32, 0>
+					, NStorage::TCMember<fp32, 1>
+					, NStorage::TCMember<fp16, 2>
+				>
+				StreamableVariant0
+			;
+			TCStreamableVariant
+				<
+					int
+					, NStorage::TCMember<int32, 0>
+					, NStorage::TCMember<fp32, 1>
+					, NStorage::TCMember<fp16, 2>
+				>
+				StreamableVariant1
+			;
+			TCStreamableVariant
+				<
+					int
+					, NStorage::TCMember<int32, 0>
+					, NStorage::TCMember<fp32, 1>
+					, NStorage::TCMember<NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>, 2>
+				>
+				StreamableVariant2
+			;
 			
 			StreamableVariant0 = 3;
 			StreamableVariant1.f_Set<1>(3.3f);
