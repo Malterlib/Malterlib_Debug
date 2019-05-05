@@ -20,7 +20,7 @@ class CSynthProvider_TCJSONValueBase(CSynthProvider_Common):
 			self.m_NumExtraChildren = 0
 
 			self.m_Value = self.m_ValueObject.GetChildMemberWithName('mp_Value')
-			CurrentType = self.m_Value.GetValueForExpressionPath('.m_Storage.m_CurrentType')
+			CurrentType = self.m_Value.GetValueForExpressionPath('.mp_Storage.m_CurrentType')
 
 			if CurrentType.GetValueAsUnsigned() == 0:
 				self.m_bEmpty = True
