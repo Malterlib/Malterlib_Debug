@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 using namespace NMib;
@@ -56,7 +56,7 @@ public:
 		void * volatile pRet = fg_GetInstructionPointer();
 		return pRet;
 	}
-	
+
 	void f_DoTests()
 	{
 #ifdef DPlatformFamily_Linux
@@ -157,7 +157,7 @@ public:
 		};
 #endif
 		DMibTestSuite("StackTraceInfo_StaticMember")
-		{	
+		{
 			{
 				CStackTraceInfo *pInfo = NSys::fg_Debug_AquireStackTraceInfo((CMibCodeAddress)fs_LookupThisStaticMemberFunc());
 				//DMibTrace("&f_LookupThisStaticMemberFunc: {}\n", (void*)&f_LookupThisStaticMemberFunc );
@@ -197,12 +197,12 @@ public:
 			bint bLookup = Symbols.f_Lookup((mint)&fg_LookupThisFunc, Info);
 
 			DMibTest(DMibExpr(bLookup) == DMibExpr(true));
-			
+
 			DMibTest(DMibExpr(Info.m_File.f_Find("Test_Malterlib_Debug.cpp")) != DMibExpr(-1));
 			DMibTest(DMibExpr(Info.m_Function.f_Find("fg_LookupThisFunc()")) != DMibExpr(-1));
-			
+
 			/*
-			DMibTrace("File: {}\nLine: {}\nFunc: {}\n", 
+			DMibTrace("File: {}\nLine: {}\nFunc: {}\n",
 						Info.m_File
 					<<	Info.m_Line
 
@@ -219,7 +219,7 @@ public:
 			using namespace NMib::NAtomic;
 			using namespace NMib::NStorage;
 			using namespace NMib;
-			
+
 			CStr Str0(str_utf8("CStr 実際にあっ 24bit:𠀀"));
 			CWStr Str1(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			CUStr Str2(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
@@ -227,11 +227,11 @@ public:
 			ch8 RawStr0[256];
 			ch16 RawStr1[256];
 			ch32 RawStr2[256];
-			
+
 			ch8 const *pRawStr0 = Str0;
 			ch16 const *pRawStr1 = Str1;
 			ch32 const *pRawStr2 = Str2;
-						
+
 			NStr::fg_StrCopy(RawStr0, pRawStr0);
 			NStr::fg_StrCopy(RawStr1, pRawStr1);
 			NStr::fg_StrCopy(RawStr2, pRawStr2);
@@ -247,7 +247,7 @@ public:
 			TCStrAggregate<TCStrTraits_Eval<ch8, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> &Str3_0 = Str0_0;
 			TCStrAggregate<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> &Str4_0 = Str1_0;
 			TCStrAggregate<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> &Str5_0 = Str2_0;
-			
+
 			CFStr128 Str6(str_utf8("CFStr128 実際にあっ 24bit:𠀀"));
 			CFStr256 Str7(str_utf8("CFStr256 実際にあっ 24bit:𠀀"));
 			CFWStr128 Str8(str_utf16("CFWStr128 実際にあっ 24bit:𠀀"));
@@ -317,7 +317,7 @@ public:
 			TCStr<TCStrTraitsPtr<ch8, EStrType_UTF>::CType> Str30_0; Str30_0.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
 			TCStr<TCStrTraitsPtr<ch16, EStrType_UTF>::CType> Str31_0; Str31_0.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
 			TCStr<TCStrTraitsPtr<ch32, EStrType_Unicode>::CType> Str32_0; Str32_0.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
-			
+
 			TCStrAggregate<CStrTraitsPtr_CStr> &Str33 = Str30;
 			TCStrAggregate<CStrTraitsPtr_CWStr> &Str34 = Str31;
 			TCStrAggregate<CStrTraitsPtr_CUStr> &Str35 = Str32;
@@ -325,16 +325,16 @@ public:
 			TCStrAggregate<TCStrTraitsPtr<ch8, EStrType_UTF>::CType> &Str33_0 = Str30_0;
 			TCStrAggregate<TCStrTraitsPtr<ch16, EStrType_UTF>::CType> &Str34_0 = Str31_0;
 			TCStrAggregate<TCStrTraitsPtr<ch32, EStrType_Unicode>::CType> &Str35_0 = Str32_0;
-			
+
 			CMStrDeprecated MixedStr8(CStr(str_utf8("CStr")));
 			CMStrDeprecated MixedStr16(CStr(str_utf8("CWStr 実際にあっ")));
 			CMStrDeprecated MixedStr32(CStr(str_utf8("CUStr 実際にあっ 24bit:𠀀")));
-			
+
 			CAnsiStr AnsiStr;
 			NMib::NSys::NStr::fg_SystemEncodeAnsiStr(CStr(str_utf8("CStr ÄäÅåÖ")), AnsiStr, '?');
 
 			CStr UnicodeStr = CMStrDeprecated(CStr(str_utf8("CStr ÄäÅåÖ")));
-			
+
 			CFStr256 TestUTF8(str_utf8("CStr 実際にあっ 24bit:𠀀"));
 			TCFStr<ch8, 256, EStrType_Unicode>::CType TestUnicode8 = AnsiStr.f_GetStr();
 			TCFStr<ch8, 256, EStrType_Ansi>::CType TestAnsi8 = AnsiStr;
@@ -343,17 +343,17 @@ public:
 			TCFStr<ch16, 256, EStrType_Unicode>::CType TestUnicode16 = str_utf16("CStr 実際にあっ");
 
 			CFUStr256 TestUnicode32 = CUStr(str_utf32("CStr 実際にあっ 24bit:𠀀"));
-			
+
 			TCVector<CTestClass> Vector;
 			DMibListLinkDS_List(CTestClass, m_Link) IntrusiveList;
 			TCLinkedList<int32> LinkedList;
-			
+
 			IntrusiveList.f_Insert(Vector.f_Insert(5));
 			IntrusiveList.f_Insert(Vector.f_Insert(8));
 			IntrusiveList.f_Insert(Vector.f_Insert(1));
 			IntrusiveList.f_Insert(Vector.f_Insert(3));
-			
-			
+
+
 			LinkedList.f_Insert(5);
 			LinkedList.f_Insert(8);
 			LinkedList.f_Insert(1);
@@ -412,7 +412,7 @@ public:
 			MapNoData[8];
 			MapNoData[1];
 			MapNoData[3];
-			
+
 			TCSet<int32> Set;
 			Set[5];
 			Set[8];
@@ -420,15 +420,15 @@ public:
 			Set[3];
 
 			TCMap<int32, TCMapTreeMember<int32, int32>> MapComplex;
-			
+
 			MapComplex(1, 5, 6);
 
 			TCMap<CStr, CStr> MapStr;
-			
+
 			MapStr["One"] = "Value";
-			
+
 			auto iLinkedListForTree = LinkedListForTree.f_GetIterator();
-			
+
 			auto iVector = Vector.f_GetIterator();
 			auto iIntrusiveList = IntrusiveList.f_GetIterator();
 			auto iLinkedList = LinkedList.f_GetIterator();
@@ -439,7 +439,7 @@ public:
 			auto iMapNoData = MapNoData.f_GetIterator();
 			auto iSet = Set.f_GetIterator();
 			auto iManyValues = pTestLinked->m_IntrusiveList.f_GetIterator();
-			
+
 			auto iConstVector = fg_Const(Vector).f_GetIterator();
 			auto iConstIntrusiveList = fg_Const(IntrusiveList).f_GetIterator();
 			auto iConstLinkedList = fg_Const(LinkedList).f_GetIterator();
@@ -469,15 +469,15 @@ public:
 			auto iSetEmtpy = Set.f_GetIterator(); fMakeEmpty(iSetEmtpy);
 
 			using namespace NTime;
-			
+
 			CTime Time = CTime::fs_NowUTC();
 			CTimeSpan TimeSpan = CTimeSpanConvert::fs_CreateSpan(0,5,3,2);
-			
+
 			fp16 Float16 = fp32(0.5f);
 			NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, true, short> Float16_2 = fp32(0.66f);
 			fp32 Float32 = 5.5f;
 			fp64 Float64 = 6.8;
-			
+
 			NStorage::TCAggregate<int32> Aggregate = { DAggregateInit };
 			NStorage::TCAggregate<int32> AggregateEmpty = { DAggregateInit };
 
@@ -490,23 +490,23 @@ public:
 					}
 				)
 			;
-			
+
 			*Aggregate = 55;
 
 			NStorage::TCAggregateSimple<int32> AggregateSimple = { DAggregateInit };
-			
+
 			AggregateSimple.f_Construct(55);
-			
+
 			NThread::TCThreadLocal<int32> ThreadLocal;
-			
+
 			*ThreadLocal = 55;
-			
+
 			auto Exception = DMibErrorInstance("Test exception");
 			auto ExceptionStr = DMibErrorInstance(CStr("Test exception str"));
 			auto ExceptionNonTrackedStr = DMibErrorInstance(CStrNonTracked("Test exception nontracked str"));
-			
+
 			NMib::NFile::CExceptionFile &FileException = (NMib::NFile::CExceptionFile &)Exception;
-			
+
 			TCVariant<int32, fp32, fp16> Variant0;
 			TCVariant<int32, fp32, fp16> Variant1;
 			TCVariant<int32, fp32, NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>> Variant2;
@@ -545,15 +545,15 @@ public:
 				>
 				StreamableVariant2
 			;
-			
+
 			StreamableVariant0 = 3;
 			StreamableVariant1.f_Set<1>(3.3f);
 			StreamableVariant2.f_Set<2>(fp32(3.4f));
-			
+
 			/*DMibTrace("MV0: {}\n", Variant0.ms_MemberValue0);
 			DMibTrace("MV1: {}\n", Variant1.ms_MemberValue1);
 			DMibTrace("MV2: {}\n", Variant2.ms_MemberValue2);*/
-			
+
 			struct CTesting
 			{
 				TCLinkedList<int32> m_LinkedList;
@@ -571,7 +571,7 @@ public:
 							m_LinkedList.f_Insert(67);
 						}
 					;
-					
+
 					fl_Test();
 				}
 			};
@@ -584,51 +584,51 @@ public:
 					LinkedList.f_Insert(67);
 				}
 			;
-			
+
 			fl_Test();
-			
+
 			CTesting TestLinkedLamba;
-			
+
 			TestLinkedLamba.f_Test();
-			
+
 			CMibCodeAddress StackTrace[16];
 			NSys::fg_System_GetStackTrace(StackTrace, 16);
-			
+
 			fg_TestIntrusive(IntrusiveList);
-			
+
 			TCAtomic<int32> AtomicInt(5);
 			TCAtomic<CTestClass *> AtomicPtr(&Vector[0]);
 			TCAtomic<CTestClass *> AtomicPtrNull(nullptr);
-			
+
 			int32 TestInt = 355;
 			TCAtomic<int32 *> AtomicIntPtr(&TestInt);
 
 			TCSet<int32> BigSet;
 			TCVector<int32> BigVector;
 			TCLinkedList<int32> BigLinkedList;
-			
+
 			for (int32 i = 0; i < 2048; ++i)
 			{
 				BigSet[i];
 				BigVector.f_Insert(i);
 				BigLinkedList.f_Insert(i);
 			}
-			
+
 			TCVector<CTestClass> VectorLooped;
 			DMibListLinkDS_List(CTestClass, m_Link) IntrusiveListLooped;
 			IntrusiveListLooped.f_Insert(VectorLooped.f_Insert(5));
 			IntrusiveListLooped.f_Insert(VectorLooped.f_Insert(8));
 			IntrusiveListLooped.f_Insert(VectorLooped.f_Insert(1));
 			IntrusiveListLooped.f_Insert(VectorLooped.f_Insert(3));
-			
+
 			*((void**)(&(VectorLooped[3].m_Link))) = (void*)(&(VectorLooped[1].m_Link));
-			
+
 			IntrusiveListLooped.f_Construct();
 			for (mint i = 0; i < 4; ++i)
 				*((void**)(&(VectorLooped[i].m_Link))) = nullptr;
-			
+
 			CTest2 Test2(665);
-			
+
 			NStorage::TCAutoClearPtr<CTest2> pAutoClear(&Test2);
 			NStorage::TCAutoClearPtrDebug<CTest2> pAutoClearDebug(&Test2);
 			NStorage::TCDebugPointer<CTest2> pDebugPointer(&Test2);
@@ -642,20 +642,20 @@ public:
 			NStorage::TCPointer<CTest2> pPointerNull;
 			NStorage::TCSharedPointer<CTest2> pSharedPointerNull;
  			NStorage::TCUniquePointer<CTest2> pUniquePointerNull;
-			
+
 			int32 Data = 664;
 
 			NStorage::TCDebugPointer<int32> pDebugPointerInt(&Data);
 			NStorage::TCPointer<int32> pPointerInt(&Data);
 			NStorage::TCSharedPointer<int32> pSharedPointerInt(fg_Construct(3));
 			NStorage::TCUniquePointer<int32> pUniquePointerInt(fg_Construct(4));
-			
+
 			CStr *pStrNullPtr = nullptr;
-						
+
 			NMib::NStorage::TCReference<int32> Reference(Data);
 
 			NMib::NStorage::TCIndirection<int32> Indirection(5);
-			
+
 			NMib::NContainer::TCRegistry<CStr, CStr> Registry;
 			Registry.f_SetThisValue("ValueRoot");
 			Registry.f_SetValue("Path0", "ValuePath0");
@@ -664,7 +664,7 @@ public:
 			Registry.f_SetValue("Path1/Key3", "Value3");
 			Registry.f_SetValue("Path1/Key4", "Value4");
 
-			CRegistryPreserve_CStr RegistryPreserve;
+			CRegistryPreserveWhitespace RegistryPreserve;
 			RegistryPreserve.f_SetThisValue("ValueRoot");
 			RegistryPreserve.f_SetValue("Path0", "ValuePath0");
 			RegistryPreserve.f_SetValue("Path0/Key1", "Value1");
@@ -672,7 +672,7 @@ public:
 			RegistryPreserve.f_SetValue("Path1/Key3", "Value3");
 			RegistryPreserve.f_SetValue("Path1/Key4", "Value4");
 
-			CRegistryPreserveAndOrder_CStr RegistryPreserveOrder;
+			CRegistryPreserveAll RegistryPreserveOrder;
 			RegistryPreserveOrder.f_SetThisValue("ValueRoot");
 			RegistryPreserveOrder.f_SetValue("Path0", "ValuePath0");
 			RegistryPreserveOrder.f_SetValue("Path0/Key1", "Value1");
@@ -684,10 +684,10 @@ public:
 			NMib::TCAutoClear<CTest2 *> AutoClearGeneralPointer;
 			AutoClearGeneralPointer = &Test2;
 			NMib::TCAutoClearInt<int32, 556> AutoClearInt;
-			
+
 			zmint AutoClear_zmint = 6;
 			zfp32 AutoClear_zfp32 = fp32(5.6f);
-			
+
 			using namespace NMib::NEncoding;
 			CJSON JSON(EJSONType_Object);
 			{
@@ -1053,8 +1053,8 @@ public:
 			auto volatile &AutoClearIntVolatileRef = AutoClearInt;
 			auto volatile &AutoClear_zmintVolatileRef = AutoClear_zmint;
 			auto volatile &AutoClear_zfp32VolatileRef = AutoClear_zfp32;
-			
-			
+
+
 			auto *RawStr0Ptr = &RawStr0;
 			auto *RawStr1Ptr = &RawStr1;
 			auto *RawStr2Ptr = &RawStr2;
@@ -1183,8 +1183,8 @@ public:
 			auto *pAutoClearInt = &AutoClearInt;
 			auto *pAutoClear_zmint = &AutoClear_zmint;
 			auto *pAutoClear_zfp32 = &AutoClear_zfp32;
-			
-			
+
+
 			auto **RawStr0PtrPtr = &RawStr0Ptr;
 			auto **RawStr1PtrPtr = &RawStr1Ptr;
 			auto **RawStr2PtrPtr = &RawStr2Ptr;
@@ -1313,7 +1313,7 @@ public:
 			auto **ppAutoClearInt = &pAutoClearInt;
 			auto **ppAutoClear_zmint = &pAutoClear_zmint;
 			auto **ppAutoClear_zfp32 = &pAutoClear_zfp32;
-			
+
 			int x1 = 0;
 			int x2 = 0;
 		};
