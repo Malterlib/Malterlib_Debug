@@ -194,7 +194,7 @@ public:
 //			Symbols.f_SetSymbolsFile("/CompiledFiles/Build/Products/Debug Inlined 10.7/Exe_Certifier.symbols");
 
 			NMib::NDebug::NPlatform::CAddressInfo Info;
-			bint bLookup = Symbols.f_Lookup((mint)&fg_LookupThisFunc, Info);
+			bool bLookup = Symbols.f_Lookup((mint)&fg_LookupThisFunc, Info);
 
 			DMibTest(DMibExpr(bLookup) == DMibExpr(true));
 

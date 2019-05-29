@@ -18,7 +18,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		CBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_Data.f_GetArray(), _Data.f_GetLen());
 
-		bint bStackTrace = mp_Settings.m_Features & EFeature_MemoryStackTrace;
+		bool bStackTrace = mp_Settings.m_Features & EFeature_MemoryStackTrace;
 		TCStackTrace<uint64> StackTrace;
 
 		auto fl_ReadStackTrace =
@@ -300,7 +300,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	}
 
-	CReportMemoryToRemote::CReportMemoryToRemote(CClient* _pClient, bint _bStackTrace)
+	CReportMemoryToRemote::CReportMemoryToRemote(CClient* _pClient, bool _bStackTrace)
 		: mp_pClient(_pClient)
 		, mp_bStackTrace(_bStackTrace)
 	{

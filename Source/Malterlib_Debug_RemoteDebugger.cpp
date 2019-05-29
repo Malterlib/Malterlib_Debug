@@ -89,7 +89,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			TCRemoteDebuggerPool<CDataBlock>::fs_Delete(mp_FreeDataBlocks.f_Pop());
 	}
 
-	bint CConnection::f_Connect()
+	bool CConnection::f_Connect()
 	{
 		DMibFastCheck(		(mp_Mode == EMode_Connect)
 						||	( (mp_Mode == EMode_DelayedConnect) && !mp_pThread)  );
@@ -103,7 +103,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		return mp_ConnectionState.f_Load();
 	}
 
-	bint CConnection::f_IsConnected() const
+	bool CConnection::f_IsConnected() const
 	{
 		return mp_ConnectionState.f_Load() == EState_Connected;
 	}
@@ -273,7 +273,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		mint iCurSendingPos = 0;
 		CDataBlock* pCurSending = nullptr;
 
-		bint bSendStuffed = false;
+		bool bSendStuffed = false;
 
 		auto fl_SendDisconnect =
 			[&]()
@@ -308,7 +308,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			{
 				if (SocketState & ENetTCPState_Read)
 				{
-					bint bReadStuffed = false;
+					bool bReadStuffed = false;
 					mint nUnreported = 0;
 					do
 					{
@@ -502,12 +502,12 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	}
 
-	bint CClient::f_IsEnabled()
+	bool CClient::f_IsEnabled()
 	{
 		return (mp_Features != EFeature_None) && (mp_Port != 0) && (!mp_Address.f_IsEmpty());
 	}
 
-	bint CClient::f_Connect()
+	bool CClient::f_Connect()
 	{
 		if (!mp_pConnection)
 			return false;
@@ -527,7 +527,7 @@ namespace NMib::NDebug::NRemoteDebugger
 	}
 
 	template<typename t_CPacket>
-	bint fg_ExtractPacket(t_CPacket& _ToHere, TCVector<uint8, NMemory::CAllocator_NonTrackedHeap> const& _FromHere)
+	bool fg_ExtractPacket(t_CPacket& _ToHere, TCVector<uint8, NMemory::CAllocator_NonTrackedHeap> const& _FromHere)
 	{
 		if (_FromHere.f_GetLen() < sizeof(t_CPacket))
 			return false;
@@ -609,7 +609,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		f_Stop();
 	}
 
-	bint CServer::f_Start()
+	bool CServer::f_Start()
 	{
 		if (!!mp_pThread)
 			return false; // Already running.
@@ -626,7 +626,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				return true;
 	}
 
-	bint CServer::f_IsRunning()
+	bool CServer::f_IsRunning()
 	{
 		return !!mp_pThread;
 	}
@@ -757,7 +757,7 @@ namespace NMib::NDebug::NRemoteDebugger
 	static CClient* g_pRDClient = nullptr;
 	static CServer* g_pRDServer = nullptr;
 
-	bint fg_RD_InitializeServer(CServerSettings&& _Settings)
+	bool fg_RD_InitializeServer(CServerSettings&& _Settings)
 	{
 		if (g_pRDServer)
 			return true;
@@ -792,7 +792,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	}
 
-	bint fg_RD_InitializeClient()
+	bool fg_RD_InitializeClient()
 	{
 		if (g_pRDClient)
 			return true;
@@ -803,7 +803,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		return true;
 	}
 
-	bint fg_RD_NetworkAvailableForClient()
+	bool fg_RD_NetworkAvailableForClient()
 	{
 		if (!g_pRDClient)
 			return false;

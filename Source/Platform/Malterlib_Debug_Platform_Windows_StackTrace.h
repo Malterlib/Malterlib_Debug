@@ -43,8 +43,8 @@ namespace NMib
 					}
 				};
 
-				bint f_InitDll(NStr::CFStr256 &_Error);
-				bint f_Init(NStr::CStrNonTracked &_Error);
+				bool f_InitDll(NStr::CFStr256 &_Error);
+				bool f_Init(NStr::CStrNonTracked &_Error);
 
 				void f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination);
 				void f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination);
@@ -86,10 +86,10 @@ namespace NMib
 				IMAGEHLP_SYMBOL64 *m_pSymbolInfo;
 				HANDLE m_hProcess;
 
-				bint m_bInitialized;
-				bint m_bInitializedDll;
-				bint m_bFailedInitialize;
-				bint m_bFailedInitializeDll;
+				bool m_bInitialized;
+				bool m_bInitializedDll;
+				bool m_bFailedInitialize;
+				bool m_bFailedInitializeDll;
 			};
 		}
 	}

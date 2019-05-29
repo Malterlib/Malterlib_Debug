@@ -180,7 +180,7 @@ namespace NMib
 					, const NStr::CStr &_Message
 					, const NStr::CStr &_ExtraLog
 					, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs
-					, bint _bDisplayGUI
+					, bool _bDisplayGUI
 				)
 			{
 				DMibDeadlockDetectorPause;
@@ -243,7 +243,7 @@ namespace NMib
 						}
 						{
 							NStr::CStrNonTracked StackTraceError;
-							bint bRet;
+							bool bRet;
 							if (_pThread)
 								bRet = SubSystem.m_StackTrace.f_Init(StackTraceError);
 							else
@@ -835,9 +835,9 @@ namespace NMib
 						NStr::CStrNonTracked SupportEmail = fg_GetSys()->f_GetSupportEmailNonTracked();
 						if (SupportEmail.f_IsEmpty())
 							SupportEmail = "unknown@example.com";
-						bint bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
+						bool bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
 		
-						bint bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
+						bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
 						if (!bDaemon)
 						{
 							for (mint i = 0; i < nCache; ++i)

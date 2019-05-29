@@ -119,7 +119,7 @@ namespace NMib
 				mp_SymbolsFilename = _pFilename;
 			}
 
-			bint CSymbols::fp_EnsureLoaded()
+			bool CSymbols::fp_EnsureLoaded()
 			{
 				if (mp_pSymbols)
 					return true;
@@ -187,7 +187,7 @@ namespace NMib
 			}
 
 
-			bint CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
+			bool CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
 			{			
 				DMibLock(mp_Lock);
 
@@ -205,7 +205,7 @@ namespace NMib
 
 					aint iFoundFunc = fg_BinarySearchLowerBound(
 							mp_Header.m_nFunctions
-						,	[&](mint _FuncIndex, mint _Address) -> bint
+						,	[&](mint _FuncIndex, mint _Address) -> bool
 							{
 								CFunction const* pFunc = fp_ReadFunction(_FuncIndex, &TmpFunc);
 
@@ -239,7 +239,7 @@ namespace NMib
 						
 						aint iFoundLine = fg_BinarySearchLowerBound(
 								LinesHeader.m_nLines
-							,	[&](mint _LineIndex, mint _Address) -> bint
+							,	[&](mint _LineIndex, mint _Address) -> bool
 								{
 									CLine Line;
 
@@ -326,7 +326,7 @@ namespace NMib
 				mint mp_nBufferBytes;
 				TCVector<char> mp_Buffer;
 
-				bint mp_bEOF;
+				bool mp_bEOF;
 
 
 				void fp_FillBuffer()
@@ -360,12 +360,12 @@ namespace NMib
 					mp_File.f_Close(false);
 				}
 
-				bint f_EOF() const { return mp_bEOF && !mp_nBufferBytes; }
+				bool f_EOF() const { return mp_bEOF && !mp_nBufferBytes; }
 
-				bint f_ReadLine(CSymStr& _oLine)
+				bool f_ReadLine(CSymStr& _oLine)
 				{
 					CSymStr LineStr;
-					bint bTerm = false;
+					bool bTerm = false;
 
 					while(!bTerm)
 					{
@@ -412,15 +412,15 @@ namespace NMib
 
 			struct CFileSorter
 			{
-				bint operator()(CFile const& _A, CFile const& _B) const
+				bool operator()(CFile const& _A, CFile const& _B) const
 				{
 					return _A.m_Index < _B.m_Index;
 				}
-				bint operator()(CFile const& _A, mint _B) const
+				bool operator()(CFile const& _A, mint _B) const
 				{
 					return _A.m_Index < _B;
 				}
-				bint operator()(mint _A, CFile const& _B) const
+				bool operator()(mint _A, CFile const& _B) const
 				{
 					return _A < _B.m_Index;
 				}
@@ -428,17 +428,17 @@ namespace NMib
 
 			struct CFunctionSorter
 			{
-				bint operator()(CFunction const& _A, CFunction const& _B) const
+				bool operator()(CFunction const& _A, CFunction const& _B) const
 				{
 					return _A.m_Address < _B.m_Address;
 				}
 
-				bint operator()(CFunction const& _A, mint _B) const
+				bool operator()(CFunction const& _A, mint _B) const
 				{
 					return _A.m_Address < _B;
 				}
 
-				bint operator()(mint _A, CFunction const& _B) const
+				bool operator()(mint _A, CFunction const& _B) const
 				{
 					return _A < _B.m_Address;
 				}
@@ -446,15 +446,15 @@ namespace NMib
 
 			struct CLineSorter
 			{
-				bint operator()(CLine const& _A, CLine const& _B) const
+				bool operator()(CLine const& _A, CLine const& _B) const
 				{
 					return _A.m_Address < _B.m_Address;
 				}
-				bint operator()(CLine const& _A, mint _B) const
+				bool operator()(CLine const& _A, mint _B) const
 				{
 					return _A.m_Address < _B;
 				}
-				bint operator()(mint _A, CLine const& _B) const
+				bool operator()(mint _A, CLine const& _B) const
 				{
 					return _A < _B.m_Address;
 				}
@@ -469,7 +469,7 @@ namespace NMib
 				f_Clear();
 			}
 
-			bint CSymbols::f_Load(char const* _pFilename)
+			bool CSymbols::f_Load(char const* _pFilename)
 			{
 				try
 				{
@@ -598,7 +598,7 @@ namespace NMib
 			}
 
 
-			bint CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
+			bool CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
 			{
 				{
 					mach_header_64 const* pHeader = (mach_header_64 const*)_dyld_get_image_header(0);

@@ -1,11 +1,11 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 /*
 	Author:			Michael Wynne
-	
+
 	Contents:		NMib::NDebug::NPlatform::CSymbols
-	
+
 	Comments:		CSymbols implements looking up symbols in a .symbols files generated from a
 					dSym via the patched google breakpad dump_syms utility.
 
@@ -23,8 +23,8 @@
 							(nFuncs / 2) + (nFuncs / 4)
 							(nFuncs / 2) - (nFuncs / 4)
 							etc...
-					
-					If you do not specify a symbols file it assumes there is one in the same 
+
+					If you do not specify a symbols file it assumes there is one in the same
 					folder as the exe with the same name, but with a .symbols extension.
 
 					The symbols file is opened the first time a symbol is requested.
@@ -43,7 +43,7 @@ namespace NMib
 		{
 
 			typedef NMib::NStr::CStrNonTracked CSymStr;
-			
+
 			struct CAddressInfo
 			{
 				mint m_Address;
@@ -51,7 +51,7 @@ namespace NMib
 				mint m_Line;
 				CSymStr m_Function;
 			};
-			
+
 			struct COSXStackTraceInfo : public CStackTraceInfo
 			{
 				COSXStackTraceInfo()
@@ -62,12 +62,12 @@ namespace NMib
 				CSymStr m_ModuleName;
 				CSymStr m_FileName;
 			};
-			
+
 			struct CAddressInfoCache
 			{
 				COSXStackTraceInfo m_StackTraceInfo;
-				zbool m_bValidCache;
-				zbool m_bSuccessful;
+				bool m_bValidCache = false;
+				bool m_bSuccessful = false;
 				NThread::CSpinLock m_Lock;
 			};
 
@@ -128,7 +128,7 @@ namespace NMib
 					BytesPerFunction = 32,
 					BytesPerLine = 24,
 					BytesPerFunctionLines = 4,
-				};	
+				};
 
 			private:
 				mint mp_AddressOffset;
@@ -137,7 +137,7 @@ namespace NMib
 				CSymStr mp_SymbolsFilename;
 				CHeader mp_Header;
 				void *mp_pSymbols;
-				
+
 				NThread::CSpinLock mp_CacheLock;
 				NContainer::TCMap<mint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
 
@@ -145,7 +145,7 @@ namespace NMib
 
 				// All private methods assume mp_Lock is taken.
 
-				bint fp_EnsureLoaded();
+				bool fp_EnsureLoaded();
 				void fp_Unload();
 
 				CSymStr fp_ReadString(uint32 _Offset);
@@ -155,21 +155,21 @@ namespace NMib
 
 
 			public:
-				
+
 				CSymbols();
 				~CSymbols();
-			
+
 				void f_SetSymbolsFile(char const* _pFilename);
 
-				bint f_Lookup(mint _Address, CAddressInfo& _oInfo);
-				
+				bool f_Lookup(mint _Address, CAddressInfo& _oInfo);
+
 				CAddressInfoCache &f_GetCache(mint _Address)
 				{
 					DMibLock(mp_CacheLock);
 					return mp_Cache[_Address];
 				}
 			};
-			
+
 			CSymbols &fg_GetSymbols();
 
 	/*
@@ -265,10 +265,10 @@ namespace NMib
 					CSymbols();
 					~CSymbols();
 
-					bint f_Load(char const* _pFilename);
+					bool f_Load(char const* _pFilename);
 					void f_Clear();
 
-					bint f_Lookup(mint _Address, CAddressInfo& _oInfo);
+					bool f_Lookup(mint _Address, CAddressInfo& _oInfo);
 			};
 			*/
 		}

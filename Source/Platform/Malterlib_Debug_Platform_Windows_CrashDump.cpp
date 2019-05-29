@@ -22,9 +22,9 @@ namespace NMib
 			class CExceptionData
 			{
 			public:
-				bint m_bDisplayGUI;
+				bool m_bDisplayGUI;
 				NMib::NContainer::TCVector<NMib::NStr::CStr> &m_GeneratedLogs;
-				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bint _bDisplayGUI) 
+				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI) 
 					: m_GeneratedLogs(_GeneratedLogs)
 					, m_bDisplayGUI(_bDisplayGUI)
 				{
@@ -53,7 +53,7 @@ namespace NMib
 				}
 			}
 
-			void CSubSystem_Debug_Platform_Windows::f_GenerateCrashDump(const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bint _bDisplayGUI)
+			void CSubSystem_Debug_Platform_Windows::f_GenerateCrashDump(const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 			{
 
 				CExceptionData Data(_GeneratedLogs, _bDisplayGUI);
@@ -191,7 +191,7 @@ namespace NMib
 						// Mini dump
 						{
 							NStr::CStrNonTracked StackTraceError;
-							bint bRet;
+							bool bRet;
 							if (_pThread)
 								bRet = SubSystem.m_StackTrace.f_Init(StackTraceError);
 							else

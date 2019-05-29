@@ -241,9 +241,9 @@ namespace NMib::NDebug::NRemoteDebugger
 		~CConnection();
 
 		EState f_GetState() const;
-		bint f_IsConnected() const;
+		bool f_IsConnected() const;
 
-		bint f_Connect(); // Used with EMode_DelayedConnect
+		bool f_Connect(); // Used with EMode_DelayedConnect
 
 		// For connection connections :-)
 
@@ -297,9 +297,9 @@ namespace NMib::NDebug::NRemoteDebugger
 		CClient(/*TCFunction<void(TCFunction<void()>&&)>&& _Dispatcher*/);
 		~CClient();
 
-		bint f_IsEnabled();
+		bool f_IsEnabled();
 
-		bint f_Connect();
+		bool f_Connect();
 
 		CConnection* f_GetConnection() { return mp_pConnection.f_Get(); }
 
@@ -329,8 +329,8 @@ namespace NMib::NDebug::NRemoteDebugger
 		CServer(CServerSettings&& _Settings);
 		~CServer();
 
-		bint f_Start();
-		bint f_IsRunning();
+		bool f_Start();
+		bool f_IsRunning();
 		void f_Stop();
 
 		uint64 f_GetClientPID() const { return mp_ClientPID;  }
@@ -341,11 +341,11 @@ namespace NMib::NDebug::NRemoteDebugger
 	{
 	private:
 		CClient* mp_pClient;
-		bint mp_bStackTrace;
+		bool mp_bStackTrace;
 		NAtomic::TCAtomic<uint32> mp_SequenceNum;
 
 	public:
-		CReportMemoryToRemote(CClient* _pClient, bint _bStackTrace);
+		CReportMemoryToRemote(CClient* _pClient, bool _bStackTrace);
 		virtual ~CReportMemoryToRemote();
 
 		void f_AllocatorName(mint _MemoryAllocator, ch8 const* _pAllocatorName) override;

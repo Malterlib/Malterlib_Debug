@@ -31,7 +31,7 @@ namespace NMib
 
 				static LONG fsp_ExceptionGenerateHandler(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_EnableCrashDumpCaches();
-				void f_GenerateCrashDump(const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bint _bDisplayGUI);
+				void f_GenerateCrashDump(const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI);
 				static LONG fsp_ExceptionGenerateHandlerMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_GenerateMemoryDump
 					(
@@ -50,13 +50,13 @@ namespace NMib
 				uint32 f_GetRandom();
 
 				static NStr::CStrNonTracked fs_FormatTimeFileName(const NTime::CTime &_Time);
-				static bint fs_CheckAccessRights(NStr::CStrNonTracked &_Path);
+				static bool fs_CheckAccessRights(NStr::CStrNonTracked &_Path);
 	
-				static LONG WINAPI fsp_DumpExceptionInformation(struct _EXCEPTION_POINTERS *_pExceptionInfo, const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs, bint _bDisplayGUI);
+				static LONG WINAPI fsp_DumpExceptionInformation(struct _EXCEPTION_POINTERS *_pExceptionInfo, const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs, bool _bDisplayGUI);
 				static BOOL CALLBACK fp_DumpExceptionMemoryCallback(PVOID _pParam,const PMINIDUMP_CALLBACK_INPUT _pInput,PMINIDUMP_CALLBACK_OUTPUT _pOutput);
 				static LONG WINAPI fsp_DumpExceptionMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, CExceptionMemoryData * _pExceptionMemoryData);
 
-				void f_InstallExceptionFilterCallback(bint _bDoInstall);
+				void f_InstallExceptionFilterCallback(bool _bDoInstall);
 				void f_UninstallExceptionFilterCallback();
 				void f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination);
 				void f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination);
@@ -97,7 +97,7 @@ namespace NMib
 				HWND m_CacheWindows[EWindowCache];
 
 				LPTOP_LEVEL_EXCEPTION_FILTER m_pPrevExceptionFilter;
-				bint m_bPollCheckExceptionFilter;
+				bool m_bPollCheckExceptionFilter;
 				aint m_bPollCheckExceptionFilterTimes;
 				void *m_pDllNotificationCookie;
 				CExceptionFilterPoller m_ExceptionFilterPoller;

@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <windows.h>
@@ -16,7 +16,7 @@
 
 
 template <typename t_CStrType>
-HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved, bint _bDecodeAddress)
+HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved, bool _bDecodeAddress)
 {
 	if (bUniStrings)
 	{
@@ -38,7 +38,7 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 		}
 
 		uint32 Processor = pHelper->GetProcessorType(pHelper);
-		bint b64Bit = false;
+		bool b64Bit = false;
 		if (Processor == 2)
 			b64Bit = true;
 
@@ -300,7 +300,7 @@ ADDIN_API HRESULT WINAPI VSE_CUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 }
 
 template <typename t_CStrType>
-HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved, bint _bDecodeAddress)
+HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved, bool _bDecodeAddress)
 {
 	if (bUniStrings)
 	{
@@ -330,7 +330,7 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 			pPrepend = "a32 ";
 
 		uint32 Processor = pHelper->GetProcessorType(pHelper);
-		bint b64Bit = false;
+		bool b64Bit = false;
 		if (Processor == 2)
 			b64Bit = true;
 
@@ -559,7 +559,7 @@ ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 		CMStren String;
 		uint32 nGot;
 
-		DWORDLONG Address = 0; 
+		DWORDLONG Address = 0;
 		if (pHelper->dwVersion<0x20000)
 		{
 			// Visual C++ 6.0 version
@@ -681,12 +681,12 @@ ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 						"{}-{sj2,sf0}-{sj2,sf0} {sj2,sf0}:{sj2,sf0}:{sj2,sf0}.{sj3,sf0} | {}-W{sj2,sf0} | {} | DayOfYear: {} | IsLeapYear: {}"
 					)
 					<< DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth
-					<< DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << (DateTime.m_Fraction * 1000.0).f_ToInt() 
-					<< DateTime2.m_Year << DateTime2.m_Week << Days[DateTime.m_DayOfWeek] 
+					<< DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << (DateTime.m_Fraction * 1000.0).f_ToInt()
+					<< DateTime2.m_Year << DateTime2.m_Week << Days[DateTime.m_DayOfWeek]
 					<< DateTime.m_DayOfYear << DateTime.m_bIsLeapYear
 					<< LocalDateTime.m_Year << LocalDateTime.m_Month << LocalDateTime.m_DayOfMonth
-					<< LocalDateTime.m_Hour << LocalDateTime.m_Minute << LocalDateTime.m_Second << (LocalDateTime.m_Fraction * 1000.0).f_ToInt() 
-					<< LocalDateTime2.m_Year << LocalDateTime2.m_Week << Days[LocalDateTime.m_DayOfWeek] 
+					<< LocalDateTime.m_Hour << LocalDateTime.m_Minute << LocalDateTime.m_Second << (LocalDateTime.m_Fraction * 1000.0).f_ToInt()
+					<< LocalDateTime2.m_Year << LocalDateTime2.m_Week << Days[LocalDateTime.m_DayOfWeek]
 					<< LocalDateTime.m_DayOfYear << LocalDateTime.m_bIsLeapYear
 					;
 

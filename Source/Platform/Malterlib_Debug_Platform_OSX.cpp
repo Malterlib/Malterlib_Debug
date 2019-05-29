@@ -73,7 +73,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 	}
 }
 
-void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bint _bDisplayGUI)
+void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
 	
 }

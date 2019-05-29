@@ -109,7 +109,7 @@ namespace NMib
 				return 0;
 			}
 
-			void CSubSystem_Debug_Platform_Windows::f_InstallExceptionFilterCallback(bint _bDoInstall)
+			void CSubSystem_Debug_Platform_Windows::f_InstallExceptionFilterCallback(bool _bDoInstall)
 			{
 				m_ExceptionFilterPoller.m_pSystem = this;
 				m_bPollCheckExceptionFilter = true;

@@ -234,12 +234,12 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	};
 
-	bint fg_RD_InitializeServer(CServerSettings&& _Settings); // Note: Callbacks will be moved out of _Settings.
+	bool fg_RD_InitializeServer(CServerSettings&& _Settings); // Note: Callbacks will be moved out of _Settings.
 	uint64 fg_RD_ServerGetClientPID();
 	void fg_RD_DeinitializeServer();
 
-	bint fg_RD_InitializeClient();
-	bint fg_RD_NetworkAvailableForClient();
+	bool fg_RD_InitializeClient();
+	bool fg_RD_NetworkAvailableForClient();
 	void fg_RD_DeinitializeClient();
 #endif
 

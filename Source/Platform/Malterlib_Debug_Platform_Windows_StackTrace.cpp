@@ -83,7 +83,7 @@ namespace NMib
 				m_RefCount = 1;
 			}
 
-			bint CStackTraceContext::f_InitDll(NStr::CFStr256 &_Error)
+			bool CStackTraceContext::f_InitDll(NStr::CFStr256 &_Error)
 			{
 				DMibLockTyped(NThread::CMutual, m_Lock);
 				if (m_bInitializedDll)
@@ -92,7 +92,7 @@ namespace NMib
 				if (m_bFailedInitializeDll)
 					return false;
 
-				auto InitLambda = [&]() -> bint
+				auto InitLambda = [&]() -> bool
 				{
 					#ifdef DArchitecture_x64
 						#define DMibPlatformDir "\\x64"
@@ -172,7 +172,7 @@ namespace NMib
 					return true;
 				};
 
-				bint bReturn = InitLambda();
+				bool bReturn = InitLambda();
 
 				if (!bReturn)
 					return false;
@@ -181,7 +181,7 @@ namespace NMib
 				return true;	
 			}
 
-			bint CStackTraceContext::f_Init(NStr::CStrNonTracked &_Error)
+			bool CStackTraceContext::f_Init(NStr::CStrNonTracked &_Error)
 			{
 				DMibLockTyped(NThread::CMutual, m_Lock);
 				if (m_bInitialized)
@@ -197,7 +197,7 @@ namespace NMib
 					return false;
 				}
 
-				auto InitLambda = [&]() -> bint
+				auto InitLambda = [&]() -> bool
 				{
 					NStr::CWStrNonTracked Strings = NSys::NFile::fg_GetProgramDirectoryNonTracked();
 
@@ -259,7 +259,7 @@ namespace NMib
 					return true;
 				};
 
-				bint bReturn = InitLambda();
+				bool bReturn = InitLambda();
 
 				if (!bReturn)
 					return false;

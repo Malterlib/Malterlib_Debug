@@ -93,7 +93,7 @@ namespace NMib
 				return NStr::CStrNonTracked::CFormat("{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0,fe3}") << DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth << DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << DateTime.m_Fraction * 1000.0;
 			}
 
-			bint CSubSystem_Debug_Platform_Windows::fs_CheckAccessRights(NStr::CStrNonTracked &_Path)
+			bool CSubSystem_Debug_Platform_Windows::fs_CheckAccessRights(NStr::CStrNonTracked &_Path)
 			{
 				try 
 				{
@@ -297,7 +297,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 #endif
 }
 
-void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bint _bDisplayGUI)
+void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_GenerateCrashDump(_Message, _ExtraLog, _GeneratedLogs, _bDisplayGUI);
