@@ -943,14 +943,14 @@
 
   <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
     <DisplayString Condition="(((mint)m_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
-      + {m_Key.m_Name}   {m_Data}
+      + {mp_Key.m_Name}   {mp_Data}
     </DisplayString>
     <DisplayString>
-      {m_Key.m_Name}   {m_Data}
+      {mp_Key.m_Name}   {mp_Data}
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="(((mint)m_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
-        m_Children.m_Tree
+        mp_Children.m_Tree
       </ExpandedItem>
     </Expand>
   </Type>

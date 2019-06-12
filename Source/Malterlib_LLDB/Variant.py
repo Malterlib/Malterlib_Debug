@@ -52,33 +52,21 @@ class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 		TemplateString = ContainerType.GetName()
 		TemplateParams = list(fg_ParseTemplate(TemplateString))
 
-		nTypes = len(TemplateParams) - 1;
+		nTypes = self.m_ValueObjectType.GetNumberOfDirectBaseClasses()
 
 		self.m_MemberToIndex = {};
 		self.m_Types = []
 
-		EnumeratorToValue = {};
-
-		EnumeratorType = ContainerType.GetTemplateArgumentType(0)
-		EnumMembers = ContainerType.GetTemplateArgumentType(0).GetEnumMembers()
-		if EnumMembers != None:
-			for iEnum in range(EnumMembers.GetSize()):
-				Member = EnumMembers.GetTypeEnumMemberAtIndex(iEnum)
-				EnumeratorToValue[Member.GetName()] = Member.GetValueAsSigned()
 
 		for iType in range(nTypes):
-			MemberParams = list(fg_ParseTemplate(TemplateParams[iType + 1]))
+			MemberType = self.m_ValueObjectType.GetDirectBaseClassAtIndex(iType).GetType()
+			MemberParams = list(fg_ParseTemplate(MemberType.GetName()))
 
-			TemplateParam = MemberParams[2];
-			TemplateParam = TemplateParam.split("::")[-1]
-
-			if fg_IsInteger(TemplateParam):
-				EnumValue = int(TemplateParam)
-			else:
-				EnumValue = EnumeratorToValue.get(TemplateParam);
-
+			EnumValue = int(MemberParams[0])
 			self.m_MemberToIndex[EnumValue] = iType
-			self.m_Types.append(fg_GetValidCanonicalType(lldb.target.FindFirstType(MemberParams[1])))
+			Type = fg_GetValidCanonicalType(MemberType.GetTemplateArgumentType(1))
+
+			self.m_Types.append(Type)
 
 		self.m_nTypes = 0
 		VoidType = ContainerType.GetBasicType(lldb.eBasicTypeVoid)

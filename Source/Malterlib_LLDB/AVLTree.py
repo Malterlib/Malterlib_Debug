@@ -97,7 +97,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_Root = self.m_ValueObject.GetChildAtIndex(0).GetChildAtIndex(0)
+			self.m_Root = self.m_ValueObject.GetValueForExpressionPath('.m_Root')
 
 			if not self.fp_ExtractType():
 				return

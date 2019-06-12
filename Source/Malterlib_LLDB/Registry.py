@@ -22,17 +22,17 @@ class CSynthProvider_TCRegistry(CSynthProvider_Common):
 			self.m_Name = None
 			self.m_NumExtraChildren = 0
 			self.m_RefCount = None
-			self.m_Name = fg_ChildPath(self.m_ValueObject, 'm_Key.m_Name')
+			self.m_Name = fg_ChildPath(self.m_ValueObject, 'mp_Key.m_Name')
 			if not fg_IsValidSBValue(self.m_Name):
 				return
-			self.m_Data = fg_ChildPath(self.m_ValueObject, 'm_Data')
+			self.m_Data = fg_ChildPath(self.m_ValueObject, 'mp_Data')
 			if not fg_IsValidSBValue(self.m_Data):
 				return
 			self.m_NameType = self.m_Name.GetType()
 			fg_PrecacheType(self.m_NameType)
 			self.m_DataType = self.m_Data.GetType()
 			fg_PrecacheType(self.m_DataType)
-			self.m_Children = fg_ChildPath(self.m_ValueObject, 'm_Children.m_Tree')
+			self.m_Children = fg_ChildPath(self.m_ValueObject, 'mp_Children.m_Tree')
 			if not fg_IsValidSBValue(self.m_Children):
 				return
 			self.m_ChildrenSynth = CSynthProvider_TCAVLTreeAggregate(self.m_Children, None)
@@ -74,13 +74,13 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return None
 		
-		ValueName = fg_ChildPath(_Value, 'm_Key.m_Name')
+		ValueName = fg_ChildPath(_Value, 'mp_Key.m_Name')
 		if not fg_IsValidSBValue(ValueName):
 			return None
-		ValueData = fg_ChildPath(_Value, 'm_Data')
+		ValueData = fg_ChildPath(_Value, 'mp_Data')
 		if not fg_IsValidSBValue(ValueData):
 			return None
-		pRootChild = fg_ChildPath(_Value, 'm_Children.m_Tree.m_Root')
+		pRootChild = fg_ChildPath(_Value, 'mp_Children.m_Tree.m_Root')
 		if not fg_IsValidSBValue(pRootChild):
 			return None
 		
