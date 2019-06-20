@@ -8,7 +8,7 @@ from StringHelpers import *
 
 class CSynthProvider_TCVector(CSynthProvider_Container):
 	def __init__(self, _ValueObject, _Dictionary):
-		CSynthProvider_Container.__init__(self, _ValueObject, _Dictionary)
+		CSynthProvider_Container.__init__(self, _ValueObject, _Dictionary, "NMib::NContainer::TCVector")
 
 	def update(self):
 		CSynthProvider_Container.update(self)
@@ -104,6 +104,13 @@ def fg_MibLLDBInit_Vector(_Debugger):
 	# Vector
 	fg_AddSynth(_Debugger, CSynthProvider_TCVector, "(^|^const )NMib::NContainer::TCVector<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, "(^|^const )NMib::NContainer::TCVector<.*>$", True)
+
+	fg_AddSynth(_Debugger, CSynthProvider_TCVector, "(^|^const )NMib::NContainer::CByteVector$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, "(^|^const )NMib::NContainer::CByteVector$", True)
+
+	fg_AddSynth(_Debugger, CSynthProvider_TCVector, "(^|^const )NMib::NContainer::CSecureByteVector$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, "(^|^const )NMib::NContainer::CSecureByteVector$", True)
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCVector_CIterator, "(^|^const )NMib::NContainer::TCVectorIterator<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NContainer::TCVectorIterator<.*>$", True)
 
