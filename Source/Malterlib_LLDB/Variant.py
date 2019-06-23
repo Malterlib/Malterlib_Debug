@@ -62,6 +62,9 @@ class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 			MemberType = self.m_ValueObjectType.GetDirectBaseClassAtIndex(iType).GetType()
 			MemberParams = list(fg_ParseTemplate(MemberType.GetName()))
 
+			if not fg_IsInteger(MemberParams[0]):
+				continue
+
 			EnumValue = int(MemberParams[0])
 			self.m_MemberToIndex[EnumValue] = iType
 			Type = fg_GetValidCanonicalType(MemberType.GetTemplateArgumentType(1))
