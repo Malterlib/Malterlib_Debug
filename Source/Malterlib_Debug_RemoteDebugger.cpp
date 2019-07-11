@@ -298,7 +298,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		{
 			ENetTCPState SocketState = mp_Socket.f_GetState();
 
-			if (SocketState & ENetTCPState_Closed)
+			if (SocketState & (ENetTCPState_Closed | ENetTCPState_RemoteClosed))
 			{
 				fl_SendDisconnect();
 				break;
