@@ -139,7 +139,7 @@ namespace NMib
 					else
 						return false;
 				}
-				catch(NMib::NFile::CExceptionFile& _Ex)
+				catch (NMib::NFile::CExceptionFile const &)
 				{
 					return false;
 				}
