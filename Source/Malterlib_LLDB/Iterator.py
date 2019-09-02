@@ -2,9 +2,9 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
-from String import *
+from .Common import *
+from .StringHelpers import *
+from .String import *
 
 class CSynthProvider_TCRange(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -20,7 +20,7 @@ class CSynthProvider_TCRange(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -60,7 +60,7 @@ class CSynthProvider_TCIterator(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -80,7 +80,7 @@ def fg_SummaryProvider_TCIterator(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Imp = _Value.GetChildMemberWithName('[Imp]')
 		if not fg_IsValidSBValue(Imp):
 			return None
@@ -89,7 +89,7 @@ def fg_SummaryProvider_TCIterator(_Value, dict):
 		return Summary
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCIterator) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCIterator) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_IsCh8Type(_Type):
@@ -119,7 +119,7 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Front = _Value.GetChildMemberWithName('mp_Front')
 		if not fg_IsValidSBValue(Front):
 			return None
@@ -176,14 +176,14 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 		return Summary
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCRange) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCRange) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_TCArrayIterator(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Array = _Value.GetChildMemberWithName("mp_pArray")
 		if not fg_IsValidSBValue(Array):
 			return None
@@ -192,15 +192,15 @@ def fg_SummaryProvider_TCArrayIterator(_Value, dict):
 		return Summary
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_TCIterator_UTFAdaptor(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
-		
+			return hex(_Value.GetValueAsUnsigned())
+
 		Parent = _Value
 		Current = Parent.GetChildMemberWithName('mp_iCurrent')
 		while not fg_IsValidSBValue(Current) and fg_IsValidSBValue(Parent):
@@ -214,19 +214,19 @@ def fg_SummaryProvider_TCIterator_UTFAdaptor(_Value, dict):
 		return Summary
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CNullTerminatedBackIterator(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		
 		return "Null terminated sentinel"
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCArrayIterator) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Iterator(_Debugger):

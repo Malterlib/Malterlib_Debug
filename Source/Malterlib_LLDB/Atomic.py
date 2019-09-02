@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 
 class CSynthProvider_TCAtomic(CSynthProvider_Common):
@@ -17,7 +17,7 @@ class CSynthProvider_TCAtomic(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_NumExtraChildren = 0
-			self.m_Value = self.m_ValueObjectDeref.GetChildMemberWithName('__a_')
+			self.m_Value = fg_ChildPath(self.m_ValueObjectDeref, '__a_.__a_value')
 			if not self.fp_ExtractType():
 				return
 			if self.m_DataType.IsPointerType():
@@ -28,7 +28,7 @@ class CSynthProvider_TCAtomic(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):

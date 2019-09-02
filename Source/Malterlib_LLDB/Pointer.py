@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 class CSynthProvider_Pointer(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -24,7 +24,7 @@ class CSynthProvider_Pointer(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -61,7 +61,55 @@ class CSynthProvider_TCUniquePointer(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			return
+
+	def fp_GetChildIndex(self, _Name):
+		if _Name == '[Value]':
+			return self.m_NumExtraChildren
+		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
+
+	def fp_GetChildAtIndex(self, _iChild):
+		if _iChild == self.m_NumExtraChildren:
+			return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', fg_GetAddressOf(self.m_Value), self.m_DataType)
+		elif _iChild < self.m_NumExtraChildren:
+			return self.m_Value.GetChildAtIndex(_iChild)
+		return None
+
+	def fp_NumChildren(self):
+		return 1 + self.m_NumExtraChildren
+
+class CSynthProvider_TCBitStorePointer(CSynthProvider_Common):
+	def __init__(self, _ValueObject, _Dictionary):
+		self.m_NumExtraChildren = 0
+		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary)
+
+	def update(self):
+		CSynthProvider_Common.update(self)
+		try:
+			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
+				return
+			self.m_NumExtraChildren = 0
+
+			TemplateString = self.m_ValueObjectType.GetName()
+			TemplateParams = list(fg_ParseTemplate(TemplateString))
+			if not fg_IsInteger(TemplateParams[1]):
+				return
+
+			NumBits = int(TemplateParams[1])
+
+			ValueAddress = fg_ChildPath(self.m_ValueObject, 'mp_PointTo').GetValueAsUnsigned()
+			ValueType = self.m_ValueObjectType.GetTemplateArgumentType(0)
+			self.m_Value = fg_CreateDynamicValue(self.m_ValueObject, '[Value]', ValueAddress << NumBits, ValueType)
+
+			self.m_DataType = self.m_Value.GetType()
+			fg_PrecacheType(self.m_DataType)
+			if self.m_Value.GetValueAsUnsigned() != 0:
+				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
+			self.m_bValid = True
+		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -115,7 +163,7 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -152,44 +200,45 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 
 def fg_SummaryProvider_Pointer(_Value, dict):
 	try:
+		_Value.SetPreferSyntheticValue(True)
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.GetChildMemberWithName('[Value]')
 		if not fg_IsValidSBValue(Current):
 			return None
 
-		PointerValue = Current.GetValueAsUnsigned()
+		PointerValue = fg_GetAddressOf(Current)
 		if PointerValue == 0:
 			Value = "nullptr";
 		else:
 			Current = Current.Dereference()
-			
+
 			Summary = Current.GetSummary()
 			if Summary == None:
 				Value = Current.GetValue()
 				if Value != None:
 					Summary = str(Value)
-			
+
 			if Summary != None:
 				Value = hex(PointerValue) + "   " + Summary
 			else:
 				Value = hex(PointerValue)
-			
+
 		if ValueType.IsPointerType():
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Pointer) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Pointer) error: ', error, ' path: ', _Value.get_expr_path())
 		return
-
 
 def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 	try:
+		_Value.SetPreferSyntheticValue(True)
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.GetChildMemberWithName('[Value]')
 		pValue = fg_ChildPath(_Value, 'm_Data.m_pPointTo')
 		PointerValue = pValue.GetValueAsUnsigned()
@@ -237,7 +286,7 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCSharedPointer) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCSharedPointer) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 
@@ -253,7 +302,8 @@ def fg_MibLLDBInit_Pointer(_Debugger):
 	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NStorage::TCUniquePointer<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NStorage::NReference::TCReference<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCUniquePointer, "(^|^const )NMib::NStorage::NIndirection::TCIndirection<.*>$", True)
-	
+	fg_AddSynth(_Debugger, CSynthProvider_TCBitStorePointer, "(^|^const )NMib::NStorage::TCBitStorePointer<.*>$", True)
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtr<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtrDebug<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCDebugPointer<.*>$", True)
@@ -261,7 +311,8 @@ def fg_MibLLDBInit_Pointer(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCUniquePointer<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::NReference::TCReference<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::NIndirection::TCIndirection<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Pointer, "(^|^const )NMib::NStorage::TCBitStorePointer<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCSharedPointer, "(^|^const )NMib::NStorage::TCSharedPointer<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCSharedPointer, "(^|^const )NMib::NStorage::TCWeakPointer<.*>$", True)
-	
+
 	return

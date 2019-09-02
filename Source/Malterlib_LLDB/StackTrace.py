@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys, os
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 g_CodeAddress_File = None
 g_CodeAddress_Line = None
@@ -22,13 +22,13 @@ class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 				return
 			if not fg_IsValidSBValue(self.m_ValueObject):
 				return;
-			#print 'self.m_ValueObjectType: ', self.m_ValueObjectType.GetName()
+			#print('self.m_ValueObjectType: ', self.m_ValueObjectType.GetName())
 			if not self.fp_ExtractType():
 				return
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -72,11 +72,23 @@ class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == 0:
-			return self.m_ValueObject.CreateValueFromAddress('[Function]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_Function)
+			Address = self.m_ValueObject.Dereference().GetAddress()
+			if Address.IsValid() and Address.GetModule():
+				return self.m_ValueObject.CreateValueFromAddress('[Function]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_Function)
+			else:
+				return self.m_ValueObject.CreateValueFromAddress('[Function]', 0, g_CodeAddress_Function)
 		elif _iChild == 1:
-			return self.m_ValueObject.CreateValueFromAddress('[File]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_File)
+			Address = self.m_ValueObject.Dereference().GetAddress()
+			if Address.IsValid() and Address.GetModule():
+				return self.m_ValueObject.CreateValueFromAddress('[File]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_File)
+			else:
+				return self.m_ValueObject.CreateValueFromAddress('[File]', 0, g_CodeAddress_File)
 		elif _iChild == 2:
-			return self.m_ValueObject.CreateValueFromAddress('[Line]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_Line)
+			Address = self.m_ValueObject.Dereference().GetAddress()
+			if Address.IsValid() and Address.GetModule():
+				return self.m_ValueObject.CreateValueFromAddress('[Line]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_Line)
+			else:
+				return self.m_ValueObject.CreateValueFromAddress('[Line]', 0, g_CodeAddress_Line)
 		elif _iChild == 3:
 			return self.m_ValueObject.CreateValueFromAddress('[Address]', fg_GetAddressOf(self.m_ValueObject), g_CodeAddress_Line.GetBasicType(lldb.eBasicTypeVoid).GetPointerType())
 		return None
@@ -88,25 +100,28 @@ def fg_SummaryProvider_CCodeAddressFunction(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Address = _Value.GetAddress()
-		if Address.IsValid():
+		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
 			Function = Address.GetFunction()
 			if Function.IsValid():
 				return Function.GetName() + " +" + str(Address.GetOffset() - Function.GetStartAddress().GetOffset())
-		return hex(fg_GetAddressOf(_Value))
+		if Address.IsValid() and Address.GetModule():
+			return "Unknown in " + Address.GetModule().GetPlatformFileSpec().GetFilename()
+		else:
+			return "Unknown"
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CCodeAddressFunction) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CCodeAddressFunction) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CCodeAddressFile(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Address = _Value.GetAddress()
-		if Address.IsValid():
+		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
 			LineEntry = Address.GetLineEntry()
 			if LineEntry.IsValid():
 				FileSpec = LineEntry.GetFileSpec()
@@ -115,30 +130,30 @@ def fg_SummaryProvider_CCodeAddressFile(_Value, dict):
 		return "Unknown"
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CCodeAddressFile) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CCodeAddressFile) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CCodeAddressLine(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Address = _Value.GetAddress()
-		if Address.IsValid():
+		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
 			LineEntry = Address.GetLineEntry()
 			if LineEntry.IsValid():
 				return str(LineEntry.GetLine())
 		return "Unknown"
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CCodeAddressLine) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CCodeAddressLine) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 
 		Current = _Value.GetChildMemberWithName('[File]')
 		FileSummary = Current.GetSummary()
@@ -154,9 +169,11 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 			if Value != None:
 				LineSummary = str(Value)
 
- 		Address = Current.GetAddress()
+		Address = Current.GetAddress()
 		FunctionName = "Unknown"
-		if Address.IsValid():
+		if Address.IsValid() and Address.GetModule():
+			FunctionName = "Unknown in " + Address.GetModule().GetPlatformFileSpec().GetFilename()
+		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
 			Function = Address.GetFunction()
 			if Function.IsValid():
 				FunctionName = Function.GetType().GetName()
@@ -170,7 +187,7 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 		return None
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CMibCodeAddress) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CMibCodeAddress) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_StackTrace(_Debugger):

@@ -2,9 +2,9 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
-from AVLTree import *
+from .Common import *
+from .StringHelpers import *
+from .AVLTree import *
 
 class CSynthProvider_TCRegistry(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -44,7 +44,7 @@ class CSynthProvider_TCRegistry(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -72,7 +72,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		
 		ValueName = fg_ChildPath(_Value, 'mp_Key.m_Name')
 		if not fg_IsValidSBValue(ValueName):
@@ -103,7 +103,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCRegistry) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCRegistry) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Registry(_Debugger):

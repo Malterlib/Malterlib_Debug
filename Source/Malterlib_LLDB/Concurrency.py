@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 class CSynthProvider_TCActor(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -32,13 +32,19 @@ class CSynthProvider_TCActor(CSynthProvider_Common):
 			self.m_DataType = None
 			self.m_ActorType = None
 
-			self.m_ActorHolder = fg_ChildPath(self.m_ValueObject, 'm_pInternalActor.m_Data.m_pPointTo')
+			Temp = self.m_ValueObject.GetNonSyntheticValue().GetChildMemberWithName('m_pInternalActor')
+
+			if Temp.GetType().IsPointerType():
+				self.m_ActorHolder = Temp
+			else:
+				self.m_ActorHolder = fg_ChildPath(Temp, 'm_Data.m_pPointTo')
+
 			self.m_ActorHolderDataType = fg_GetPointerValueType(self.m_ActorHolder)
 			if self.m_ActorHolder.GetValueAsUnsigned() != 0:
 				self.m_ActorType = fg_ChildPath(self.m_ActorHolder, 'm_ActorTypeName')
 				self.m_ActorTypeType = fg_GetValueType(self.m_ActorType)
-				self.m_RefCount = fg_ChildPath(self.m_ActorHolder, 'm_RefCount.__a_')
-				self.m_WeakRefCount = fg_ChildPath(self.m_ActorHolder, 'm_WeakRefCount.__a_')
+				self.m_RefCount = fg_ChildPath(self.m_ActorHolder, 'm_RefCount.__a_.__a_value')
+				self.m_WeakRefCount = fg_ChildPath(self.m_ActorHolder, 'm_WeakRefCount.__a_.__a_value')
 				self.m_Value = fg_ChildPath(self.m_ActorHolder, 'mp_pActor.m_Data.m_pPointTo')
 				if self.m_Value != None:
 					self.m_DataType = fg_GetPointerValueType(self.m_Value)
@@ -49,7 +55,7 @@ class CSynthProvider_TCActor(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -113,7 +119,7 @@ class CSynthProvider_ActorHolder(CSynthProvider_Common):
 				self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -131,8 +137,15 @@ def fg_SummaryProvider_TCActor(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
-		Current = _Value.GetChildMemberWithName('m_pInternalActor')
+			return hex(_Value.GetValueAsUnsigned())
+
+		Temp = _Value.GetNonSyntheticValue().GetChildMemberWithName('m_pInternalActor')
+
+		if Temp.GetType().IsPointerType():
+			Current = Temp
+		else:
+			Current = fg_ChildPath(Temp, 'm_Data.m_pPointTo')
+
 		if not fg_IsValidSBValue(Current):
 			return None
 
@@ -152,13 +165,58 @@ def fg_SummaryProvider_TCActor(_Value, dict):
 		return Summary
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Pointer) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Pointer) error: ', error, ' path: ', _Value.get_expr_path())
 		return
+
+class CSynthProvider_CThisActor(CSynthProvider_Common):
+	def __init__(self, _ValueObject, _Dictionary):
+		self.m_NumExtraChildren = 0
+		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary)
+
+	def update(self):
+		CSynthProvider_Common.update(self)
+		try:
+			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
+				return
+			self.m_NumExtraChildren = 0
+			self.m_Value = self.m_ValueObjectDeref.GetChildMemberWithName('m_pThis')
+			self.m_Value = fg_GetLeafValue(self.m_Value)
+			if not self.fp_ExtractType():
+				return
+			self.m_NumExtraChildren = self.m_Value.GetNumChildren();
+			self.m_bValid = True
+		except Exception as error:
+			traceback.print_exc(file=sys.stdout)
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			return
+
+	def fp_ExtractType(self):
+		self.m_DataType = self.m_Value.GetType()
+		fg_PrecacheType(self.m_DataType)
+		return True
+
+	def fp_GetChildIndex(self, _Name):
+		if _Name == '[Value]':
+			return self.m_NumExtraChildren
+		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
+
+	def fp_GetChildAtIndex(self, _iChild):
+		if _iChild == self.m_NumExtraChildren:
+			return self.m_ValueObject.CreateValueFromAddress('[Value]', fg_GetAddressOf(self.m_Value), self.m_DataType)
+		elif _iChild < self.m_NumExtraChildren:
+			return self.m_Value.GetChildAtIndex(_iChild)
+		return None
+
+	def fp_NumChildren(self):
+		return 1 + self.m_NumExtraChildren
+
 
 def fg_MibLLDBInit_Concurrency(_Debugger):
 	
 	fg_AddSynth(_Debugger, CSynthProvider_TCActor, "(^|^const )NMib::NConcurrency::TCActor<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_ActorHolder, "(^|^const )NMib::NConcurrency::TCActorInternal<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_CThisActor, "(^|^const )NMib::NConcurrency::NPrivate::CThisActor$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCActor, "(^|^const )NMib::NConcurrency::TCActor<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NConcurrency::NPrivate::CThisActor$", True)
 
 	return

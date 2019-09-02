@@ -2,9 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
-
+from .Common import *
+from .StringHelpers import *
 
 class CSynthProvider_TCAVLTreeAggregate_Node:
 	def fp_Left(self):
@@ -109,7 +108,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
@@ -190,7 +189,7 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -258,7 +257,7 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
@@ -343,7 +342,7 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -392,7 +391,8 @@ def fg_SummaryProvider_TCMapTreeMember(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
+
 		KeyMember = _Value.GetChildMemberWithName('m_Key')
 		KeySummary = KeyMember.GetSummary()
 		if KeySummary == None:
@@ -424,7 +424,7 @@ def fg_SummaryProvider_TCMapTreeMember(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCMapTreeMember) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCMapTreeMember) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_AVLTree(_Debugger):

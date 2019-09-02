@@ -564,7 +564,7 @@ public:
 				}
 				void f_Test()
 				{
-					auto fl_Test
+					auto fTest
 						= [this]()
 						{
 							m_LinkedList.f_Insert(66);
@@ -572,20 +572,20 @@ public:
 						}
 					;
 
-					fl_Test();
+					fTest();
 				}
 			};
-			auto fl_Test
+			auto fTest
 				= [&]()
 				{
-					IntrusiveList.f_GetIterator();
+			IntrusiveList.f_GetIterator();
 					AVLTree.f_GetIterator();
 					LinkedList.f_Insert(66);
 					LinkedList.f_Insert(67);
 				}
 			;
 
-			fl_Test();
+			fTest();
 
 			CTesting TestLinkedLamba;
 

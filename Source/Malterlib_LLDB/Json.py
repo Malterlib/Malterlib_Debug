@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 class CSynthProvider_TCJSONValueBase(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -40,7 +40,7 @@ class CSynthProvider_TCJSONValueBase(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -86,7 +86,7 @@ class CSynthProvider_TCJSONObject(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -132,7 +132,7 @@ class CSynthProvider_TCObjectEntry(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -154,7 +154,7 @@ def fg_SummaryProvider_TCObjectEntry(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		NonSynthValue = _Value.GetNonSyntheticValue()
 		KeyMember = NonSynthValue.GetValueForExpressionPath('.mp_Name')
 		KeySummary = KeyMember.GetSummary()
@@ -191,28 +191,28 @@ def fg_SummaryProvider_TCObjectEntry(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCObjectEntry) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCObjectEntry) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_TCJSONObject(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		ObjectsMember = _Value.GetValueForExpressionPath('.mp_ObjectTree')
 		ObjectsSummary = ObjectsMember.GetSummary()
 		return ObjectsSummary;
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCJSONObject) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCJSONObject) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CEJSONUserType(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		ObjectsMember = _Value.GetValueForExpressionPath('.m_Type')
 		if ObjectsMember != None:
 			ObjectSummary = fg_GetValueRawSummary(ObjectsMember)
@@ -223,14 +223,14 @@ def fg_SummaryProvider_CEJSONUserType(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CEJSONUserType) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CEJSONUserType) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CJSONBoolean(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		ObjectsMember = _Value.GetValueForExpressionPath('.m_bValue')
 		if ObjectsMember.GetValueAsUnsigned():
 			return "true"
@@ -239,7 +239,7 @@ def fg_SummaryProvider_CJSONBoolean(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CJSONBoolean) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CJSONBoolean) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CJSONNull(_Value, dict):
@@ -248,7 +248,7 @@ def fg_SummaryProvider_CJSONNull(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CJSONNull) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CJSONNull) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Json(_Debugger):

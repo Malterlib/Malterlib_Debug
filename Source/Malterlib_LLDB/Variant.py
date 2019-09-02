@@ -2,24 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
-
-def fg_ParseTemplate(_String):
-	stack = []
-	lastStart = 0
-	for i, c in enumerate(_String):
-		if c == ',' and len(stack) == 1:
-			yield _String[lastStart: i].strip()
-			lastStart = i + 1
-		if c == '<':
-			stack.append(i)
-			if len(stack) == 1:
-				lastStart = i + 1
-		elif c == '>' and stack:
-			stack.pop()
-			if len(stack) == 0:
-				yield _String[lastStart: i].strip()
+from .Common import *
+from .StringHelpers import *
 
 class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -37,7 +21,7 @@ class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):

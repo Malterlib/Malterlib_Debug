@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 def fg_BoundStrLen(_StrLen):
 	if _StrLen > 4096:
@@ -11,7 +11,10 @@ def fg_BoundStrLen(_StrLen):
 	return _StrLen
 
 def fg_GetStringType(_Value, _Default = 2):
-	StrType = fg_GetInheritedType(fg_GetValidCanonicalType(_Value.GetType()), "NMib::NStr::TCStrAggregate")
+	Type = _Value.GetType()
+	if Type.IsPointerType():
+		Type = _Value.Dereference().GetType()
+	StrType = fg_GetInheritedType(fg_GetValidCanonicalType(Type), "NMib::NStr::TCStrAggregate")
 	if StrType == None:
 		return _Default
 	MemberFunctionHelper = fg_GetMemberFunction(StrType, 'fs_TypeDebugHelper')
@@ -26,8 +29,8 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
-	
+			return hex(_Value.GetValueAsUnsigned())
+
 		pData = _Value.GetChildMemberWithName('m_pData')
 
 		DataAddress = pData.GetValueAsUnsigned()
@@ -57,14 +60,15 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Dynamic_ch8) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Dynamic_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
+
 		pData = _Value.GetChildMemberWithName('m_pData')
 
 		DataAddress = pData.GetValueAsUnsigned()
@@ -91,15 +95,15 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 		return fg_MakeStringFromData_ch16(pStrData.GetPointeeData(0, (StrLen + 1)*2), StrLen, Type)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Dynamic_ch16) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Dynamic_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
-		
+			return hex(_Value.GetValueAsUnsigned())
+
 		pData = _Value.GetChildMemberWithName('m_pData')
 
 		DataAddress = pData.GetValueAsUnsigned()
@@ -126,7 +130,7 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 		return fg_MakeStringFromData_ch32(pStrData.GetPointeeData(0, (StrLen + 1) * 4), StrLen, Type)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Dynamic_ch32) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Dynamic_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 
@@ -134,8 +138,8 @@ def fg_SummaryProvider_Str_Fixed_ch8(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
-		
+			return hex(_Value.GetValueAsUnsigned())
+
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_lData')
@@ -146,14 +150,14 @@ def fg_SummaryProvider_Str_Fixed_ch8(_Value, dict):
 		return fg_MakeStringFromData_ch8(lData.GetData(), Len, Type)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Fixed_ch8) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Fixed_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_lData')
@@ -164,14 +168,14 @@ def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
 		return fg_MakeStringFromData_ch16(lData.GetData(), Len, Type)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Fixed_ch16) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Fixed_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value, 1)
 		lData = _Value.GetChildMemberWithName('m_lData')
@@ -182,15 +186,15 @@ def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
 		return fg_MakeStringFromData_ch32(lData.GetData(), Len, Type)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Fixed_ch32) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Fixed_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Ptr_ch8(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
-		
+			return hex(_Value.GetValueAsUnsigned())
+
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_pData')
@@ -208,14 +212,14 @@ def fg_SummaryProvider_Str_Ptr_ch8(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Ptr_ch8) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Ptr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Ptr_ch16(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value)
 		lData = _Value.GetChildMemberWithName('m_pData')
@@ -233,14 +237,14 @@ def fg_SummaryProvider_Str_Ptr_ch16(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Ptr_ch16) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Ptr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Ptr_ch32(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value, 1)
 		lData = _Value.GetChildMemberWithName('m_pData')
@@ -257,64 +261,76 @@ def fg_SummaryProvider_Str_Ptr_ch32(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Ptr_ch32) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Ptr_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Array_ch8(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 
 		Len = _Value.GetNumChildren()
 
 		if fg_RawSummary():
-			return fg_MakeStringFromData_ch8_Raw(_Value.GetData(), Len, 2)
-		Value = '"' + fg_MakeStringFromData_ch8_Raw(_Value.GetData(), Len, 2) + '"'
+			return fg_MakeStringFromData_ch8_Raw(fg_GetData(_Value), Len, 2)
+		Value = '"' + fg_MakeStringFromData_ch8_Raw(fg_GetData(_Value), Len, 2) + '"'
+
+		if ValueType.IsPointerType():
+			Value = Value + "   " + hex(_Value.GetValueAsUnsigned());
 
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Array_ch8) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Array_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Array_ch16(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Len = _Value.GetNumChildren()
 
 		if fg_RawSummary():
-			return fg_MakeStringFromData_ch16_Raw(_Value.GetData(), Len, 2)
-		Value = '"' + fg_MakeStringFromData_ch16_Raw(_Value.GetData(), Len, 2) + '"'
+			return fg_MakeStringFromData_ch16_Raw(fg_GetData(_Value), Len, 2)
+		Value = '"' + fg_MakeStringFromData_ch16_Raw(fg_GetData(_Value), Len, 2) + '"'
+
+		if ValueType.IsPointerType():
+			Value = Value + "   " + hex(_Value.GetValueAsUnsigned());
 
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Array_ch16) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Array_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Array_ch32(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Len = _Value.GetNumChildren()
+
 		if fg_RawSummary():
-			return fg_MakeStringFromData_ch32_Raw(_Value.GetData(), Len, 2)
-		Value = '"' + fg_MakeStringFromData_ch32_Raw(_Value.GetData(), Len, 2) + '"'
+			return fg_MakeStringFromData_ch32_Raw(fg_GetData(_Value), Len, 2)
+
+		Value = '"' + fg_MakeStringFromData_ch32_Raw(fg_GetData(_Value), Len, 2) + '"'
+
+		if ValueType.IsPointerType():
+			Value = Value + "   " + hex(_Value.GetValueAsUnsigned());
+
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_Array_ch32) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_Array_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Len = None, _Offset = 0):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
-			return None; # Pointer to pointer
+			return hex(_Value.GetValueAsUnsigned());
 		if _Len != None:
 			Len = int(_Len)
 		else:
@@ -330,14 +346,14 @@ def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Len = None, _Offset = 0):
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*1), Len, 2) + '"'
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_ArrayPtr_ch8) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_ArrayPtr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Len = None, _Offset = 0):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
-			return None; # Pointer to pointer
+			return hex(_Value.GetValueAsUnsigned());
 		if _Len != None:
 			Len = int(_Len)
 		else:
@@ -353,14 +369,14 @@ def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Len = None, _Offset = 0)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*2), Len, 2) + '"'
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_ArrayPtr_ch16) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_ArrayPtr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Len = None, _Offset = 0):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
-			return None; # Pointer to pointer
+			return hex(_Value.GetValueAsUnsigned());
 		if _Len != None:
 			Len = int(_Len)
 		else:
@@ -376,13 +392,13 @@ def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Len = None, _Offset = 0)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*4), Len, 2) + '"'
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Str_ArrayPtr_ch32) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Str_ArrayPtr_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Char_ch8(_Value, dict):
 	try:
 		if _Value.GetType().IsPointerType():
-			return
+			return hex(_Value.GetValueAsUnsigned())
 		Ret = ''
 		Value = _Value.GetValueAsUnsigned()
 		if Value == 0:
@@ -394,33 +410,33 @@ def fg_SummaryProvider_Char_ch8(_Value, dict):
 		return "'" + Ret + "'   " + str(Value)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Char_ch8) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Char_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Char_ch16(_Value, dict):
 	try:
 		if _Value.GetType().IsPointerType():
-			return
+			return hex(_Value.GetValueAsUnsigned())
 		Ret = ''
 		Value = _Value.GetValueAsUnsigned()
 		Ret += unichr(Value);
 		return "'" + Ret + "' = " + str(Value)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Char_ch16) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Char_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Char_ch32(_Value, dict):
 	try:
 		if _Value.GetType().IsPointerType():
-			return
+			return hex(_Value.GetValueAsUnsigned())
 		Ret = ''
 		Value = _Value.GetValueAsUnsigned()
 		Ret += unichr(Value);
 		return "'" + Ret + "' = " + str(Value)
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Char_ch32) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Char_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_String(_Debugger):
@@ -442,7 +458,7 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const ch8 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 \[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 const\[[0-9]+]", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "char *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "char *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const char *")
@@ -456,7 +472,7 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const ch16 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 \[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 const\[[0-9]+]", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "char16_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "char16_t *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const char16_t *")

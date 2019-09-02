@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 
 
@@ -11,7 +11,7 @@ def fg_SummaryProvider_CTime(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.CreateValueFromExpression("[TempData]", "NMib::NTime::CTime::fsp_DebugStr((void*)(size_t)" + hex(fg_GetValueAddress(_Value)) + ")")
 		Value = fg_MakeStringFromData_ch8_Raw(Current.GetPointeeData(0, 256), 256, 1)
 		if ValueType.IsPointerType():
@@ -19,7 +19,7 @@ def fg_SummaryProvider_CTime(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CTime) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CTime) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 
@@ -27,7 +27,7 @@ def fg_SummaryProvider_CTimeSpan(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.CreateValueFromExpression("[TempData]", "NMib::NTime::CTimeSpan::fsp_DebugStr((void*)(size_t)" + hex(fg_GetValueAddress(_Value)) + ")")
 		Value = fg_MakeStringFromData_ch8_Raw(Current.GetPointeeData(0, 256), 256, 1)
 		if ValueType.IsPointerType():
@@ -35,7 +35,7 @@ def fg_SummaryProvider_CTimeSpan(_Value, dict):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CTimeSpan) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CTimeSpan) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 

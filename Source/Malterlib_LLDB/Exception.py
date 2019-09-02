@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 
 class CSynthProvider_NException_CCallstack(CSynthProvider_Common):
@@ -20,7 +20,7 @@ class CSynthProvider_NException_CCallstack(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -54,7 +54,7 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -104,7 +104,7 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.GetChildMemberWithName('[Message]')
 		Summary = Current.GetSummary()
 		if Summary == None:
@@ -119,7 +119,7 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 		return None
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_CExceptionBase) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_CExceptionBase) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Exception(_Debugger):

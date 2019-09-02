@@ -8,38 +8,39 @@ import json
 g_MaxSynthChildren = 1024
 g_bRawSummary = threading.local()
 
-g_ModuleName = ""
-
-def fg_SetModuleName(_Name):
-	global g_ModuleName
-	g_ModuleName = _Name
-
-
 def fg_AddSummary(_Debugger, _Function, _Type, _Regex = False, _Priority = 0):
-	global g_ModuleName
-	if _Regex:
-		if _Priority == 0:
-			_Debugger.HandleCommand('type summary add -F ' + g_ModuleName + '.' + _Function.__name__ + ' -x "' + _Type + '" -w MibLLDB')
+	try:
+		if _Regex:
+			if _Priority == 0:
+				_Debugger.HandleCommand('type summary add -F ' + _Function.__module__ + '.' + _Function.__name__ + ' -x "' + _Type + '" -w MibLLDB')
+			else:
+				_Debugger.HandleCommand('type summary add -F ' + _Function.__module__ + '.' + _Function.__name__ + ' -x "' + _Type + '" -w MibLLDB_' + str(_Priority))
 		else:
-			_Debugger.HandleCommand('type summary add -F ' + g_ModuleName + '.' + _Function.__name__ + ' -x "' + _Type + '" -w MibLLDB_' + str(_Priority))
-	else:
-		if _Priority == 0:
-			_Debugger.HandleCommand('type summary add -F ' + g_ModuleName + '.' + _Function.__name__ + ' "' + _Type + '" -w MibLLDB')
-		else:
-			_Debugger.HandleCommand('type summary add -F ' + g_ModuleName + '.' + _Function.__name__ + ' "' + _Type + '" -w MibLLDB_' + str(_Priority))
+			if _Priority == 0:
+				_Debugger.HandleCommand('type summary add -F ' + _Function.__module__ + '.' + _Function.__name__ + ' "' + _Type + '" -w MibLLDB')
+			else:
+				_Debugger.HandleCommand('type summary add -F ' + _Function.__module__ + '.' + _Function.__name__ + ' "' + _Type + '" -w MibLLDB_' + str(_Priority))
+	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
+		print('(fg_AddSummary) error: ', error, ' path: ', _Value.get_expr_path())
+		return
 
 def fg_AddSynth(_Debugger, _Class, _Type, _Regex = False, _Priority = 0):
-	global g_ModuleName
-	if _Regex:
-		if _Priority == 0:
-			_Debugger.HandleCommand('type synthetic add -l ' + g_ModuleName + '.' + _Class.__name__ + ' -x "' + _Type + '" -w MibLLDB')
+	try:
+		if _Regex:
+			if _Priority == 0:
+				_Debugger.HandleCommand('type synthetic add -l ' + _Class.__module__ + '.' + _Class.__name__ + ' -x "' + _Type + '" -w MibLLDB')
+			else:
+				_Debugger.HandleCommand('type synthetic add -l ' + _Class.__module__ + '.' + _Class.__name__ + ' -x "' + _Type + '" -w MibLLDB_' + str(_Priority))
 		else:
-			_Debugger.HandleCommand('type synthetic add -l ' + g_ModuleName + '.' + _Class.__name__ + ' -x "' + _Type + '" -w MibLLDB_' + str(_Priority))
-	else:
-		if _Priority == 0:
-			_Debugger.HandleCommand('type synthetic add -l ' + g_ModuleName + '.' + _Class.__name__ + ' "' + _Type + '" -w MibLLDB')
-		else:
-			_Debugger.HandleCommand('type synthetic add -l ' + g_ModuleName + '.' + _Class.__name__ + ' "' + _Type + '" -w MibLLDB_' + str(_Priority))
+			if _Priority == 0:
+				_Debugger.HandleCommand('type synthetic add -l ' + _Class.__module__ + '.' + _Class.__name__ + ' "' + _Type + '" -w MibLLDB')
+			else:
+				_Debugger.HandleCommand('type synthetic add -l ' + _Class.__module__ + '.' + _Class.__name__ + ' "' + _Type + '" -w MibLLDB_' + str(_Priority))
+	except Exception as error:
+		traceback.print_exc(file=sys.stdout)
+		print('(fg_AddSynth) error: ', error, ' path: ', _Value.get_expr_path())
+		return
 
 def fg_RawSummary():
 	global g_bRawSummary
@@ -52,6 +53,22 @@ def fg_SetRawSummary(_bRaw):
 	bOld = fg_RawSummary()
 	g_bRawSummary.m_bRawSummary = _bRaw
 	return bOld
+
+def fg_ParseTemplate(_String):
+	stack = []
+	lastStart = 0
+	for i, c in enumerate(_String):
+		if c == ',' and len(stack) == 1:
+			yield _String[lastStart: i].strip()
+			lastStart = i + 1
+		if c == '<':
+			stack.append(i)
+			if len(stack) == 1:
+				lastStart = i + 1
+		elif c == '>' and stack:
+			stack.pop()
+			if len(stack) == 0:
+				yield _String[lastStart: i].strip()
 
 def fg_GetValueRawSummary(_Value):
 	bOld = fg_SetRawSummary(True)
@@ -73,15 +90,19 @@ def fg_GetStringValue(_ValueObject, _Name, _Value):
 def fg_GetEmptyValue(_ValueObject, _Value = "Empty"):
 	return fg_GetStringValue(_ValueObject, "[Empty]", _Value)
 
-def fg_GetDynamicType(_Value, _Type, _Address):
+def fg_GetDynamicType(_Value, _Type):
 	Process = _Value.GetProcess()
-	if type(_Address) is not int:
-		_Address = 0
-	DataAddress = lldb.SBData.CreateDataFromUInt64Array(Process.GetByteOrder(), Process.GetAddressByteSize(), [_Address])
+	DataAddress = lldb.SBData.CreateDataFromUInt32Array(Process.GetByteOrder(), Process.GetAddressByteSize(), [0, 0])
 	return _Value.CreateValueFromData("[Temp]", DataAddress, _Type.GetPointerType()).GetDynamicValue(lldb.eDynamicDontRunTarget).Dereference().GetType()
 
 def fg_CreateDynamicValue(_Value, _Name, _Address, _Type):
-	return _Value.CreateValueFromAddress(_Name, _Address, fg_GetDynamicType(_Value, _Type, _Address))
+	return _Value.CreateValueFromAddress(_Name, _Address, fg_GetDynamicType(_Value, _Type))
+
+def fg_GetData(_Value):
+	Type = _Value.GetType()
+	if Type.IsReferenceType() or Type.IsPointerType():
+		return _Value.Dereference().GetData()
+	return _Value.GetData()
 
 def fg_IsInteger(s):
     if s[0] in ('-', '+'):
@@ -99,13 +120,13 @@ def fg_GetAddressOf(_Value):
 	Address = _Value.GetAddress()
 	if Address.IsValid():
 		LoadAddress = Address.load_addr
-		if type(LoadAddress) is int:
+		if type(LoadAddress) is int and LoadAddress != 0xffffffffffffffff:
 			return LoadAddress
 
 	AddressOf = _Value.AddressOf()
 	AddressValue = AddressOf.GetValueAsUnsigned()
-	if type(AddressValue) is int:
-		return AddressOf.GetValueAsUnsigned()
+	if type(AddressValue) is int and AddressValue != 0xffffffffffffffff:
+		return AddressValue
 
 	return 0
 
@@ -130,13 +151,13 @@ def fg_PrecacheType(_Type):
 	return
 
 def fg_TraceType(_Type):
-	print 'Fields'
+	print('Fields')
 	for iField in range(0, _Type.GetNumberOfFields()):
-		print str(_Type.GetFieldAtIndex(iField))
-	print 'Member functions'
+		print(str(_Type.GetFieldAtIndex(iField)))
+	print('Member functions')
 	for iField in range(0, _Type.GetNumberOfMemberFunctions()):
 		MemberFunction = _Type.GetMemberFunctionAtIndex(iField);
-		print MemberFunction.GetName() + " " + str(_Type.GetMemberFunctionAtIndex(iField))
+		print(MemberFunction.GetName() + " " + str(_Type.GetMemberFunctionAtIndex(iField)))
 	return
 
 def fg_GetMemberFunction(_Type, _Name):
@@ -184,7 +205,7 @@ def fg_SummaryProvider_ContainerShared(_Value, dict, _Name):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
-			return None # Pointer to pointer we don't want to provide summary for
+			return hex(_Value.GetValueAsUnsigned())
 
 		Len = _Value.GetChildMemberWithName('[Length]')
 		if not fg_IsValidSBValue(Len):
@@ -195,15 +216,15 @@ def fg_SummaryProvider_ContainerShared(_Value, dict, _Name):
 		return Value
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_Container) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_Container) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Name):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
-			return None # Pointer to pointer we don't want to provide summary for
-		
+			return hex(_Value.GetValueAsUnsigned())
+
 		global g_MaxSynthChildren
 		Len = _Value.GetChildMemberWithName('[Length]')
 		if not fg_IsValidSBValue(Len):
@@ -219,7 +240,7 @@ def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Name):
 		return Value
 
 	except Exception as error:
-		print '(fg_SummaryProvider_ContainerLimited) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_ContainerLimited) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Container(_Value, dict):
@@ -255,6 +276,7 @@ def fg_GetValidCanonicalType(_Type):
 
 def fg_GetLeafValue(_Value):
 	Current = _Value
+	Current.SetPreferSyntheticValue(True)
 	NextLevel = Current.GetChildMemberWithName('[Value]')
 	while fg_IsValidSBValue(NextLevel) and NextLevel.GetName() == '[Value]':
 		Current = NextLevel
@@ -264,9 +286,10 @@ def fg_GetLeafValue(_Value):
 
 def fg_SummaryProvider_IteratorCommon(_Value, dict):
 	try:
+		_Value.SetPreferSyntheticValue(True)
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
-			return "" # Pointer to pointer we don't want to provide summary for
+			return hex(_Value.GetValueAsUnsigned())
 
 		ValueMember = _Value.GetChildMemberWithName('[Empty]')
 		if ValueMember:
@@ -337,7 +360,7 @@ def fg_SummaryProvider_IteratorCommon(_Value, dict):
 		return ReturnString;
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print 'common summary error: ', error
+		print('common summary error: ', error)
 		return None
 
 
@@ -375,7 +398,7 @@ class CSynthProvider_Common:
 				self.m_OriginalNameMap[Child.GetName()] = iOriginalChild
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def has_children(self):
@@ -393,13 +416,13 @@ class CSynthProvider_Common:
 						self.m_Count = self.fp_NumChildren()
 					except Exception as error:
 						traceback.print_exc(file=sys.stdout)
-						print '(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+						print('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 						self.m_Count = 0
 			
 			return int(self.m_Count + self.m_nOriginalChildren)
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return 0
 
 	def get_child_index(self, _Name):
@@ -418,7 +441,7 @@ class CSynthProvider_Common:
 			return -1
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') get_child_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') get_child_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return -1
 
 	def fp_GetChildIndex(self, _Name):
@@ -441,12 +464,12 @@ class CSynthProvider_Common:
 					return self.fp_GetChildAtIndex(_iChild)
 				except Exception as error:
 					traceback.print_exc(file=sys.stdout)
-					print '(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+					print('(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 					return None
 			return None
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return None
 
 	def fp_GetChildAtIndex(self, _iChild):

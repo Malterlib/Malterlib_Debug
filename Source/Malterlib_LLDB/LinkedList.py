@@ -2,8 +2,8 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 	def __init__(self, _ValueObject, _Dictionary):
@@ -26,7 +26,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -42,7 +42,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 			return False
 		
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
- 			LinkType = ContainerType.GetTemplateArgumentType(2)
+			LinkType = ContainerType.GetTemplateArgumentType(2)
 			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
@@ -147,7 +147,7 @@ class CSynthProvider_TCDLinkListAggregate_CIterator(CSynthProvider_Common):
 
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -229,7 +229,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 			self.m_bLooped = False
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType2(self):
@@ -371,7 +371,7 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -473,7 +473,7 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 			self.m_bLooped = False
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -581,7 +581,7 @@ class CSynthProvider_TCSLinkListAggregate_CIterator(CSynthProvider_Common):
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
-			print '(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path()
+			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):

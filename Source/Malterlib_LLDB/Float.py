@@ -2,15 +2,15 @@
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
-from Common import *
-from StringHelpers import *
+from .Common import *
+from .StringHelpers import *
 
 #template <aint t_SignBits, aint t_ExponentBits, aint t_MantissaBits, typename t_CImplicitFloat = CNoImplicit, bool t_bDummyOptimize = true, typename t_CIntegerStorage = typename NTraits::TCIntFromSizeLarger<(t_SignBits + t_ExponentBits + t_MantissaBits + 7)/8>::CType>
 def fg_SummaryProvider_TCFloat(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
-			return None
+			return hex(_Value.GetValueAsUnsigned())
 
 		ImplicitData = _Value.GetChildMemberWithName("m_DataImplicit")
 		if fg_GetValidCanonicalType(fg_GetValueType(ImplicitData)).GetName() != "NMib::NNumeric::CNoImplicit":
@@ -54,7 +54,7 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 		return None
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print '(fg_SummaryProvider_TCFloat) error: ', error, ' path: ', _Value.get_expr_path()
+		print('(fg_SummaryProvider_TCFloat) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Float(_Debugger):
