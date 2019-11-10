@@ -751,8 +751,8 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	}
 
-	NStorage::TCAggregateSimple<CClient> g_RDClient = {DAggregateInit};
-	NStorage::TCAggregateSimple<CServer> g_RDServer = {DAggregateInit};
+	constinit NStorage::TCAggregateSimple<CClient> g_RDClient = {DAggregateInit};
+	constinit NStorage::TCAggregateSimple<CServer> g_RDServer = {DAggregateInit};
 
 	static CClient* g_pRDClient = nullptr;
 	static CServer* g_pRDServer = nullptr;

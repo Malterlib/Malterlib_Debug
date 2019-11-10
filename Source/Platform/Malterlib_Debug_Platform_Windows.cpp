@@ -150,7 +150,7 @@ namespace NMib
 			}
 
 			
-			NMib::TCSubSystem<CSubSystem_Debug_Platform_Windows, NMib::ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Windows = {DAggregateInit};
+			constinit NMib::TCSubSystem<CSubSystem_Debug_Platform_Windows, NMib::ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Windows = {DAggregateInit};
 
 			CSubSystem_Debug_Platform_Windows &fg_Debug_Platfrom_Windows()
 			{

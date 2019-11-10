@@ -35,7 +35,7 @@ namespace NMib
 				}
 			};
 			
-			TCSubSystem<CSubSystem_Debug_Platform_Linux_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Linux_Symbols = {DAggregateInit};
+			constinit TCSubSystem<CSubSystem_Debug_Platform_Linux_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Linux_Symbols = {DAggregateInit};
 			
 			CSymbols &fg_GetSymbols()
 			{
