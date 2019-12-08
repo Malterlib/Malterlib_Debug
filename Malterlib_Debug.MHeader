@@ -7,7 +7,7 @@ Import "../Core/Lib_Malterlib.MTarget"
 {
 	Repository
 	{
-		Type External
+		Type "External"
 	}
 }
 
@@ -18,9 +18,9 @@ Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules
 
 %Group "{Malterlib}/{Lib_Malterlib_Debug}"
 {
-	%Group Debug
+	%Group "Debug"
 	{
-		%Group Include
+		%Group "Include"
 		{
 			Compile.Type "C++"
 			{
@@ -29,7 +29,7 @@ Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules
 			%File "Include/Mib/Debug/^*"
 		}
 		%File "Source/^*"
-		%Group Platform
+		%Group "Platform"
 		{
 			%File "Source/Platform/*"
 			{
@@ -39,7 +39,7 @@ Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules
 				}
 			}
 		}
-		%Group Documentation
+		%Group "Documentation"
 		{
 			%File "Documentation/*"
 		}
@@ -85,6 +85,6 @@ Target.ExtraGroups "~Automatic/NatVis;@(Target.ExtraGroups)"
 	&
 	{
 		TargetIsExecutable true
-		GeneratorFamily VisualStudio
+		GeneratorFamily "VisualStudio"
 	}
 }

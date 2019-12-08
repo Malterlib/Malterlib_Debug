@@ -1,7 +1,7 @@
 // Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-%Target Dll_MalterlibVSE
+%Target "Dll_MalterlibVSE"
 {
 	Property
 	{
@@ -16,20 +16,20 @@
 	}
 	Compile
 	{
-		!!CompileDialect C
+		!!CompileDialect "C"
 	
 		PrefixHeader ""
 	}
 	%Group "Header Files"
 	{
-		%File MalterlibVSE.h
-		%File custview.h
+		%File "MalterlibVSE.h"
+		%File "custview.h"
 	}
 	%Group "Resource Files"
 	%Group "Source Files"
 	{
-		%File MalterlibVSE.cpp
-		%File MalterlibVSE.def
+		%File "MalterlibVSE.cpp"
+		%File "MalterlibVSE.def"
 	}
-	%Dependency Lib_Malterlib
+	%Dependency "Lib_Malterlib"
 }
