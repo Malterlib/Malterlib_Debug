@@ -21,7 +21,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 			Frame = self.m_ValueObject.GetProcess().GetSelectedThread().GetSelectedFrame()
 
 			ThreadLocalIndex = self.m_ValueObject.GetChildMemberWithName('m_ThreadLocalLocal').GetValueAsUnsigned();
-			if ThreadLocalIndex != 0 and Frame != None:
+			if ThreadLocalIndex != 0 and Frame is not None:
 				self.m_ThreadLocal = Frame.EvaluateExpression("fg_Debug_GetThreadLocal(" + str(ThreadLocalIndex) + ")").GetValueAsUnsigned()
 				if self.m_ThreadLocal == 0:
 					self.m_ThreadLocal = None
@@ -31,7 +31,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 			if not self.fp_ExtractType():
 				return
 
-			if self.m_ThreadLocal != None:
+			if self.m_ThreadLocal is not None:
 				self.m_Value = fg_CreateDynamicValue(self.m_ValueObject, '[TempData]', self.m_ThreadLocal, self.m_DataType)
 				self.m_Value = fg_GetLeafValue(self.m_Value)
 				self.m_ValueDataType = self.m_Value.GetType()
@@ -58,7 +58,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 		return True
 
 	def fp_GetChildIndex(self, _Name):
-		if self.m_ThreadLocal == None or self.m_DataType == None:
+		if self.m_ThreadLocal is None or self.m_DataType is None:
 			if _Name == '[Empty]':
 				return self.m_NumExtraChildren
 		else:
@@ -69,7 +69,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			if self.m_ThreadLocal == None or self.m_DataType == None:
+			if self.m_ThreadLocal is None or self.m_DataType is None:
 				return self.m_ValueObject.CreateValueFromAddress('[Empty]', 0, self.m_DataType)
 			else:
 				return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', self.m_ThreadLocal, self.m_DataType)

@@ -158,29 +158,29 @@ def fg_SummaryProvider_TCObjectEntry(_Value, dict):
 		NonSynthValue = _Value.GetNonSyntheticValue()
 		KeyMember = NonSynthValue.GetValueForExpressionPath('.mp_Name')
 		KeySummary = KeyMember.GetSummary()
-		if KeySummary == None:
+		if KeySummary is None:
 			KeySummary = str(KeyMember.GetValue())
 
 
 		ValueMember = fg_GetLeafValue(NonSynthValue.GetChildMemberWithName('mp_Value'))
 
-		if ValueMember == None or not ValueMember.IsValid():
+		if ValueMember is None or not ValueMember.IsValid():
 			Value = KeySummary;
 		else:
 			ValueSummary = ValueMember.GetSummary()
-			if ValueSummary == None:
+			if ValueSummary is None:
 				ValueSummary = str(ValueMember.GetValue())
 
 			if ValueSummary == "None":
 				ValueSummary = "..."
 
-			if KeySummary == None:
-				if ValueSummary == None:
+			if KeySummary is None:
+				if ValueSummary is None:
 					return None
 				else:
 					Value = '? > ' + ValueSummary
 			else:
-				if ValueSummary == None:
+				if ValueSummary is None:
 					Value = KeySummary + ' > ?'
 				else:
 					Value = KeySummary + ' > ' + ValueSummary
@@ -214,9 +214,9 @@ def fg_SummaryProvider_CEJSONUserType(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
 		ObjectsMember = _Value.GetValueForExpressionPath('.m_Type')
-		if ObjectsMember != None:
+		if ObjectsMember is not None:
 			ObjectSummary = fg_GetValueRawSummary(ObjectsMember)
-			if ObjectSummary != None:
+			if ObjectSummary is not None:
 				return "UserType(" + ObjectSummary + ")"
 
 		return "UserType"

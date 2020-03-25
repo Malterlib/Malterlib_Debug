@@ -88,9 +88,9 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 
 		Name = fg_GetValueRawSummary(ValueName)
 		Data = fg_GetValueRawSummary(ValueData)
-		if Name == None:
+		if Name is None:
 			Name = ""
-		if Data == None:
+		if Data is None:
 			Data = ""
 		
 		if bLeaf:

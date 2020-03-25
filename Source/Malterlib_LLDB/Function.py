@@ -94,7 +94,7 @@ class CSynthProvider_TCFunction(CSynthProvider_Common):
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if _iChild == self.m_NumExtraChildren and self.m_Value != None:
+		if _iChild == self.m_NumExtraChildren and self.m_Value is not None:
 			if self.m_bEmpty:
 				return fg_GetEmptyValue(self.m_ValueObject)
 			else:

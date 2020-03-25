@@ -79,18 +79,18 @@ class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == 0:
 			MemberIndex = self.m_MemberToIndex.get(self.m_CurrentType);
-			if MemberIndex == None:
+			if MemberIndex is None:
 				return None
 			Value = fg_CreateDynamicValue(self.m_ValueObject, '[Value]', self.m_DataAddress, self.m_Types[MemberIndex])
 			return Value
 		if _iChild == 1:
 			MemberIndex = self.m_MemberToIndex.get(self.m_CurrentType);
-			if MemberIndex == None:
+			if MemberIndex is None:
 				return None
 			return fg_GetStringValue(self.m_ValueObject, '[Type]', self.m_Types[MemberIndex].GetName())
 		if _iChild == 2:
 			MemberIndex = self.m_MemberToIndex.get(self.m_CurrentType);
-			if MemberIndex == None:
+			if MemberIndex is None:
 				return None
 			if self.m_CurrentTypeType.GetTypeClass() == lldb.eTypeClassBuiltin:
 				return self.m_ValueObject.CreateValueFromExpression('[Index]', str(self.m_CurrentType))

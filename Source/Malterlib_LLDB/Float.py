@@ -15,12 +15,12 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 		ImplicitData = _Value.GetChildMemberWithName("m_DataImplicit")
 		if fg_GetValidCanonicalType(fg_GetValueType(ImplicitData)).GetName() != "NMib::NNumeric::CNoImplicit":
 			Summary = ImplicitData.GetSummary()
-			if Summary == None:
+			if Summary is None:
 				Value = ImplicitData.GetValue()
-				if Value != None:
+				if Value is not None:
 					Summary = str(Value)
 
-			if Summary != None:
+			if Summary is not None:
 				if ValueType.IsPointerType():
 					return hex(_Value.GetValueAsUnsigned()) + "   " + Summary
 				return Summary;
@@ -41,12 +41,12 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 				return None
 
 		Summary = Current.GetSummary()
-		if Summary == None:
+		if Summary is None:
 			Value = Current.GetValue()
-			if Value != None:
+			if Value is not None:
 				Summary = str(Value)
 		
-		if Summary != None:
+		if Summary is not None:
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + "   " + Summary
 			return Summary;

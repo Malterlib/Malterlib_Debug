@@ -157,16 +157,16 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 
 		Current = _Value.GetChildMemberWithName('[File]')
 		FileSummary = Current.GetSummary()
-		if FileSummary == None:
+		if FileSummary is None:
 			Value = Current.GetValue()
-			if Value != None:
+			if Value is not None:
 				FileSummary = str(Value)
 
 		Current = _Value.GetChildMemberWithName('[Line]')
 		LineSummary = Current.GetSummary()
-		if LineSummary == None:
+		if LineSummary is None:
 			Value = Current.GetValue()
-			if Value != None:
+			if Value is not None:
 				LineSummary = str(Value)
 
 		Address = Current.GetAddress()
@@ -178,10 +178,10 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 			if Function.IsValid():
 				FunctionName = Function.GetType().GetName()
 
-		if FunctionName != None and FileSummary != None and LineSummary != None and FileSummary != "Unknown" and LineSummary != "Unknown":
+		if FunctionName is not None and FileSummary is not None and LineSummary is not None and FileSummary != "Unknown" and LineSummary != "Unknown":
 			return FunctionName + " - " + os.path.basename(FileSummary) + ":" + LineSummary
 
-		if FunctionName != None:
+		if FunctionName is not None:
 			return FunctionName;
 
 		return None

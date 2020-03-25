@@ -113,7 +113,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		Address = self.m_ChildMap[_iChild]
-		if Address == None or Address < self.m_Offset:
+		if Address is None or Address < self.m_Offset:
 			return None
 		
 		RetValue = fg_CreateDynamicValue(self.m_ValueObject, '[' + str(_iChild) + ']', Address - self.m_Offset, self.m_DataType)
@@ -222,7 +222,7 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if self.m_Value != None:
+		if self.m_Value is not None:
 			if _iChild == self.m_NumExtraChildren:
 				return self.m_Value
 			elif _iChild < self.m_NumExtraChildren:
@@ -262,7 +262,7 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		Address = self.m_ChildMap[_iChild]
-		if Address == None or Address < self.m_Offset:
+		if Address is None or Address < self.m_Offset:
 			return None
 		
 		RetValue =  fg_CreateDynamicValue(self.m_ValueObject, '[' + str(_iChild) + ']', Address - self.m_Offset, self.m_DataType)
@@ -376,7 +376,7 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
-		if self.m_Value != None:
+		if self.m_Value is not None:
 			if _iChild == self.m_NumExtraChildren:
 				return self.m_Value
 			elif _iChild < self.m_NumExtraChildren:
@@ -395,23 +395,23 @@ def fg_SummaryProvider_TCMapTreeMember(_Value, dict):
 
 		KeyMember = _Value.GetChildMemberWithName('m_Key')
 		KeySummary = KeyMember.GetSummary()
-		if KeySummary == None:
+		if KeySummary is None:
 			KeySummary = KeyMember.GetValue()
 
 		ValueMember = _Value.GetChildMemberWithName('m_Data')
 		
-		if ValueMember == None or not ValueMember.IsValid():
+		if ValueMember is None or not ValueMember.IsValid():
 			Value = KeySummary;
 		else:
 			ValueSummary = ValueMember.GetSummary()
-			if ValueSummary == None:
+			if ValueSummary is None:
 				ValueSummary = str(ValueMember.GetValue())
 
 			if ValueSummary == "None":
 				ValueSummary = "..."
 
-			if KeySummary == None:
-				if ValueSummary == None:
+			if KeySummary is None:
+				if ValueSummary is None:
 					return None
 				else:
 					Value = '? > ' + ValueSummary

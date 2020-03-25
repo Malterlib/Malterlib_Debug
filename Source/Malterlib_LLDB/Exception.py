@@ -107,12 +107,12 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.GetChildMemberWithName('[Message]')
 		Summary = Current.GetSummary()
-		if Summary == None:
+		if Summary is None:
 			Value = Current.GetValue()
-			if Value != None:
+			if Value is not None:
 				Summary = str(Value)
 		
-		if Summary != None:
+		if Summary is not None:
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + "   " + Summary
 			return Summary;

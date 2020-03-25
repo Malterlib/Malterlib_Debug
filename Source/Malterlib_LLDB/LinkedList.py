@@ -82,7 +82,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		NodeAddress = self.m_ChildMap[_iChild]
-		if NodeAddress == None:
+		if NodeAddress is None:
 			return None # We are at end of list
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
@@ -286,7 +286,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 		return self.m_ValueObject.CreateValueFromAddress("[TempData]", _pNodePointer, self.m_LinkType)
 
 	def fp_GetData(self, _pNodePointer, _Name):
-		if self.m_ValueType == None:
+		if self.m_ValueType is None:
 			return None;
 		if _pNodePointer < self.m_Offset:
 			return None
@@ -301,7 +301,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		NodeAddress = self.m_ChildMap[_iChild]
-		if NodeAddress == None:
+		if NodeAddress is None:
 			return None # We are at end of list
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
@@ -518,7 +518,7 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
 		NodeAddress = self.m_ChildMap[_iChild]
-		if NodeAddress == None:
+		if NodeAddress is None:
 			return None # We are at end of list
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')

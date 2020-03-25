@@ -46,7 +46,7 @@ class CSynthProvider_TCActor(CSynthProvider_Common):
 				self.m_RefCount = fg_ChildPath(self.m_ActorHolder, 'm_RefCount.__a_.__a_value')
 				self.m_WeakRefCount = fg_ChildPath(self.m_ActorHolder, 'm_WeakRefCount.__a_.__a_value')
 				self.m_Value = fg_ChildPath(self.m_ActorHolder, 'mp_pActor.m_Data.m_pPointTo')
-				if self.m_Value != None:
+				if self.m_Value is not None:
 					self.m_DataType = fg_GetPointerValueType(self.m_Value)
 					fg_PrecacheType(self.m_DataType)
 					if self.m_Value.GetValueAsUnsigned() != 0:
@@ -73,20 +73,20 @@ class CSynthProvider_TCActor(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			if self.m_Value != None:
+			if self.m_Value is not None:
 				return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', fg_GetValueAddress(self.m_Value), self.m_DataType)
 		if _iChild == self.m_NumExtraChildren + 1:
-			if self.m_ActorType != None:
+			if self.m_ActorType is not None:
 				return fg_CreateDynamicValue(self.m_ValueObject, '[Type]', fg_GetValueAddress(self.m_ActorType), self.m_ActorTypeType)
 		if _iChild == self.m_NumExtraChildren + 2:
-			if self.m_ActorHolder != None:
+			if self.m_ActorHolder is not None:
 				return fg_CreateDynamicValue(self.m_ValueObject, '[ActorHolder]', fg_GetValueAddress(self.m_ActorHolder), self.m_ActorHolderDataType)
 		elif _iChild == self.m_NumExtraChildren + 3:
-			if self.m_RefCount != None:
+			if self.m_RefCount is not None:
 				Data = lldb.SBData.CreateDataFromSInt64Array(self.m_Endianness, self.m_PointerSize, [int(1 + self.m_RefCount.GetValueAsSigned())])
 				return self.m_ValueObject.CreateValueFromData('[Count]', Data, self.m_CountType)
 		elif _iChild == self.m_NumExtraChildren + 4:
-			if self.m_WeakRefCount != None:
+			if self.m_WeakRefCount is not None:
 				Data = lldb.SBData.CreateDataFromSInt64Array(self.m_Endianness, self.m_PointerSize, [int(self.m_WeakRefCount.GetValueAsSigned())])
 				return self.m_ValueObject.CreateValueFromData('[WeakCount]', Data, self.m_CountType)
 		elif _iChild < self.m_NumExtraChildren:
@@ -157,9 +157,9 @@ def fg_SummaryProvider_TCActor(_Value, dict):
 		else:
 			TypeSummary = None
 
-		if Summary != None and TypeSummary != None:
+		if Summary is not None and TypeSummary is not None:
 			return Summary + " " + TypeSummary
-		elif TypeSummary != None:
+		elif TypeSummary is not None:
 			return TypeSummary
 
 		return Summary

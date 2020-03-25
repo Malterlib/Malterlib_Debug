@@ -45,7 +45,7 @@ def fg_AddSynth(_Debugger, _Class, _Type, _Regex = False, _Priority = 0):
 def fg_RawSummary():
 	global g_bRawSummary
 	bRawSummary = getattr(g_bRawSummary, 'm_bRawSummary', None)
-	if bRawSummary == None:
+	if bRawSummary is None:
 		return False
 	return bRawSummary
 
@@ -169,16 +169,22 @@ def fg_GetMemberFunction(_Type, _Name):
 
 def fg_GetInheritedType(_Type, _TypeName):
 	Type = _Type.GetUnqualifiedType()
+	if Type is None:
+		return None
 	if Type.IsReferenceType():
 		Type = Type.GetDereferencedType()
+		if Type is None:
+			return None
 	Type = Type.GetUnqualifiedType()
-	while Type != None and Type.IsValid() and not Type.GetName().startswith(_TypeName):
+	if Type is None:
+		return None
+	while Type is not None and Type.IsValid() and not Type.GetName().startswith(_TypeName):
 		Type = Type.GetDirectBaseClassAtIndex(0).GetType().GetUnqualifiedType()
 	return Type
 
 def fg_GetBaseValue(_Value, _TypeName):
 	Value = _Value.GetNonSyntheticValue()
-	while Value != None and Value.IsValid() and not Value.GetType().GetCanonicalType().GetName().startswith(_TypeName):
+	while Value is not None and Value.IsValid() and not Value.GetType().GetCanonicalType().GetName().startswith(_TypeName):
 		Value = Value.GetChildAtIndex(0)
 	return Value.GetNonSyntheticValue()
 
@@ -197,7 +203,7 @@ def fg_GetPointerValueType(_Value):
 	return Type
 
 def fg_IsValidSBValue(_Value):
-	if _Value != None and _Value.IsValid() and _Value.GetError().Success():
+	if _Value is not None and _Value.IsValid() and _Value.GetError().Success():
 		return True
 	return False
 
@@ -311,22 +317,22 @@ def fg_SummaryProvider_IteratorCommon(_Value, dict):
 				else:
 					CurrentDeref = Current.Dereference();
 					Summary = CurrentDeref.GetSummary()
-					if Summary != None:
+					if Summary is not None:
 						Value = hex(PointerValue) + "   " + Summary
 					else:
 						Value = CurrentDeref.GetValue()
-						if Value != None:
+						if Value is not None:
 							Value = hex(PointerValue) + "   " + str(Value)
 			else:
 				Summary = Current.GetSummary()
-				if Summary != None:
+				if Summary is not None:
 					Value = Summary
 				else:
 					Value = Current.GetValue()
-					if Value != None:
+					if Value is not None:
 						Value = str(Value)
 					
-		if Value != None:
+		if Value is not None:
 			if Type.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 			return Value
@@ -367,7 +373,7 @@ def fg_SummaryProvider_IteratorCommon(_Value, dict):
 class CSynthProvider_Common:
 	def __init__(self, _ValueObject, _Dictionary, _ExpectedTypeName = None):
 		self.m_ValueObject = _ValueObject
-		if _ExpectedTypeName != None:
+		if _ExpectedTypeName is not None:
 			self.m_ValueObject = fg_GetBaseValue(self.m_ValueObject, _ExpectedTypeName)
 
 		self.m_ValueObjectType = fg_GetValidCanonicalType(self.m_ValueObject.GetType())
@@ -408,7 +414,7 @@ class CSynthProvider_Common:
 		try:
 			if not self.m_bUpdated:
 				self.update()
-			if self.m_Count == None:
+			if self.m_Count is None:
 				if not self.m_bValid:
 					self.m_Count = 0
 				else:
@@ -427,16 +433,16 @@ class CSynthProvider_Common:
 
 	def get_child_index(self, _Name):
 		try:
-			if self.m_OriginalNameMap == None:
+			if self.m_OriginalNameMap is None:
 				return -1
 			OriginalIndex = self.m_OriginalNameMap.get(_Name)
-			if OriginalIndex != None:
-				if self.m_Count == None:
+			if OriginalIndex is not None:
+				if self.m_Count is None:
 					self.num_children()
 				return int(self.m_Count + OriginalIndex)
 			if self.m_bValid:
 				Return = self.fp_GetChildIndex(_Name)
-				if Return != None:
+				if Return is not None:
 					return int(Return)
 			return -1
 		except Exception as error:
@@ -489,10 +495,10 @@ class CSynthProvider_Container(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == 0:
-			if self.m_nElements == None:
+			if self.m_nElements is None:
 				return None;
 			return self.m_ValueObject.CreateValueFromExpression("[Length]", str(self.m_nElements))
-		if self.m_Error != None:
+		if self.m_Error is not None:
 			if _iChild == 1:
 				return fg_GetStringValue(self.m_ValueObject, "[Error]", self.m_Error)
 			return self.fp_ContainerGetChildAtIndex(_iChild - 2);
@@ -522,7 +528,7 @@ class CSynthProvider_Container(CSynthProvider_Common):
 		Ret = self.m_nElements
 		if Ret > g_MaxSynthChildren:
 			Ret = g_MaxSynthChildren;
-		if self.m_Error != None:
+		if self.m_Error is not None:
 			return Ret + 2
 		else:
 			return Ret + 1

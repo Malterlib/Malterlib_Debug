@@ -15,13 +15,13 @@ def fg_GetStringType(_Value, _Default = 2):
 	if Type.IsPointerType():
 		Type = _Value.Dereference().GetType()
 	StrType = fg_GetInheritedType(fg_GetValidCanonicalType(Type), "NMib::NStr::TCStrAggregate")
-	if StrType == None:
+	if StrType is None:
 		return _Default
 	MemberFunctionHelper = fg_GetMemberFunction(StrType, 'fs_TypeDebugHelper')
 	if not MemberFunctionHelper:
 		return _Default
 	DataType = MemberFunctionHelper.GetReturnType()
-	if DataType == None:
+	if DataType is None:
 		return _Default
 	return int(fg_GetValidCanonicalType(DataType).GetName().split('<')[1].split('>')[0])
 
@@ -331,7 +331,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Len = None, _Offset = 0):
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned());
-		if _Len != None:
+		if _Len is not None:
 			Len = int(_Len)
 		else:
 			Len = 2048
@@ -354,7 +354,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Len = None, _Offset = 0)
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned());
-		if _Len != None:
+		if _Len is not None:
 			Len = int(_Len)
 		else:
 			Len = 2048
@@ -377,7 +377,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Len = None, _Offset = 0)
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned());
-		if _Len != None:
+		if _Len is not None:
 			Len = int(_Len)
 		else:
 			Len = 2048

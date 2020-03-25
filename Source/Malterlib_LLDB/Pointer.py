@@ -179,13 +179,13 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 		if _iChild == self.m_NumExtraChildren:
 			return fg_CreateDynamicValue(self.m_ValueObject, '[Value]', fg_GetValueAddress(self.m_Value), self.m_DataType)
 		elif _iChild == self.m_NumExtraChildren + 1:
-			if self.m_RefCount != None:
+			if self.m_RefCount is not None:
 				Data = lldb.SBData.CreateDataFromSInt64Array(self.m_Endianness, self.m_PointerSize, [int(1 + self.m_RefCount.GetValueAsSigned())])
 				return self.m_ValueObject.CreateValueFromData("[Count]", Data, self.m_CountType)
 			else:
 				return None
 		elif _iChild == self.m_NumExtraChildren + 2:
-			if self.m_WeakRefCount != None:
+			if self.m_WeakRefCount is not None:
 				Data = lldb.SBData.CreateDataFromSInt64Array(self.m_Endianness, self.m_PointerSize, [int(self.m_WeakRefCount.GetValueAsSigned())])
 				return self.m_ValueObject.CreateValueFromData("[WeakCount]", Data, self.m_CountType)
 			else:
@@ -215,12 +215,12 @@ def fg_SummaryProvider_Pointer(_Value, dict):
 			Current = Current.Dereference()
 
 			Summary = Current.GetSummary()
-			if Summary == None:
+			if Summary is None:
 				Value = Current.GetValue()
-				if Value != None:
+				if Value is not None:
 					Summary = str(Value)
 
-			if Summary != None:
+			if Summary is not None:
 				Value = hex(PointerValue) + "   " + Summary
 			else:
 				Value = hex(PointerValue)
@@ -250,15 +250,15 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 			if Current.GetType().IsPointerType():
 				Current = Current.Dereference()
 			Summary = Current.GetSummary()
-			if Summary == None:
+			if Summary is None:
 				Value = Current.GetValue()
-				if Value != None:
+				if Value is not None:
 					Summary = str(Value)
 			
 			RefCount = _Value.GetChildMemberWithName('[Count]')
 			WeakRefCount = _Value.GetChildMemberWithName('[WeakCount]')
 			
-			if Summary != None:
+			if Summary is not None:
 				if fg_IsValidSBValue(RefCount):
 					if fg_IsValidSBValue(WeakRefCount):
 						Value = hex(PointerValue) + " Count: " + str(RefCount.GetValueAsUnsigned()) + " WeakCount: " + str(WeakRefCount.GetValueAsUnsigned()) + "   " + Summary
