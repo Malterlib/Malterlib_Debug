@@ -578,8 +578,10 @@ public:
 			auto fTest
 				= [&]()
 				{
-			IntrusiveList.f_GetIterator();
+					IntrusiveList.f_GetIterator();
+#ifndef DCompiler_MSVC_Workaround
 					AVLTree.f_GetIterator();
+#endif
 					LinkedList.f_Insert(66);
 					LinkedList.f_Insert(67);
 				}
