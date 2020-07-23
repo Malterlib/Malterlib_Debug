@@ -118,8 +118,9 @@ def fg_GetValueAsUnsigned(_Value):
 
 def fg_GetAddressOf(_Value):
 	Address = _Value.GetAddress()
-	if Address.IsValid():
-		LoadAddress = Address.load_addr
+	Target = lldb.target
+	if Address is not None and Address.IsValid() and Target is not None:
+		LoadAddress = Address.GetLoadAddress(Target)
 		if type(LoadAddress) is int and LoadAddress != 0xffffffffffffffff:
 			return LoadAddress
 
@@ -207,7 +208,7 @@ def fg_IsValidSBValue(_Value):
 		return True
 	return False
 
-def fg_SummaryProvider_ContainerShared(_Value, dict, _Name):
+def fg_SummaryProvider_ContainerShared(_Value, dict, _Options, _Name):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
@@ -225,7 +226,7 @@ def fg_SummaryProvider_ContainerShared(_Value, dict, _Name):
 		print('(fg_SummaryProvider_Container) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Name):
+def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Options, _Name):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
@@ -250,16 +251,16 @@ def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Name):
 		return
 
 def fg_SummaryProvider_Container(_Value, dict):
-	return fg_SummaryProvider_ContainerShared(_Value, dict, "elements")
+	return fg_SummaryProvider_ContainerShared(_Value, dict, None, "elements")
 
 def fg_SummaryProvider_ContainerLimited(_Value, dict):
-	return fg_SummaryProvider_ContainerLimitedShared(_Value, dict, "elements")
+	return fg_SummaryProvider_ContainerLimitedShared(_Value, dict, None, "elements")
 
 def fg_SummaryProvider_ContainerMap(_Value, dict):
-	return fg_SummaryProvider_ContainerShared(_Value, dict, "key-value pairs")
+	return fg_SummaryProvider_ContainerShared(_Value, dict, None, "key-value pairs")
 
 def fg_SummaryProvider_ContainerMapLimited(_Value, dict):
-	return fg_SummaryProvider_ContainerLimitedShared(_Value, dict, "key-value pairs")
+	return fg_SummaryProvider_ContainerLimitedShared(_Value, dict, None, "key-value pairs")
 
 def fg_ChildPath(_Value, _Path):
 	if _Value.GetType().IsPointerType():
@@ -273,10 +274,12 @@ def fg_GetValidCanonicalType(_Type):
 	if CanonicalType.GetName() != "void":
 		return CanonicalType
 
-	for Type in lldb.target.FindTypes(_Type.GetName()):
-		CanonicalType = Type.GetCanonicalType()
-		if CanonicalType.GetName() != "void":
-			break
+	Target = lldb.target
+	if Target is not None:
+		for Type in Target.FindTypes(_Type.GetName()):
+			CanonicalType = Type.GetCanonicalType()
+			if CanonicalType.GetName() != "void":
+				break
 
 	return CanonicalType
 

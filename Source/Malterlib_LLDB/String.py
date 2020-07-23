@@ -326,7 +326,7 @@ def fg_SummaryProvider_Str_Array_ch32(_Value, dict):
 		print('(fg_SummaryProvider_Str_Array_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Len = None, _Offset = 0):
+def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Options, _Len = None, _Offset = 0):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
@@ -349,7 +349,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Len = None, _Offset = 0):
 		print('(fg_SummaryProvider_Str_ArrayPtr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Len = None, _Offset = 0):
+def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Options, _Len = None, _Offset = 0):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():
@@ -372,7 +372,7 @@ def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Len = None, _Offset = 0)
 		print('(fg_SummaryProvider_Str_ArrayPtr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Len = None, _Offset = 0):
+def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Options, _Len = None, _Offset = 0):
 	try:
 		Type = fg_GetValueType(_Value)
 		if Type.GetPointeeType().IsPointerType():

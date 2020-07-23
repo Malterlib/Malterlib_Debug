@@ -170,7 +170,7 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 						if bReverse:
 							FrontArray = _Value.CreateValueFromExpression("[TempData]", "(char32_t *)" + hex(FrontAddress + 4));
 						#FrontArray = _Value.CreateValueFromAddress("[TempData]", FrontAddress + 4, _Value.GetType().GetBasicType(lldb.eBasicTypeChar32).GetPointerType())
-						return fg_SummaryProvider_Str_ArrayPtr_ch32(FrontArray, None, int(Length/4))
+						return fg_SummaryProvider_Str_ArrayPtr_ch32(FrontArray, None, None, int(Length/4))
 				
 		Summary = Front.GetSummary()
 		return Summary
