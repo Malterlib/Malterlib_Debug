@@ -3,6 +3,7 @@
 
 #include <Mib/Core/Core>
 #include <Mib/Core/PlatformSpecific/WindowsError>
+#include <Mib/Core/PlatformSpecific/WindowsString>
 
 #pragma warning(disable:4091)
 #include <Windows.h>
@@ -202,25 +203,26 @@ namespace NMib
 					NStr::CWStrNonTracked Strings = NSys::NFile::fg_GetProgramDirectoryNonTracked();
 
 					NStr::CWStrNonTracked TempStr;
-					GetEnvironmentVariableW(str_utf16("_NT_SYMBOL_PATH"), TempStr.f_GetStr(32768), 32768);
+					using namespace NMib::NStr::NPlatform;
+					GetEnvironmentVariableW(str_utf16("_NT_SYMBOL_PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
 
 					if (TempStr.f_GetLen())
 						Strings = Strings + ";" + TempStr;
 					else
 					{
 
-						GetEnvironmentVariableW(str_utf16("_NT_ALTERNATE_SYMBOL_PATH"), TempStr.f_GetStr(32768), 32768);
+						GetEnvironmentVariableW(str_utf16("_NT_ALTERNATE_SYMBOL_PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
 
 						if (TempStr.f_GetLen())
 							Strings = Strings + ";" + TempStr;
 						else
 						{
-							GetEnvironmentVariableW(str_utf16("SystemRoot"), TempStr.f_GetStr(32768), 32768);
+							GetEnvironmentVariableW(str_utf16("SystemRoot"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
 
 							if (TempStr.f_GetLen())
 								Strings = Strings + ";" + TempStr + "\\Symbols";
 
-							GetEnvironmentVariableW(str_utf16("PATH"), TempStr.f_GetStr(32768), 32768);
+							GetEnvironmentVariableW(str_utf16("PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
 
 							if (TempStr.f_GetLen())
 								Strings = Strings + ";" + TempStr;
