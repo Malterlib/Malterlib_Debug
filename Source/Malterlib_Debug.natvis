@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?> 
-<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010"> 
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
   <!-- CStr -->
 
@@ -17,7 +17,7 @@
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrVMem&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Dynamic&lt;*&gt; &gt; &gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrAnsi&gt;"></AlternativeType>
-        
+
         <DisplayString Condition="(m_pData == 0)">
       ""
     </DisplayString>
@@ -313,7 +313,7 @@
       </Item>
     </Expand>
   </Type>
-  
+
   <Type Name="NMib::NEncoding::TCJSONObject&lt;*&gt;">
     <DisplayString>
       {mp_Objects}
@@ -371,21 +371,21 @@
   </Type>
 
     <Type Name="NMib::NConcurrency::TCActorInternal&lt;*&gt;">
-    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo != 0">
-      {*(($T1 *)mp_pActor.m_Data.m_pPointTo)}
+    <DisplayString Condition="mp_pActorUnsafe._Storage._Value != 0">
+      {*(($T1 *)mp_pActorUnsafe._Storage._Value)}
     </DisplayString>
     <DisplayString>
       Destroyed
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo != 0">
-        *(($T1 *)mp_pActor.m_Data.m_pPointTo)
+      <ExpandedItem Condition="mp_pActorUnsafe._Storage._Value != 0">
+        *(($T1 *)mp_pActorUnsafe._Storage._Value)
       </ExpandedItem>
       <Item Name="[Ref Count]">
-        m_RefCount._My_val + 1
+        m_RefCount._Storage._Value + 1
       </Item>
       <Item Name="[Weak Count]">
-        m_WeakRefCount._My_val
+        m_WeakRefCount._Storage._Value
       </Item>
       <Item Name="[Internal Actor Raw View]">
         *this,!
@@ -394,15 +394,15 @@
   </Type>
 
   <Type Name="NMib::NConcurrency::CActorHolder">
-    <DisplayString Condition="mp_pActor.m_Data.m_pPointTo != 0">
-      {*mp_pActor.m_Data.m_pPointTo}
+    <DisplayString Condition="mp_pActorUnsafe._Storage._Value != 0">
+      {*mp_pActorUnsafe._Storage._Value}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="mp_pActor.m_Data.m_pPointTo != 0">
-        *mp_pActor.m_Data.m_pPointTo
+      <ExpandedItem Condition="mp_pActorUnsafe._Storage._Value != 0">
+        *mp_pActorUnsafe._Storage._Value
       </ExpandedItem>
       <Item Name="[Internal Actor Raw View]">
         *this,!
@@ -428,16 +428,16 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCDLinkAggregateListNoPrevPtr&lt;*&gt;">
+  <Type Name="NMib::NIntrusive::CDLinkAggregateListNoPrevPtr">
     <Expand>
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Next]" Condition="m_Data.m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_Data.m_pNextPtr) &amp; ~mint(1)))->m_Data.m_pNextPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)(((mint)m_Data.m_pNextPtr) &amp; ~mint(1)))
+      <Item Name ="[Next]" Condition="m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)m_pNextPtr) &amp; ~mint(1)))->m_pNextPtr) &amp; mint(1)) != mint(1)">
+        *((CThis *)(((mint)m_pNextPtr) &amp; ~mint(1)))
       </Item>
-      <Item Name ="[Prev]" Condition="m_Data.m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)((CThis *)m_Data.m_pPrevPtr)->m_Data.m_pNextPtr) &amp; ~mint(1)))->m_Data.m_pNextPtr) &amp; mint(1)) != mint(1)">
-        *((CThis *)m_Data.m_pPrevPtr)
+      <Item Name ="[Prev]" Condition="m_pNextPtr != 0 &amp;&amp; (((mint)((CThis *)(((mint)((CThis *)m_pPrevPtr)->m_pNextPtr) &amp; ~mint(1)))->m_pNextPtr) &amp; mint(1)) != mint(1)">
+        *((CThis *)m_pPrevPtr)
       </Item>
     </Expand>
   </Type>
@@ -471,8 +471,8 @@
   </Type>
 
 
-  <!-- NMib::NIntrusive::TDLink<*> -->
-  <Type Name="NMib::NIntrusive::TDLink&lt;*&gt;">
+  <!-- NMib::NIntrusive::TCDLink<*> -->
+  <Type Name="NMib::NIntrusive::TCDLink&lt;*&gt;">
     <DisplayString>
       {m_Link}
     </DisplayString>
@@ -545,7 +545,7 @@
             (CThis *)
             (
               (
-                ((mint)m_Data.m_pNextPtr)&amp;~mint(1))
+                ((mint)m_pNextPtr)&amp;~mint(1))
                 *
                 (
                   mint(1)
@@ -553,10 +553,10 @@
                   (
                     (
                       (mint)
-                      ((CThis *)((mint)m_Data.m_pNextPtr &amp; ~mint(1)))->m_Data.m_pNextPtr
+                      ((CThis *)((mint)m_pNextPtr &amp; ~mint(1)))->m_pNextPtr
                       |
-                      (mint)((CThis *)((mint)m_Data.m_pNextPtr &amp; ~mint(1))
-                    )->m_Data.m_pPrevPtr
+                      (mint)((CThis *)((mint)m_pNextPtr &amp; ~mint(1))
+                    )->m_pPrevPtr
                   )
                   &amp;
                   mint(1)
@@ -628,7 +628,7 @@
           (
           (
           (
-          (mint)m_Data.m_pNextPtr
+          (mint)m_pNextPtr
           )
           &amp;
           ~mint(1)
@@ -643,17 +643,17 @@
           (
           (CThis *)
           (
-          (mint)m_Data.m_pNextPtr &amp; ~mint(1)
+          (mint)m_pNextPtr &amp; ~mint(1)
           )
-          )->m_Data.m_pNextPtr
+          )->m_pNextPtr
           |
           (mint)
           (
           (CThis *)
           (
-          (mint)m_Data.m_pNextPtr &amp; ~mint(1)
+          (mint)m_pNextPtr &amp; ~mint(1)
           )
-          )->m_Data.m_pPrevPtr
+          )->m_pPrevPtr
           )
           &amp;
           mint(1)
@@ -924,17 +924,17 @@
   </Type>
 
   <Type Name="NMib::NStorage::TCAggregate&lt;*,*,*&gt;">
-    <DisplayString Condition="m_bConstructed &amp;&amp; !m_bDestructed">
+    <DisplayString Condition="(m_LifeTimeFlags._Storage._Value &amp; 1) &amp;&amp; !(m_LifeTimeFlags._Storage._Value &amp; 2)">
       {*((CData *)&amp;m_ObjectSpace)}
     </DisplayString>
-    <DisplayString Condition="m_bDestructed">
+    <DisplayString Condition="(m_LifeTimeFlags._Storage._Value &amp; 2)">
       Destructed
     </DisplayString>
-    <DisplayString Condition="!m_bConstructed">
+    <DisplayString Condition="!(m_LifeTimeFlags._Storage._Value &amp; 1)">
       Not constructed
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_bConstructed &amp;&amp; !m_bDestructed">
+      <ExpandedItem Condition="(m_LifeTimeFlags._Storage._Value &amp; 1) &amp;&amp; !(m_LifeTimeFlags._Storage._Value &amp; 2)">
         *((CData *)&amp;m_ObjectSpace)
       </ExpandedItem>
     </Expand>
@@ -942,14 +942,14 @@
 
 
   <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
-    <DisplayString Condition="(((mint)m_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
+    <DisplayString Condition="(((mint)mp_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
       + {mp_Key.m_Name}   {mp_Data}
     </DisplayString>
     <DisplayString>
       {mp_Key.m_Name}   {mp_Data}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="(((mint)m_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
+      <ExpandedItem Condition="(((mint)mp_Children.m_Tree.m_Root) &amp; ~mint(3)) != 0">
         mp_Children.m_Tree
       </ExpandedItem>
     </Expand>
@@ -1074,10 +1074,20 @@
     </Expand>
   </Type>
 
+  <Type Name="NMib::NEncoding::NPrivate::CJSONBoolean">
+    <DisplayString>{m_bValue}</DisplayString>
+  </Type>
+
+  <Type Name="NMib::NEncoding::NPrivate::CJSONNull">
+    <DisplayString>null</DisplayString>
+  </Type>
+
   <Type Name="NMib::NStorage::TCVariantCommon&lt;*&gt;">
     <Intrinsic Name="index" Expression="(CIndexType)mp_Storage.m_CurrentType"/>
     <Intrinsic Name="length" Expression="mc_Length"/>
-    <DisplayString Condition="length() &gt; 0 &amp;&amp; index() == $T2::mc_Member">{*(($T2::CType *)&amp;mp_Storage)}</DisplayString>
+    <Intrinsic Name="has_void" Expression="$T2::mc_bDebugIsVoid"/>
+    <DisplayString Condition="has_void() &amp;&amp; length() &gt; 0 &amp;&amp; index() == $T2::mc_Member">void</DisplayString>
+    <DisplayString Condition="!has_void() &amp;&amp; length() &gt; 0 &amp;&amp; index() == $T2::mc_Member">{*(($T2::CDebugType *)&amp;mp_Storage)}</DisplayString>
     <DisplayString Condition="length() &gt; 1 &amp;&amp; index() == $T3::mc_Member" Optional="true">{*(($T3::CType *)&amp;mp_Storage)}</DisplayString>
     <DisplayString Condition="length() &gt; 2 &amp;&amp; index() == $T4::mc_Member" Optional="true">{*(($T4::CType *)&amp;mp_Storage)}</DisplayString>
     <DisplayString Condition="length() &gt; 3 &amp;&amp; index() == $T5::mc_Member" Optional="true">{*(($T5::CType *)&amp;mp_Storage)}</DisplayString>
@@ -1145,7 +1155,8 @@
       <Item Name ="Type">
         ((CIndexType)mp_Storage.m_CurrentType)
       </Item>
-      <Item Name ="Value" Condition="length() &gt; 0 &amp;&amp; index() == $T2::mc_Member">(*(($T2::CType *)&amp;mp_Storage))</Item>
+      <Item Name ="Value" Condition="has_void() &amp;&amp; length() &gt; 0 &amp;&amp; index() == $T2::mc_Member">"void",sb</Item>
+      <Item Name ="Value" Condition="!has_void() &amp;&amp; length() &gt; 0 &amp;&amp; index() == $T2::mc_Member">(($T2::CDebugType *)&amp;mp_Storage)</Item>
       <Item Name ="Value" Condition="length() &gt; 1 &amp;&amp; index() == $T3::mc_Member" Optional="true">(*(($T3::CType *)&amp;mp_Storage))</Item>
       <Item Name ="Value" Condition="length() &gt; 2 &amp;&amp; index() == $T4::mc_Member" Optional="true">(*(($T4::CType *)&amp;mp_Storage))</Item>
       <Item Name ="Value" Condition="length() &gt; 3 &amp;&amp; index() == $T5::mc_Member" Optional="true">(*(($T5::CType *)&amp;mp_Storage))</Item>

@@ -74,9 +74,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 		return fg_CreateDynamicValue(self.m_ValueObject, _Name, _pNodePointer - self.m_Offset, self.m_DataType)
 
 	def fp_GetNext(self, _pNode):
-		pNext = _pNode.GetValueForExpressionPath('.m_Data.m_pNextPtr')
-		if not pNext:
-			pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr')
+		pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr')
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
 
@@ -295,7 +293,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 		return fg_CreateDynamicValue(self.m_ValueObject, _Name, MemberAddress, self.m_ValueType)
 
 	def fp_GetNext(self, _pNode):
-		pNext = _pNode.GetValueForExpressionPath('.m_Data.m_pNextPtr')
+		pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr')
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
 
