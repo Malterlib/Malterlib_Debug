@@ -68,7 +68,7 @@ namespace NMib
 				COSXStackTraceInfo m_StackTraceInfo;
 				bool m_bValidCache = false;
 				bool m_bSuccessful = false;
-				NThread::CSpinLock m_Lock;
+				NThread::CLowLevelLock m_Lock;
 			};
 
 			/*
@@ -133,12 +133,12 @@ namespace NMib
 			private:
 				mint mp_AddressOffset;
 
-				NMib::NThread::CSpinLock mp_Lock;
+				NMib::NThread::CLowLevelLock mp_Lock;
 				CSymStr mp_SymbolsFilename;
 				CHeader mp_Header;
 				void *mp_pSymbols;
 
-				NThread::CSpinLock mp_CacheLock;
+				NThread::CLowLevelLock mp_CacheLock;
 				NContainer::TCMap<mint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
 
 			private:
