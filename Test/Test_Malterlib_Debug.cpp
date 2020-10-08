@@ -130,7 +130,7 @@ public:
 				}
 			}
 		};
-#if defined(DPlatformFamily_Linux)
+#if defined(DPlatformFamily_Linux) && !defined(DMibSanitizerEnabled)
 		DMibTestSuite("StackTraceInfoExternal")
 		{
 			{
@@ -478,8 +478,8 @@ public:
 			fp32 Float32 = 5.5f;
 			fp64 Float64 = 6.8;
 
-			NStorage::TCAggregate<int32> Aggregate = { DAggregateInit };
-			NStorage::TCAggregate<int32> AggregateEmpty = { DAggregateInit };
+			static NStorage::TCAggregate<int32> Aggregate = { DAggregateInit };
+			static NStorage::TCAggregate<int32> AggregateEmpty = { DAggregateInit };
 
 			auto CleanupAggregate
 				= fg_OnScopeExit
