@@ -26,7 +26,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 
 
-	CConnection::CConnection(NThread::CSemaphoreReportableAggregate* _pReportTo)
+	CConnection::CConnection(NThread::CSemaphoreAggregate* _pReportTo)
 		: mp_pReportTo(_pReportTo)
 		, mp_Mode(EMode_Listen)
 		, mp_ConnectionState(EState_None)
@@ -37,7 +37,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			mp_FreePackets.f_Insert(TCRemoteDebuggerPool<CPacket>::fs_New());
 	}
 
-	CConnection::CConnection(EMode _Mode, CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreReportableAggregate* _pReportTo)
+	CConnection::CConnection(EMode _Mode, CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate* _pReportTo)
 		: mp_pReportTo(_pReportTo)
 		, mp_Mode(_Mode)
 		, mp_Address(_Address)
@@ -58,10 +58,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CNetAddress Address = CSocket::fs_ResolveAddress(AddressStr);
 				Address.f_SetPort(_Port);
 
-				if (mp_pReportTo)
-					mp_SocketSema.f_ReportTo(mp_pReportTo);
-
-				mp_Socket.f_Listen(Address, &mp_SocketSema, NNetwork::ENetFlag_None);
+				mp_Socket.f_Listen(Address, mp_pReportTo, NNetwork::ENetFlag_None);
 
 				mp_ConnectionState.f_Store(EState_Listening);
 			}
@@ -172,7 +169,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			mp_SendData.f_InsertLast(_pBlock);
 		}
 		if (mp_bDataToSend.f_Exchange(1) == 0)
-			mp_SocketSema.f_Signal();
+			mp_pThread->m_EventWantQuit.f_Signal();
 	}
 
 	CPacketReference CConnection::f_ReceivePacket()
@@ -190,13 +187,13 @@ namespace NMib::NDebug::NRemoteDebugger
 	}
 
 	// Can return nullptr. Wait on _pReportTo for when connections.
-	TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> CConnection::f_Accept(NThread::CSemaphoreReportableAggregate* _pReportTo)
+	TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> CConnection::f_Accept(NThread::CSemaphoreAggregate* _pReportTo)
 	{
 		DMibFastCheck(mp_Mode == EMode_Listen);
 
 		TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> pNewConn = fg_Construct(_pReportTo);
 
-		pNewConn->mp_Socket.f_Accept(&mp_Socket, &pNewConn->mp_SocketSema);
+		pNewConn->mp_Socket.f_Accept(&mp_Socket, &pNewConn->mp_pThread->m_EventWantQuit);
 
 		if (pNewConn->mp_Socket.f_IsValid())
 		{
@@ -213,8 +210,6 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CConnection::fp_Process()
 	{
-		mp_SocketSema.f_ReportTo(&mp_pThread->m_EventWantQuit);
-
 		if (mp_Mode != EMode_Listen)
 		{
 			// We perform the connection here as at the moment the network subsystem does not support
@@ -229,7 +224,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			{
 				try
 				{
-					mp_Socket.f_Connect(Address, &mp_SocketSema);
+					mp_Socket.f_Connect(Address, &mp_pThread->m_EventWantQuit);
 				}
 				catch (NMib::NNetwork::CExceptionNet const &_Error)
 				{
@@ -472,7 +467,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		{
 			fp_Initialize(mp_Features);
 
-			mp_pConnection = fg_Construct(CConnection::EMode_DelayedConnect, mp_Address, mp_Port, &mp_ReadReady);
+			mp_pConnection = fg_Construct(CConnection::EMode_DelayedConnect, mp_Address, mp_Port, &mp_pThread->m_EventWantQuit);
 
 			{
 				// Notify server of PID
@@ -537,8 +532,6 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CClient::fp_Process()
 	{
-		mp_pThread->m_EventWantQuit.f_ReportTo(&mp_ReadReady);
-
 		while(mp_pThread->f_GetState() != NThread::EThreadState_EventWantQuit)
 		{
 			auto Packet = mp_pConnection->f_ReceivePacket();
@@ -573,7 +566,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				}
 			}
 
-			mp_ReadReady.f_Wait();
+			mp_pThread->m_EventWantQuit.f_Wait();
 		}
 	}
 
@@ -675,7 +668,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		while(mp_pThread->f_GetState() != NThread::EThreadState_EventWantQuit)
 		{
-			if ( !!(mp_pConnection = pListener->f_Accept(&mp_ConnectionReady)) )
+			if ( !!(mp_pConnection = pListener->f_Accept(&mp_pThread->m_EventWantQuit)) )
 			{
 				return;
 			}
@@ -686,9 +679,6 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CServer::fp_Process_Connected()
 	{
-
-		mp_pThread->m_EventWantQuit.f_ReportTo(&mp_ConnectionReady);
-
 		{
 			CSysPacket_Initialize InitPacket = { uint32(mp_Settings.m_Features) };
 			mp_pConnection->f_SendPacket(EChannel_System, EPacket_Sys_Initialize, InitPacket, nullptr);
@@ -734,7 +724,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				}
 			}
 
-			mp_ConnectionReady.f_Wait();
+			mp_pThread->m_EventWantQuit.f_Wait();
 		}
 	}
 

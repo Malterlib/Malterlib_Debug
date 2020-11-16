@@ -208,9 +208,8 @@ namespace NMib::NDebug::NRemoteDebugger
 		NAtomic::TCAtomic<EState> mp_ConnectionState;
 
 		NNetwork::CSocket mp_Socket;
-		NThread::CSemaphoreReportable mp_SocketSema;
 
-		NThread::CSemaphoreReportableAggregate* mp_pReportTo;
+		NThread::CSemaphoreAggregate* mp_pReportTo;
 
 		NAtomic::TCAtomic<uint32> mp_bDataToSend;
 		NThread::CMutual mp_SendLock;
@@ -236,8 +235,8 @@ namespace NMib::NDebug::NRemoteDebugger
 		CPacket *fp_GetPacket();
 
 	public:
-		CConnection(NThread::CSemaphoreReportableAggregate* _pReportTo); // Should be private. Do not use.
-		CConnection(EMode _Mode, NStr::CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreReportableAggregate* _pReportTo);
+		CConnection(NThread::CSemaphoreAggregate* _pReportTo); // Should be private. Do not use.
+		CConnection(EMode _Mode, NStr::CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate* _pReportTo);
 		~CConnection();
 
 		EState f_GetState() const;
@@ -266,7 +265,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		// For listen connections
 
 		// Can return nullptr. Wait on _pReportTo for when connections.
-		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> f_Accept(NThread::CSemaphoreReportableAggregate* _pReportTo);
+		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> f_Accept(NThread::CSemaphoreAggregate* _pReportTo);
 	};
 
 	class CReportMemoryToRemote;
@@ -278,7 +277,6 @@ namespace NMib::NDebug::NRemoteDebugger
 //			TCFunction<void(TCFunction<void()>&&)> mp_Dispatcher;
 
 		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> mp_pConnection;
-		NThread::CSemaphoreReportable mp_ReadReady;
 
 		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> mp_pThread;
 
@@ -312,7 +310,6 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> mp_pConnection;
 
-		NThread::CSemaphoreReportable mp_ConnectionReady;
 		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> mp_pThread;
 
 		uint64 mp_ClientPID;
