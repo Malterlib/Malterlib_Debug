@@ -116,6 +116,13 @@ def fg_GetValueAsUnsigned(_Value):
 
 	return 0
 
+def fg_IsArm64(_Value):
+	Target = _Value.GetTarget()
+	if Target is not None:
+		if Target.GetTriple() == "arm64-apple-macosx11.0.0":
+			return True
+	return False
+
 def fg_GetAddressOf(_Value):
 	Address = _Value.GetAddress()
 	Target = lldb.target

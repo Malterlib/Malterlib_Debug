@@ -22,6 +22,10 @@ class CSynthProvider_TCFunction(CSynthProvider_Common):
 				return
 			if self.m_ValueObjectType.IsPointerType():
 				return
+				
+			if fg_IsArm64(self.m_ValueObject):
+				return
+
 			self.m_NumExtraChildren = 0
 			self.m_Value = None
 			self.m_bEmpty = False
@@ -107,7 +111,7 @@ class CSynthProvider_TCFunction(CSynthProvider_Common):
 		return 1 + self.m_NumExtraChildren
 
 def fg_MibLLDBInit_Function(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCFunction<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCMutableFunction<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCFunction, "(^|^const )NMib::NFunction::TCMovableFunction<.*>$", True)

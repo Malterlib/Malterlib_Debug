@@ -16,6 +16,9 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 
+			if fg_IsArm64(self.m_ValueObject):
+				return
+
 			self.m_NumExtraChildren = 0
 
 			Frame = self.m_ValueObject.GetProcess().GetSelectedThread().GetSelectedFrame()
@@ -82,7 +85,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 
 
 def fg_MibLLDBInit_ThreadLocal(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCThreadLocal, "(^|^const )NMib::NThread::TCThreadLocal<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NThread::TCThreadLocal<.*>$", True)
 	
