@@ -10,6 +10,28 @@ namespace NMib
 {
 	void fg_MalterlibFatalError(const ch8 *_pMessage);
 
+	/***************************************************************************************************\
+	|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+	| Tests																						|
+	|___________________________________________________________________________________________________|
+	\***************************************************************************************************/
+
+#ifndef DMibConfig_Tests_Enable
+#	if defined(DMibDebug) || defined(DConfig_ReleaseTesting)
+#		define DMibConfig_Tests_Enable 1
+	DMibCompilerMessage("-- Tests automatically enabled")
+#	else
+#		define DMibConfig_Tests_Enable 0
+	DMibCompilerMessage("-- Tests automatically disabled")
+#	endif
+#else
+#	if DMibConfig_Tests_Enable
+	DMibCompilerMessage("-- Tests forcefully enabled")
+#	else
+	DMibCompilerMessage("-- Tests forcefully disabled")
+#	endif
+#endif
+
 	namespace NDebug
 	{
 		
@@ -53,10 +75,9 @@ namespace NMib
 #			define DDTraceTimed2 DMibDTraceTimed2
 #		endif
 
-
 		// If trace enable has not been specifically set, enable it
 #		ifndef DMibEnableTrace
-#			if defined(DConfig_Release) && !defined(DMibConfig_Tests_Enable)
+#			if defined(DConfig_Release) && !DMibConfig_Tests_Enable
 #				define DMibEnableTrace 0
 #			else
 #				define DMibEnableTrace 1
@@ -95,28 +116,6 @@ namespace NMib
 #		endif
 
 	}
-
-	/***************************************************************************************************\
-	|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-	| Tests																						|
-	|___________________________________________________________________________________________________|
-	\***************************************************************************************************/
-
-#ifndef DMibConfig_Tests_Enable
-#	if defined(DMibDebug) || defined(DConfig_ReleaseTesting)
-#		define DMibConfig_Tests_Enable 1
-	DMibCompilerMessage("-- Tests automatically enabled")
-#	else
-#		define DMibConfig_Tests_Enable 0
-	DMibCompilerMessage("-- Tests automatically disabled")
-#	endif
-#else
-#	if DMibConfig_Tests_Enable
-	DMibCompilerMessage("-- Tests forcefully enabled")
-#	else
-	DMibCompilerMessage("-- Tests forcefully disabled")
-#	endif
-#endif
 
 	/***************************************************************************************************\
 	|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
