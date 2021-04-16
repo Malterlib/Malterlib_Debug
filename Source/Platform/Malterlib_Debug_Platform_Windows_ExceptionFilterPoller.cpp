@@ -50,7 +50,7 @@ namespace NMib
 				CSubSystem_Debug_Platform_Windows *pThis = (CSubSystem_Debug_Platform_Windows *)Context;
 				pThis->m_bPollCheckExceptionFilterTimes = 1000/25;
 				pThis->m_ExceptionFilterPoller.m_EventWantQuit.f_Signal();
-				if (pThis->m_bExceptionFilterPollerInstalled.f_Exchange(1) == 0)
+				if (!fg_GetSys()->f_DestroyingThreadSpecific() && pThis->m_bExceptionFilterPollerInstalled.f_Exchange(1) == 0)
 					pThis->m_ExceptionFilterPoller.f_Start();
 
 				/*if (NotificationReason == 1)
