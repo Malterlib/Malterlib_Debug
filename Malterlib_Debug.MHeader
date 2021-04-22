@@ -11,7 +11,7 @@ Import "../Core/Lib_Malterlib.MTarget"
 	}
 }
 
-Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules)"
+Property.MalterlibBoostModules =+ ["lockfree", "align", "parameter"]
 {
 	!!MalterlibMemoryManager_Stats_EnableCallstack true
 }
@@ -35,7 +35,7 @@ Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules
 			{
 				Compile.Disabled true
 				{
-					!PlatformFamily "@(PlatformFamilyFromFile)"
+					!PlatformFamily PlatformFamilyFromFile
 				}
 			}
 		}
@@ -48,20 +48,13 @@ Property.MalterlibBoostModules "lockfree;align;parameter;@(MalterlibBoostModules
 
 Property
 {
-	MalterlibLibrary_Debug true
-	{
-		&
-		{
-			MalterlibLibrary_Debug ""
-			MalterlibLibrary_All true
-		}
-	}
-	MalterlibSubLibraries "Debug;@(MalterlibSubLibraries)"
+	MalterlibLibrary_Debug define bool = MalterlibLibrary_All
+	MalterlibSubLibraries =+ "Debug"
 	{
 		!!MalterlibLibrary_Debug true
 	}
-//	MalterlibSubLibrarySeparate_Lib_Malterlib_Debug true
-	MalterlibIncludeRoots "@('Include'->MakeAbsolute());@(MalterlibIncludeRoots)"
+//	MalterlibSubLibrarySeparate_Lib_Malterlib_Debug define bool = true
+	MalterlibIncludeRoots =+ "Include"->MakeAbsolute()
 	{
 		!!MalterlibLibrary_Debug true
 	}
@@ -71,8 +64,8 @@ Property
 {
 	!!MalterlibEnableInternalTests true
 	
-	MalterlibTests "Malterlib_Debug;@(MalterlibTests)"
-	MalterlibTestFiles_Malterlib_Debug "@('Test/*'->MakeAbsolute())"
+	MalterlibTests =+ "Malterlib_Debug"
+	MalterlibTestFiles_Malterlib_Debug define [type(CEntity)] = ["Test/*"->MakeAbsolute()]
 }
 
 %Group "~Automatic/NatVis"
@@ -80,7 +73,7 @@ Property
 	%File "Source/*.natvis"
 }
 
-Target.ExtraGroups "~Automatic/NatVis;@(Target.ExtraGroups)"
+Target.ExtraGroups =+ "~Automatic/NatVis"
 {
 	&
 	{

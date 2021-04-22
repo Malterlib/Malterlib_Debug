@@ -12,7 +12,7 @@
 	{
 		Type "DynamicLibrary"
 		BaseName "MalterlibVSE"
-		ModuleDefinitionFile "@('MalterlibVSE.def'->MakeAbsolute())"
+		ModuleDefinitionFile "MalterlibVSE.def"->MakeAbsolute()
 	}
 	Compile
 	{
