@@ -18,6 +18,15 @@ Property.MalterlibBoostModules =+ ["lockfree", "align", "parameter"]
 
 %Group "{Malterlib}/{Lib_Malterlib_Debug}"
 {
+	Compile
+	{
+		!!CompileDialect "C"
+		PreprocessorDefines =+ `DMibConfig_MemoryManager_Stats_Enable=@(MalterlibMemoryManager_Stats_Enable ? "1" : "0")`
+		{
+			!!MalterlibMemory_Shims_Enable true
+		}
+	}
+
 	%Group "Debug"
 	{
 		%Group "Include"
