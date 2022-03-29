@@ -57,7 +57,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		template <typename ...tfp_CParams>
 		static t_CType *fs_New(tfp_CParams &&...p_Params)
 		{
-			auto Memory = NMemory::CAllocator_NonTrackedHeap::f_AllocSafe(sizeof(t_CType), NTraits::TCAlignmentOf<t_CType>::mc_Value);
+			auto Memory = NMemory::CAllocator_NonTrackedHeap::f_AllocSafe(sizeof(t_CType), alignof(t_CType));
 			auto pReturn = new(Memory.m_pMemory) t_CType(fg_Forward<tfp_CParams>(p_Params)...);
 			Memory.f_Claim();
 			return pReturn;

@@ -538,12 +538,9 @@ namespace NMib
 				bool bRecurseRet = true;
 
 				Dwarf_Die pRetDie;
-				Dwarf_Die pPrevDie;
 
 				// Check siblings
 				Dwarf_Error Error;
-
-				pPrevDie = nullptr;
 
 				while (_pDie && Ret == DW_DLV_OK)
 				{
