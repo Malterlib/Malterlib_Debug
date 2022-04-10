@@ -9,6 +9,8 @@
 namespace NMib
 {
 	void fg_MalterlibFatalError(const ch8 *_pMessage);
+	
+	NStr::CStr fg_DebugColor(NStr::CStr const &_Data);
 
 	/***************************************************************************************************\
 	|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
@@ -34,7 +36,6 @@ namespace NMib
 
 	namespace NDebug
 	{
-		
 		// If dtrace enable has not been specifically set, enable it incase we are in debug mode
 #		ifndef DMibEnableDTrace
 #			ifdef DMibDebug
