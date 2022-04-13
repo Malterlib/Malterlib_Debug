@@ -59,6 +59,10 @@ public:
 
 	void f_DoTests()
 	{
+#ifdef DMibDebug_NoSymbols
+		return;
+#endif
+
 #ifdef DPlatformFamily_Linux
 		ETest ExpectLinuxFail = ETest_ExpectFail;
 #else

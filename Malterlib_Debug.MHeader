@@ -69,12 +69,33 @@ Property
 	}
 }
 
+%Group "{Test}/{Malterlib_Debug}"
+{
+	Compile
+	{
+		!!CompileDialect "C"
+
+		PreprocessorDefines =+ "DMibDebug_NoSymbols"
+		{
+			!MalterlibDebugSymbolsEnable true
+		}
+	}
+
+	%Group "Tests"
+	{
+		%File "Test/*"
+	}
+}
+
+
+
 Property
 {
 	!!MalterlibEnableInternalTests true
 	
 	MalterlibTests =+ "Malterlib_Debug"
 	MalterlibTestFiles_Malterlib_Debug define [type(CEntity)] = ["Test/*"->MakeAbsolute()]
+	MalterlibTestExtraGroups_Malterlib_Debug define [string] = ["{Test}/{Malterlib_Debug}"]
 }
 
 %Group "~Automatic/NatVis"
