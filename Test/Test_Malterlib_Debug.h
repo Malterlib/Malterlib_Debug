@@ -8,6 +8,7 @@ public:
 		: m_Value(_Value)
 	{
 	}
+
 	mint m_Value;
 
 	DMibListLinkDS_Link(CTestClass, m_Link);
@@ -20,6 +21,7 @@ public:
 		: m_Value(_Value)
 	{
 	}
+
 	mint m_Value;
 	fp32 m_Value0 = 55.55f;
 	fp32 m_Value1 = 6;
@@ -35,15 +37,15 @@ struct CTestRecursiveLinked
 	DMibListLinkDS_List(CTestRecursiveLinked, m_Link) m_Children;
 };
 
-class CTest2 : public NMib::NStorage::TCSharedPointerIntrusiveBase<>
+class CTest2
 {
 public:
+
 	CTest2(int _Value)
 		: m_Value(_Value)
 	{
 	}
-	mint m_Value;
-	
+
 	class CCompare
 	{
 	public:
@@ -53,6 +55,8 @@ public:
 		}
 	};
 
+	NMib::NStorage::CIntrusiveRefCount m_RefCount;
+	mint m_Value;
 	NMib::NIntrusive::TCAVLLink<> m_AVLLink;
 	DMibListLinkS_Link(CTest2, m_Link);
 	DMibAutoClearPtrDeclare;

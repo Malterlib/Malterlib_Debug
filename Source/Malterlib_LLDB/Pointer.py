@@ -152,8 +152,8 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 			self.m_DataType = fg_GetPointerValueType(self.m_Value)
 			fg_PrecacheType(self.m_DataType)
 			if self.m_Value.GetValueAsUnsigned() != 0:
-				self.m_RefCount = self.m_Value.GetValueForExpressionPath('->m_RefCount.__a_')
-				self.m_WeakRefCount = self.m_Value.GetValueForExpressionPath('->m_WeakRefCount.__a_')
+				self.m_RefCount = self.m_Value.GetValueForExpressionPath('->m_RefCount.m_RefCount.__a_')
+				self.m_WeakRefCount = self.m_Value.GetValueForExpressionPath('->m_RefCount.m_WeakRefCount.__a_')
 				if fg_GetValidCanonicalType(self.m_DataType).GetName().startswith('NMib::NStorage::NPrivate::TCSharedPointerCounter'):
 					Data = self.m_Value.GetChildMemberWithName('m_Data')
 					self.m_DataType = fg_GetValueType(Data)
