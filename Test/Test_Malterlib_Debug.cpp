@@ -153,7 +153,10 @@ public:
 
 					DMibTest(DMibExpr((void*)pInfo->m_pModuleName) != DMibExpr(nullptr));
 					if (pInfo->m_pModuleName)
-						DMibExpect(NFile::CFile::fs_GetFileNoExt(NFile::CFile::fs_GetFileNoExt(NStr::CStr(pInfo->m_pModuleName))), ==, "libdl");
+					{
+						auto ModuleName = NFile::CFile::fs_GetFileNoExt(NFile::CFile::fs_GetFileNoExt(NStr::CStr(pInfo->m_pModuleName)));
+						DMibTest(DMibExpr(ModuleName) == DMibExpr("libdl") || DMibExpr(ModuleName) == DMibExpr("libc"));
+					}
 
 					NSys::fg_Debug_ReleaseStackTraceInfo(pInfo);
 				}
