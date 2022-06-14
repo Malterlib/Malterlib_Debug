@@ -5,7 +5,7 @@
 #include <Mib/Cryptography/UUID>
 #include <Mib/Process/ProcessLaunch>
 
-#include "Malterlib_Debug_Platform_OSX_Symbols.h"
+#include "Malterlib_Debug_Platform_MacOS_Symbols.h"
 
 #include <execinfo.h>
 #include <dlfcn.h>

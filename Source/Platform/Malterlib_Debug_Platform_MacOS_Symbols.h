@@ -52,9 +52,9 @@ namespace NMib
 				CSymStr m_Function;
 			};
 
-			struct COSXStackTraceInfo : public CStackTraceInfo
+			struct CMacOSStackTraceInfo : public CStackTraceInfo
 			{
-				COSXStackTraceInfo()
+				CMacOSStackTraceInfo()
 				{
 					this->m_pContext = nullptr;
 				}
@@ -65,7 +65,7 @@ namespace NMib
 
 			struct CAddressInfoCache
 			{
-				COSXStackTraceInfo m_StackTraceInfo;
+				CMacOSStackTraceInfo m_StackTraceInfo;
 				bool m_bValidCache = false;
 				bool m_bSuccessful = false;
 				NThread::CLowLevelLock m_Lock;

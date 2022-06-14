@@ -3,8 +3,8 @@
 
 using namespace NMib;
 
-#ifdef DPlatformFamily_OSX
-	#include <Mib/Debug/PlatformSpecific/OSXSymbols>
+#ifdef DPlatformFamily_macOS
+	#include <Mib/Debug/PlatformSpecific/MacOSSymbols>
 #elif defined(DPlatformFamily_Linux)
 	#include <dlfcn.h>
 #endif
@@ -122,7 +122,7 @@ public:
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fg_LookupThisFunc")) != DMibExpr(-1))(ExpectLinuxFail);
 					}
 
-#ifndef DPlatformFamily_OSX
+#ifndef DPlatformFamily_macOS
 					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
 					if ( pInfo->m_pSourceFileName)
 					{
@@ -180,7 +180,7 @@ public:
 					if (pInfo->m_pFunctionName)
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fs_LookupThisStaticMemberFunc")) != DMibExpr(-1))(ExpectLinuxFail);
 
-#ifndef DPlatformFamily_OSX
+#ifndef DPlatformFamily_macOS
 					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
 					if ( pInfo->m_pSourceFileName)
 					{
@@ -193,8 +193,8 @@ public:
 			}
 		};
 //*/
-	#if defined(DPlatformFamily_OSX) && 0
-		DMibTestSuite("OSXSymbols")
+	#if defined(DPlatformFamily_macOS) && 0
+		DMibTestSuite("MacOSSymbols")
 		{
 			auto &Symbols = NMib::NDebug::NPlatform::fg_GetSymbols();
 

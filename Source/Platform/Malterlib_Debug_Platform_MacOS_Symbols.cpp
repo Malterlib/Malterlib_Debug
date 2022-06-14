@@ -1,7 +1,7 @@
 // Copyright © 2015 Hansoft AB 
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
-#include "Malterlib_Debug_Platform_OSX_Symbols.h"
+#include "Malterlib_Debug_Platform_MacOS_Symbols.h"
 #include <mach-o/loader.h>
 #include <mach-o/dyld.h>
 
@@ -12,19 +12,19 @@ namespace NMib
 		namespace NPlatform
 		{
 
-			struct CSubSystem_Debug_Platform_OSX_Symbols : public CSubSystem
+			struct CSubSystem_Debug_Platform_MacOS_Symbols : public CSubSystem
 			{
 				CSymbols m_Symbols;
-				~CSubSystem_Debug_Platform_OSX_Symbols()
+				~CSubSystem_Debug_Platform_MacOS_Symbols()
 				{
 				}
 			};
 			
-			constinit TCSubSystem<CSubSystem_Debug_Platform_OSX_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_OSX_Symbols = {DAggregateInit};
+			constinit TCSubSystem<CSubSystem_Debug_Platform_MacOS_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_MacOS_Symbols = {DAggregateInit};
 			
 			CSymbols &fg_GetSymbols()
 			{
-				return g_SubSystem_Debug_Platform_OSX_Symbols->m_Symbols;
+				return g_SubSystem_Debug_Platform_MacOS_Symbols->m_Symbols;
 			}
 			
 			template <typename t_CSorter, typename t_CFind>
