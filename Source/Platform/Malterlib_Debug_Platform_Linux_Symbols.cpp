@@ -205,7 +205,7 @@ namespace NMib
 					(
 							[&](CLineEntry const& _Entry, mint _ToFind)
 							{
-								return _Entry.m_PC < _ToFind;
+								return _Entry.m_PC <=> _ToFind;
 							}
 						,	_Address					
 					)
@@ -246,7 +246,7 @@ namespace NMib
 					(
 							[&](CFunction const& _Func, mint _Address)
 							{
-								return _Func.m_LowPC < _Address;
+								return _Func.m_LowPC <=> _Address;
 							}
 						,	_Address
 					)
@@ -368,9 +368,9 @@ namespace NMib
 						CurUnit.m_lSortedLines.f_SetLen(nValidLines);
 
 						CurUnit.m_lSortedLines.f_Sort(
-								[](CLineEntry const& _A, CLineEntry const& _B) -> bool
+								[](CLineEntry const& _A, CLineEntry const& _B)
 								{
-									return _A.m_PC < _B.m_PC;
+									return _A.m_PC <=> _B.m_PC;
 								});
 
 						if (!CurUnit.m_lSortedLines.f_IsEmpty())
@@ -415,9 +415,9 @@ namespace NMib
 				fp_CollectFunction(_Unit.m_pDie, _Unit);
 
 				_Unit.m_lSortedFunctions.f_Sort(
-						[](CFunction const& _A, CFunction const& _B) -> bool
+						[](CFunction const& _A, CFunction const& _B)
 						{
-							return _A.m_LowPC < _B.m_HighPC;
+							return _A.m_LowPC <=> _B.m_HighPC;
 						}
 					);
 

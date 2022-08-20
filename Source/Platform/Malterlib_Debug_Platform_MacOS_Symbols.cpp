@@ -27,8 +27,8 @@ namespace NMib
 				return g_SubSystem_Debug_Platform_MacOS_Symbols->m_Symbols;
 			}
 			
-			template <typename t_CSorter, typename t_CFind>
-			aint fg_BinarySearchLowerBound(mint _nItems, t_CSorter &&_Sorter, const t_CFind &_ToFind)
+			template <typename tf_CCompare, typename t_CFind>
+			aint fg_BinarySearchLowerBound(mint _nItems, tf_CCompare &&_fCompare, const t_CFind &_ToFind)
 			{
 				mint Len = _nItems;
 
@@ -38,7 +38,7 @@ namespace NMib
 				while(Low < High)
 				{
 					mint Mid = (Low + High) >> 1;
-					if(fg_Forward<t_CSorter>(_Sorter)(Mid, _ToFind))
+					if (COrdering_Partial(_fCompare(Mid, _ToFind)) < 0)
 						Low = Mid + 1;
 					else
 						High = Mid;
@@ -205,14 +205,14 @@ namespace NMib
 
 					aint iFoundFunc = fg_BinarySearchLowerBound(
 							mp_Header.m_nFunctions
-						,	[&](mint _FuncIndex, mint _Address) -> bool
+						,	[&](mint _FuncIndex, mint _Address) -> COrdering_Partial
 							{
 								CFunction const* pFunc = fp_ReadFunction(_FuncIndex, &TmpFunc);
 
 								if (pFunc)
-									return pFunc->m_Address < _Address;
+									return pFunc->m_Address <=> _Address;
 								else
-									return false;
+									return COrdering_Partial::unordered;
 							}
 						,	_Address
 						);
@@ -239,7 +239,7 @@ namespace NMib
 						
 						aint iFoundLine = fg_BinarySearchLowerBound(
 								LinesHeader.m_nLines
-							,	[&](mint _LineIndex, mint _Address) -> bool
+							,	[&](mint _LineIndex, mint _Address) -> COrdering_Partial
 								{
 									CLine Line;
 
@@ -247,7 +247,7 @@ namespace NMib
 									NMib::NSys::NFile::fg_Read(mp_pSymbols, &Line, Offset, sizeof(Line));
 									Offset += sizeof(Line);
 
-									return Line.m_Address < _Address;
+									return Line.m_Address <=> _Address;
 								}
 							,	_Address);
 
@@ -288,8 +288,8 @@ namespace NMib
 
 			/*
 			// TODO: Move into TVector
-			template <typename t_CVector, typename t_CSorter, typename t_CFind>
-			aint fg_BinarySearchLowerBound(t_CVector const& _lVector, t_CSorter &&_Sorter, const t_CFind &_ToFind, aint _nMax = -1)
+			template <typename t_CVector, typename tf_CCompare, typename t_CFind>
+			aint fg_BinarySearchLowerBound(t_CVector const& _lVector, tf_CCompare &&_fCompare, const t_CFind &_ToFind, aint _nMax = -1)
 			{
 				mint Len = _lVector.f_GetLen();
 				if (_nMax >= 0)
@@ -301,12 +301,12 @@ namespace NMib
 				while(Low < High)
 				{
 					mint Mid = (Low + High) >> 1;
-					if(fg_Forward<t_CSorter>(_Sorter)(pArray[Mid], _ToFind))
+					if (_fCompare(pArray[Mid], _ToFind))
 						Low = Mid + 1;
 					else
 						High = Mid;
 				}
-				if(Low >= 0 && Low < Len && !fg_Forward<t_CSorter>(_Sorter)(pArray[Low], _ToFind) && !fg_Forward<t_CSorter>(_Sorter)(_ToFind, pArray[Low]))
+				if(Low >= 0 && Low < Len && !fg_Forward<t_CSorter>(_fCompare)(pArray[Low], _ToFind) && !_fCompare(_ToFind, pArray[Low]))
 					return Low;
 				else
 					return Low;
@@ -412,51 +412,51 @@ namespace NMib
 
 			struct CFileSorter
 			{
-				bool operator()(CFile const& _A, CFile const& _B) const
+				COrdering_Partial operator()(CFile const& _A, CFile const& _B) const
 				{
-					return _A.m_Index < _B.m_Index;
+					return _A.m_Index <=> _B.m_Index;
 				}
-				bool operator()(CFile const& _A, mint _B) const
+				COrdering_Partial operator()(CFile const& _A, mint _B) const
 				{
-					return _A.m_Index < _B;
+					return _A.m_Index <=> _B;
 				}
-				bool operator()(mint _A, CFile const& _B) const
+				COrdering_Partial operator()(mint _A, CFile const& _B) const
 				{
-					return _A < _B.m_Index;
+					return _A <=> _B.m_Index;
 				}
 			};
 
 			struct CFunctionSorter
 			{
-				bool operator()(CFunction const& _A, CFunction const& _B) const
+				COrdering_Partial operator()(CFunction const& _A, CFunction const& _B) const
 				{
-					return _A.m_Address < _B.m_Address;
+					return _A.m_Address <=> _B.m_Address;
 				}
 
-				bool operator()(CFunction const& _A, mint _B) const
+				COrdering_Partial operator()(CFunction const& _A, mint _B) const
 				{
-					return _A.m_Address < _B;
+					return _A.m_Address <=> _B;
 				}
 
-				bool operator()(mint _A, CFunction const& _B) const
+				COrdering_Partial operator()(mint _A, CFunction const& _B) const
 				{
-					return _A < _B.m_Address;
+					return _A <=> _B.m_Address;
 				}
 			};
 
 			struct CLineSorter
 			{
-				bool operator()(CLine const& _A, CLine const& _B) const
+				COrdering_Partial operator()(CLine const& _A, CLine const& _B) const
 				{
-					return _A.m_Address < _B.m_Address;
+					return _A.m_Address <=> _B.m_Address;
 				}
-				bool operator()(CLine const& _A, mint _B) const
+				COrdering_Partial operator()(CLine const& _A, mint _B) const
 				{
-					return _A.m_Address < _B;
+					return _A.m_Address <=> _B;
 				}
-				bool operator()(mint _A, CLine const& _B) const
+				COrdering_Partial operator()(mint _A, CLine const& _B) const
 				{
-					return _A < _B.m_Address;
+					return _A <=> _B.m_Address;
 				}
 			};
 
