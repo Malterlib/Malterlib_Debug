@@ -414,12 +414,6 @@ public:
 			Map[1] = 1;
 			Map[3] = 3;
 
-			TCMap<int32> MapNoData;
-			MapNoData[5];
-			MapNoData[8];
-			MapNoData[1];
-			MapNoData[3];
-
 			TCSet<int32> Set;
 			Set[5];
 			Set[8];
@@ -443,7 +437,6 @@ public:
 			auto iIntrusiveSingleList = IntrusiveSingleList.f_GetIterator();
  			auto iMap = Map.f_GetIterator();
 			auto iMapComplex = MapComplex.f_GetIterator();
-			auto iMapNoData = MapNoData.f_GetIterator();
 			auto iSet = Set.f_GetIterator();
 			auto iManyValues = pTestLinked->m_IntrusiveList.f_GetIterator();
 
@@ -454,7 +447,6 @@ public:
 			auto iConstIntrusiveSingleList = fg_Const(IntrusiveSingleList).f_GetIterator();
 			auto iConstMap = fg_Const(Map).f_GetIterator();
 			auto iConstMapComplex = fg_Const(MapComplex).f_GetIterator();
-			auto iConstMapNoData = fg_Const(MapNoData).f_GetIterator();
 			auto iConstSet = fg_Const(Set).f_GetIterator();
 			auto iConstManyValues = fg_Const(pTestLinked->m_IntrusiveList).f_GetIterator();
 
@@ -472,7 +464,6 @@ public:
 			auto iIntrusiveSingleListEmpty = IntrusiveSingleList.f_GetIterator(); fMakeEmpty(iIntrusiveSingleListEmpty);
  			auto iMapEmpty = Map.f_GetIterator(); fMakeEmpty(iMapEmpty);
 			auto iMapComplexEmpty = MapComplex.f_GetIterator(); fMakeEmpty(iMapComplexEmpty);
-			auto iMapNoDataEmpty = MapNoData.f_GetIterator(); fMakeEmpty(iMapNoDataEmpty);
 			auto iSetEmtpy = Set.f_GetIterator(); fMakeEmpty(iSetEmtpy);
 
 			using namespace NTime;
@@ -803,7 +794,6 @@ public:
 			auto &AVLTreeRef = AVLTree;
 			auto &IntrusiveSingleListRef = IntrusiveSingleList;
 			auto &MapRef = Map;
-			auto &MapNoDataRef = MapNoData;
 			auto &SetRef = Set;
 			auto &MapComplexRef = MapComplex;
 			auto &MapStrRef = MapStr;
@@ -815,7 +805,6 @@ public:
 			auto &iIntrusiveSingleListRef = iIntrusiveSingleList;
 			auto &iMapRef = iMap;
 			auto &iMapComplexRef = iMapComplex;
-			auto &iMapNoDataRef = iMapNoData;
 			auto &iSetRef = iSet;
 			auto &iConstVectorRef = iConstVector;
 			auto &iConstIntrusiveListRef = iConstIntrusiveList;
@@ -824,7 +813,6 @@ public:
 			auto &iConstIntrusiveSingleListRef = iConstIntrusiveSingleList;
 			auto &iConstMapRef = iConstMap;
 			auto &iConstMapComplexRef = iConstMapComplex;
-			auto &iConstMapNoDataRef = iConstMapNoData;
 			auto &iConstSetRef = iConstSet;
 			auto &TimeRef = Time;
 			auto &TimeSpanRef = TimeSpan;
@@ -897,7 +885,6 @@ public:
 			auto const &AVLTreeConstRef = AVLTree;
 			auto const &IntrusiveSingleListConstRef = IntrusiveSingleList;
 			auto const &MapConstRef = Map;
-			auto const &MapNoDataConstRef = MapNoData;
 			auto const &SetConstRef = Set;
 			auto const &MapComplexConstRef = MapComplex;
 			auto const &MapStrConstRef = MapStr;
@@ -909,7 +896,6 @@ public:
 			auto const &iIntrusiveSingleListConstRef = iIntrusiveSingleList;
 			auto const &iMapConstRef = iMap;
 			auto const &iMapComplexConstRef = iMapComplex;
-			auto const &iMapNoDataConstRef = iMapNoData;
 			auto const &iSetConstRef = iSet;
 			auto const &iConstVectorConstRef = iConstVector;
 			auto const &iConstIntrusiveListConstRef = iConstIntrusiveList;
@@ -918,7 +904,6 @@ public:
 			auto const &iConstIntrusiveSingleListConstRef = iConstIntrusiveSingleList;
 			auto const &iConstMapConstRef = iConstMap;
 			auto const &iConstMapComplexConstRef = iConstMapComplex;
-			auto const &iConstMapNoDataConstRef = iConstMapNoData;
 			auto const &iConstSetConstRef = iConstSet;
 			auto const &TimeConstRef = Time;
 			auto const &TimeSpanConstRef = TimeSpan;
@@ -991,7 +976,6 @@ public:
 			auto volatile &AVLTreeVolatileRef = AVLTree;
 			auto volatile &IntrusiveSingleListVolatileRef = IntrusiveSingleList;
 			auto volatile &MapVolatileRef = Map;
-			auto volatile &MapNoDataVolatileRef = MapNoData;
 			auto volatile &SetVolatileRef = Set;
 			auto volatile &MapComplexVolatileRef = MapComplex;
 			auto volatile &MapStrVolatileRef = MapStr;
@@ -1003,7 +987,6 @@ public:
 			auto volatile &iIntrusiveSingleListVolatileRef = iIntrusiveSingleList;
 			auto volatile &iMapVolatileRef = iMap;
 			auto volatile &iMapComplexVolatileRef = iMapComplex;
-			auto volatile &iMapNoDataVolatileRef = iMapNoData;
 			auto volatile &iSetVolatileRef = iSet;
 			auto volatile &iConstVectorVolatileRef = iConstVector;
 			auto volatile &iConstIntrusiveListVolatileRef = iConstIntrusiveList;
@@ -1012,7 +995,6 @@ public:
 			auto volatile &iConstIntrusiveSingleListVolatileRef = iConstIntrusiveSingleList;
 			auto volatile &iConstMapVolatileRef = iConstMap;
 			auto volatile &iConstMapComplexVolatileRef = iConstMapComplex;
-			auto volatile &iConstMapNoDataVolatileRef = iConstMapNoData;
 			auto volatile &iConstSetVolatileRef = iConstSet;
 			auto volatile &TimeVolatileRef = Time;
 			auto volatile &TimeSpanVolatileRef = TimeSpan;
@@ -1122,7 +1104,6 @@ public:
 			auto *pAVLTree = &AVLTree;
 			auto *pIntrusiveSingleList = &IntrusiveSingleList;
 			auto *pMap = &Map;
-			auto *pMapNoData = &MapNoData;
 			auto *pSet = &Set;
 			auto *pMapComplex = &MapComplex;
 			auto *pMapStr = &MapStr;
@@ -1134,7 +1115,6 @@ public:
 			auto *piIntrusiveSingleList = &iIntrusiveSingleList;
 			auto *piMap = &iMap;
 			auto *piMapComplex = &iMapComplex;
-			auto *piMapNoData = &iMapNoData;
 			auto *piSet = &iSet;
 			auto *piConstVector = &iConstVector;
 			auto *piConstIntrusiveList = &iConstIntrusiveList;
@@ -1143,7 +1123,6 @@ public:
 			auto *piConstIntrusiveSingleList = &iConstIntrusiveSingleList;
 			auto *piConstMap = &iConstMap;
 			auto *piConstMapComplex = &iConstMapComplex;
-			auto *piConstMapNoData = &iConstMapNoData;
 			auto *piConstSet = &iConstSet;
 			auto *pTime = &Time;
 			auto *pTimeSpan = &TimeSpan;
@@ -1252,7 +1231,6 @@ public:
 			auto **ppAVLTree = &pAVLTree;
 			auto **ppIntrusiveSingleList = &pIntrusiveSingleList;
 			auto **ppMap = &pMap;
-			auto **ppMapNoData = &pMapNoData;
 			auto **ppSet = &pSet;
 			auto **ppMapComplex = &pMapComplex;
 			auto **ppMapStr = &pMapStr;
@@ -1264,7 +1242,6 @@ public:
 			auto **ppiIntrusiveSingleList = &piIntrusiveSingleList;
 			auto **ppiMap = &piMap;
 			auto **ppiMapComplex = &piMapComplex;
-			auto **ppiMapNoData = &piMapNoData;
 			auto **ppiSet = &piSet;
 			auto **ppiConstVector = &piConstVector;
 			auto **ppiConstIntrusiveList = &piConstIntrusiveList;
@@ -1273,7 +1250,6 @@ public:
 			auto **ppiConstIntrusiveSingleList = &piConstIntrusiveSingleList;
 			auto **ppiConstMap = &piConstMap;
 			auto **ppiConstMapComplex = &piConstMapComplex;
-			auto **ppiConstMapNoData = &piConstMapNoData;
 			auto **ppiConstSet = &piConstSet;
 			auto **ppTime = &pTime;
 			auto **ppTimeSpan = &pTimeSpan;

@@ -743,45 +743,6 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapNoData,*,*&gt;">
-    <Expand>
-      <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root &amp; ~mint(3))</HeadPointer>
-        <LeftPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[0]
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </LeftPointer>
-        <RightPointer>
-          (
-          (CThis *)
-          (
-          (
-          (
-          (mint)m_pNext[1]
-          )
-          &amp;
-          ~mint(3)
-          )
-          )
-          )
-        </RightPointer>
-        <ValueNode>
-          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapNoData,$T2,$T3&gt;::CMapTreeMember *)((mint)this))->m_Key
-        </ValueNode>
-      </TreeItems>
-    </Expand>
-  </Type>
-
   <Type Name="NMib::NContainer::TCMapTreeMember&lt;*,*&gt;">
     <Expand>
       <Item Name ="Key">
@@ -790,18 +751,6 @@
       <Item Name ="Value">
         m_Data
       </Item>
-    </Expand>
-  </Type>
-
-  <Type Name="NMib::NContainer::TCMapTreeMember&lt;*,NMib::NContainer::CMapSet&gt;">
-    <AlternativeType Name="NMib::NContainer::TCMapTreeMember&lt;*,NMib::NContainer::CMapNoData&gt;"></AlternativeType>
-    <DisplayString>
-      {m_Key}
-    </DisplayString>
-    <Expand>
-      <ExpandedItem>
-        m_Key
-      </ExpandedItem>
     </Expand>
   </Type>
 
