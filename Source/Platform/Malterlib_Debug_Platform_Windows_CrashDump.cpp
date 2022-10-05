@@ -155,7 +155,7 @@ namespace NMib
 						mint nCache = EWindowCache;
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
 
-						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>(NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("IdsCrashDumpDir")));
+						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>(NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("MalterlibCrashDumpDir")));
 						if (CrashDumpPath.f_IsEmpty() || !fs_CheckAccessRights(CrashDumpPath))
 						{
 							CrashDumpPath = NMib::NFile::CFile::fs_AppendPath(NMib::fg_GetSys()->f_GetProgramRootNonTracked(), NStr::CStrNonTracked("CrashDumps"));
