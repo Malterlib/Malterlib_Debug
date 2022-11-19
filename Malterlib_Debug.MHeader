@@ -57,12 +57,12 @@ Property.MalterlibBoostModules =+ ["lockfree", "align", "parameter"]
 
 Property
 {
-	MalterlibLibrary_Debug define bool = MalterlibLibrary_All
+	MalterlibLibrary_Debug: bool = MalterlibLibrary_All
 	MalterlibSubLibraries =+ "Debug"
 	{
 		!!MalterlibLibrary_Debug true
 	}
-//	MalterlibSubLibrarySeparate_Lib_Malterlib_Debug define bool = true
+//	MalterlibSubLibrarySeparate_Lib_Malterlib_Debug: bool = true
 	MalterlibIncludeRoots =+ "Include"->MakeAbsolute()
 	{
 		!!MalterlibLibrary_Debug true
@@ -94,8 +94,8 @@ Property
 	!!MalterlibEnableInternalTests true
 	
 	MalterlibTests =+ "Malterlib_Debug"
-	MalterlibTestFiles_Malterlib_Debug define [type(CEntity)] = ["Test/*"->MakeAbsolute()]
-	MalterlibTestExtraGroups_Malterlib_Debug define [string] = ["{Test}/{Malterlib_Debug}"]
+	MalterlibTestFiles_Malterlib_Debug: [type(CEntity)] = ["Test/*"->MakeAbsolute()]
+	MalterlibTestExtraGroups_Malterlib_Debug: [string] = ["{Test}/{Malterlib_Debug}"]
 }
 
 %Group "~Automatic/NatVis"
