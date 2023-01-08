@@ -707,7 +707,7 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapSet,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root &amp; ~mint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Tree.m_Root &amp; ~mint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
@@ -737,19 +737,19 @@
           )
         </RightPointer>
         <ValueNode>
-          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::CMapTreeMember *)((mint)this))->m_Key
-        </ValueNode>
+          ((NMib::NContainer::TCMap&lt;$T1,NMib::NContainer::CMapSet,$T2,$T3&gt;::CNode *)((mint)this))->m_Key
+		</ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
-  <Type Name="NMib::NContainer::TCMapTreeMember&lt;*,*&gt;">
+  <Type Name="NMib::NContainer::TCMapNode&lt;*,*&gt;">
     <Expand>
       <Item Name ="Key">
         m_Key
       </Item>
       <Item Name ="Value">
-        m_Data
+        m_Value
       </Item>
     </Expand>
   </Type>
@@ -757,7 +757,7 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Data.m_Tree.m_Root &amp; ~mint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((mint)mp_Tree.m_Root &amp; ~mint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
@@ -787,7 +787,7 @@
           )
         </RightPointer>
         <ValueNode>
-          *((NMib::NContainer::TCMapTreeMember&lt;$T1,$T2&gt; *)(this))
+			*((NMib::NContainer::TCMapNode&lt;$T1,$T2&gt; *)(this))
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -849,15 +849,15 @@
 
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
     <DisplayString Condition="mp_Iter.m_iStack >= 0">
-      {*((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack]))}
-    </DisplayString>
-    <DisplayString>
-      Invalid
-    </DisplayString>
-    <Expand>
-      <ExpandedItem Condition="mp_Iter.m_iStack >= 0">
-        *((CMapTreeMember *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack]))
-      </ExpandedItem>
+		{*((CNode *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack]))}
+	</DisplayString>
+	<DisplayString>
+		Invalid
+	</DisplayString>
+	<Expand>
+		<ExpandedItem Condition="mp_Iter.m_iStack >= 0">
+			*((CNode *)((mint)mp_Iter.m_pStack[mp_Iter.m_iStack]))
+		</ExpandedItem>
     </Expand>
   </Type>
 

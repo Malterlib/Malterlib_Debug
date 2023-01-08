@@ -242,7 +242,7 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_Tree = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_Tree')
+			self.m_Tree = fg_ChildPath(self.m_ValueObject, 'mp_Tree')
 			self.m_Root = self.m_Tree.GetValueForExpressionPath('.m_Root')
 			if not self.fp_ExtractType():
 				return
@@ -387,7 +387,7 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 		return 1 + self.m_NumExtraChildren
 
 
-def fg_SummaryProvider_TCMapTreeMember(_Value, dict):
+def fg_SummaryProvider_TCMapNode(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
@@ -398,7 +398,7 @@ def fg_SummaryProvider_TCMapTreeMember(_Value, dict):
 		if KeySummary is None:
 			KeySummary = KeyMember.GetValue()
 
-		ValueMember = _Value.GetChildMemberWithName('m_Data')
+		ValueMember = _Value.GetChildMemberWithName('m_Value')
 		
 		if ValueMember is None or not ValueMember.IsValid():
 			Value = KeySummary;
@@ -424,7 +424,7 @@ def fg_SummaryProvider_TCMapTreeMember(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_TCMapTreeMember) error: ', error, ' path: ', _Value.get_expr_path())
+		print('(fg_SummaryProvider_TCMapNode) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_AVLTree(_Debugger):
@@ -447,7 +447,7 @@ def fg_MibLLDBInit_AVLTree(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerMapLimited, '(^|^const )NMib::NContainer::TCMapWithPool<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerLimited, '(^|^const )NMib::NContainer::TCSetWithPool<.*>$', True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCMap_CIterator, '(^|^const )NMib::NContainer::TCMap<.*>::TCIterator<.*>$', True, 1)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_TCMapTreeMember, '(^|^const )(NMib::NContainer::)TCMapTreeMember<.*>$', True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCMapNode, '(^|^const )(NMib::NContainer::)TCMapNode<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NContainer::TCMap<.*>::TCIterator<.*>$', True, 1)
 	
 	return

@@ -420,7 +420,7 @@ public:
 			Set[1];
 			Set[3];
 
-			TCMap<int32, TCMapTreeMember<int32, int32>> MapComplex;
+			TCMap<int32, TCMapNode<int32, int32>> MapComplex;
 
 			MapComplex(1, 5, 6);
 
