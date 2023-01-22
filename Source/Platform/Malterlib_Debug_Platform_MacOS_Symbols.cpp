@@ -38,7 +38,7 @@ namespace NMib
 				while(Low < High)
 				{
 					mint Mid = (Low + High) >> 1;
-					if (COrdering_Partial(_fCompare(Mid, _ToFind)) < 0)
+					if (fg_CheckOrdering(_fCompare(Mid, _ToFind)) < 0)
 						Low = Mid + 1;
 					else
 						High = Mid;
