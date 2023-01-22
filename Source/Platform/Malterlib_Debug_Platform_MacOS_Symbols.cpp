@@ -166,7 +166,6 @@ namespace NMib
 				CSymStr Str;
 				char* pRawStr = Str.f_GetStr(nBytes + 1);
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, pRawStr, Offset, nBytes);
-				Offset += nBytes;
 				pRawStr[nBytes] = 0;
 				
 				return fg_Move(Str);
@@ -181,7 +180,6 @@ namespace NMib
 			{
 				uint32 Offset = mp_Header.m_FunctionsOffset + BytesPerFunction * _FuncIndex;
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, _pTmp, Offset, sizeof(CFunction));
-				Offset += sizeof(CFunction);
 
 				return _pTmp;
 			}
@@ -235,8 +233,7 @@ namespace NMib
 
 						uint32 Offset = pFunc->m_FirstLine;
 						NMib::NSys::NFile::fg_Read(mp_pSymbols, (char*)&LinesHeader, Offset, sizeof(LinesHeader));
-						Offset += sizeof(LinesHeader);
-						
+
 						aint iFoundLine = fg_BinarySearchLowerBound(
 								LinesHeader.m_nLines
 							,	[&](mint _LineIndex, mint _Address) -> COrdering_Partial
@@ -257,7 +254,6 @@ namespace NMib
 
 							uint32 Offset = pFunc->m_FirstLine + BytesPerFunctionLines + BytesPerLine * iFoundLine;
 							NMib::NSys::NFile::fg_Read(mp_pSymbols, &Line, Offset, sizeof(Line));
-							Offset += sizeof(Line);
 
 							if (	_Address >= Line.m_Address
 								&&	_Address <= (Line.m_Address + Line.m_Size) )
