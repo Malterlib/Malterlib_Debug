@@ -305,8 +305,8 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, co
 
 void NMib::NSys::fg_Debug_GenerateMemoryDump
 	(
-	 	NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
-	 	, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
+		NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
+		, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 	)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;

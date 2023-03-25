@@ -127,16 +127,18 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Alloc(
+							mp_Settings.m_pMemoryReporter->f_Alloc
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_Address
-								,	Packet.m_RequestedAlignment
-								,	Packet.m_RequestedSize
-								, 	Packet.m_ReturnedSize
-								,	Packet.m_nBytesOverhead
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, Packet.m_RequestedAlignment
+									, Packet.m_RequestedSize
+									, Packet.m_ReturnedSize
+									, Packet.m_nBytesOverhead
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -151,17 +153,19 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Resize(
+							mp_Settings.m_pMemoryReporter->f_Resize
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_OldAddress
-								, 	Packet.m_Address
-								,	Packet.m_RequestedAlignment
-								,	Packet.m_RequestedSize
-								, 	Packet.m_ReturnedSize
-								,	Packet.m_nBytesOverhead
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_OldAddress
+									, Packet.m_Address
+									, Packet.m_RequestedAlignment
+									, Packet.m_RequestedSize
+									, Packet.m_ReturnedSize
+									, Packet.m_nBytesOverhead
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -176,17 +180,19 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Realloc(
+							mp_Settings.m_pMemoryReporter->f_Realloc
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_OldAddress
-								, 	Packet.m_Address
-								,	Packet.m_RequestedAlignment
-								,	Packet.m_RequestedSize
-								, 	Packet.m_ReturnedSize
-								,	Packet.m_nBytesOverhead
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_OldAddress
+									, Packet.m_Address
+									, Packet.m_RequestedAlignment
+									, Packet.m_RequestedSize
+									, Packet.m_ReturnedSize
+									, Packet.m_nBytesOverhead
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -201,12 +207,14 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Free(
+							mp_Settings.m_pMemoryReporter->f_Free
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_Address
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -221,13 +229,15 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_GetSize(
+							mp_Settings.m_pMemoryReporter->f_GetSize
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_Address
-								, 	Packet.m_Size
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, Packet.m_Size
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -242,14 +252,16 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Protect(
+							mp_Settings.m_pMemoryReporter->f_Protect
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_Address
-								, 	Packet.m_Size
-								, 	Packet.m_Protect
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, Packet.m_Size
+									, Packet.m_Protect
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -264,13 +276,15 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Commit(
+							mp_Settings.m_pMemoryReporter->f_Commit
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_Address
-								, 	Packet.m_Size
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, Packet.m_Size
+									, StackTrace
+								)
+							;
 						}
 					);
 				}
@@ -285,13 +299,15 @@ namespace NMib::NDebug::NRemoteDebugger
 					mp_Settings.m_MemoryDispatcher(
 						[this, Packet, StackTrace]()
 						{
-							mp_Settings.m_pMemoryReporter->f_Decommit(
+							mp_Settings.m_pMemoryReporter->f_Decommit
+								(
 									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								, 	Packet.m_Address
-								, 	Packet.m_Size
-								, StackTrace
-							);
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, Packet.m_Size
+									, StackTrace
+								)
+							;
 						}
 					);
 				}

@@ -109,7 +109,7 @@ namespace NMib
 
 					if (!m_hDbgHelp)
 					{
-						NStr::CStrNonTracked DebugHelpDLL = "\\DebugHelp" DMibPlatformDir "\\Dbghelp.dll"; 			
+						NStr::CStrNonTracked DebugHelpDLL = "\\DebugHelp" DMibPlatformDir "\\Dbghelp.dll";
 
 						m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(ProgramRoot + DebugHelpDLL);
 

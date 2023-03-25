@@ -651,12 +651,14 @@ namespace NMib::NDebug::NRemoteDebugger
 	void CServer::fp_Process_Listening()
 	{
 		TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> pListener;
-		pListener = fg_Construct(
-						CConnection::EMode_Listen
-					, 	mp_Settings.m_Address
-					,	mp_Settings.m_Port
-					,	&mp_pThread->m_EventWantQuit
-		);
+		pListener = fg_Construct
+			(
+				CConnection::EMode_Listen
+				, mp_Settings.m_Address
+				, mp_Settings.m_Port
+				, &mp_pThread->m_EventWantQuit
+			)
+		;
 
 		if (pListener->f_GetState() != CConnection::EState_Listening)
 		{

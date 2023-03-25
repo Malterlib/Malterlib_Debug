@@ -435,7 +435,7 @@ public:
 			auto iLinkedList = LinkedList.f_GetIterator();
 			auto iAVLTree = AVLTree.f_GetIterator();
 			auto iIntrusiveSingleList = IntrusiveSingleList.f_GetIterator();
- 			auto iMap = Map.f_GetIterator();
+			auto iMap = Map.f_GetIterator();
 			auto iMapComplex = MapComplex.f_GetIterator();
 			auto iSet = Set.f_GetIterator();
 			auto iManyValues = pTestLinked->m_IntrusiveList.f_GetIterator();
@@ -462,7 +462,7 @@ public:
 			auto iLinkedListEmpty = LinkedList.f_GetIterator(); fMakeEmpty(iLinkedListEmpty);
 			auto iAVLTreeEmpty = AVLTree.f_GetIterator(); fMakeEmpty(iAVLTreeEmpty);
 			auto iIntrusiveSingleListEmpty = IntrusiveSingleList.f_GetIterator(); fMakeEmpty(iIntrusiveSingleListEmpty);
- 			auto iMapEmpty = Map.f_GetIterator(); fMakeEmpty(iMapEmpty);
+			auto iMapEmpty = Map.f_GetIterator(); fMakeEmpty(iMapEmpty);
 			auto iMapComplexEmpty = MapComplex.f_GetIterator(); fMakeEmpty(iMapComplexEmpty);
 			auto iSetEmtpy = Set.f_GetIterator(); fMakeEmpty(iSetEmtpy);
 
@@ -639,7 +639,7 @@ public:
 			NStorage::TCDebugPointer<CTest2> pDebugPointerNull;
 			NStorage::TCPointer<CTest2> pPointerNull;
 			NStorage::TCSharedPointer<CTest2> pSharedPointerNull;
- 			NStorage::TCUniquePointer<CTest2> pUniquePointerNull;
+			NStorage::TCUniquePointer<CTest2> pUniquePointerNull;
 
 			int32 Data = 664;
 
