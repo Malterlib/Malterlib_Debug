@@ -67,7 +67,7 @@ class CSynthProvider_TCFunction(CSynthProvider_Common):
 
 			ValueType = ValueType.GetPointeeType()
 
-			self.m_bEmpty = ValueType.GetName() == "NMib::NFunction::NPrivate::CNullFunctionImpl"
+			self.m_bEmpty = ValueType.GetName() == "NMib::NFunction::NPrivate::TCNullFunctionImpl<true>" or ValueType.GetName() == "NMib::NFunction::NPrivate::TCNullFunctionImpl<false>"
 
 			Storage = self.m_ValueObject.GetValueForExpressionPath(StorageName)
 
