@@ -1194,6 +1194,11 @@
     </Expand>
   </Type>
 
+  <Type Name="NMib::NConcurrency::NPrivate::TCPromiseData&lt;*&gt;">
+    <DisplayString>
+        {m_FutureTypeName} | {m_Coroutine}
+    </DisplayString>
+  </Type>
 
   <!--
 -		TCIntNoAutoConvertAggregate<long,NAOCC::NPrivate::CAOUniqueIDTag,-1>	{m_Data=33995 }	TCIntNoAutoConvertAggregate<long,NAOCC::NPrivate::CAOUniqueIDTag,-1>
