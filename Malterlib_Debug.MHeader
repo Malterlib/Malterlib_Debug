@@ -11,7 +11,7 @@ Import "../Core/Lib_Malterlib.MTarget"
 	}
 }
 
-Property.MalterlibBoostModules =+ ["lockfree", "align", "parameter"]
+Property.MalterlibBoostModules =+ ["lockfree", "align", "parameter", "preprocessor"]
 {
 	!!MalterlibMemoryManager_Stats_EnableCallstack true
 }
