@@ -403,7 +403,48 @@ namespace NMib
 						//
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_INTEGER)
 						{
-				#ifdef DArchitecture_x64
+				#if defined(DArchitecture_arm64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat("Integer registers:\r\n"
+								" x0=0x{}   x1=0x{}   x2=0x{}   x3=0x{}\r\n"
+								" x4=0x{}   x5=0x{}   x6=0x{}   x7=0x{}\r\n"
+								" x8=0x{}   x9=0x{}  x10=0x{}  x11=0x{}\r\n"
+								"x12=0x{}  x13=0x{}  x14=0x{}  x15=0x{}\r\n"
+								"x16=0x{}  x17=0x{}  x18=0x{}  x19=0x{}\r\n"
+								"x20=0x{}  x21=0x{}  x22=0x{}  x23=0x{}\r\n"
+								"x24=0x{}  x25=0x{}  x26=0x{}  x27=0x{}\r\n"
+								"x28=0x{}\r\n"
+								"\r\n")
+								<< ((void *)_pExceptionInfo->ContextRecord->X0)
+								<< ((void *)_pExceptionInfo->ContextRecord->X1)
+								<< ((void *)_pExceptionInfo->ContextRecord->X2)
+								<< ((void *)_pExceptionInfo->ContextRecord->X3)
+								<< ((void *)_pExceptionInfo->ContextRecord->X4)
+								<< ((void *)_pExceptionInfo->ContextRecord->X5)
+								<< ((void *)_pExceptionInfo->ContextRecord->X6)
+								<< ((void *)_pExceptionInfo->ContextRecord->X7)
+								<< ((void *)_pExceptionInfo->ContextRecord->X8)
+								<< ((void *)_pExceptionInfo->ContextRecord->X9)
+								<< ((void *)_pExceptionInfo->ContextRecord->X10)
+								<< ((void *)_pExceptionInfo->ContextRecord->X11)
+								<< ((void *)_pExceptionInfo->ContextRecord->X12)
+								<< ((void *)_pExceptionInfo->ContextRecord->X13)
+								<< ((void *)_pExceptionInfo->ContextRecord->X14)
+								<< ((void *)_pExceptionInfo->ContextRecord->X15)
+								<< ((void *)_pExceptionInfo->ContextRecord->X16)
+								<< ((void *)_pExceptionInfo->ContextRecord->X17)
+								<< ((void *)_pExceptionInfo->ContextRecord->X18)
+								<< ((void *)_pExceptionInfo->ContextRecord->X19)
+								<< ((void *)_pExceptionInfo->ContextRecord->X20)
+								<< ((void *)_pExceptionInfo->ContextRecord->X21)
+								<< ((void *)_pExceptionInfo->ContextRecord->X22)
+								<< ((void *)_pExceptionInfo->ContextRecord->X23)
+								<< ((void *)_pExceptionInfo->ContextRecord->X24)
+								<< ((void *)_pExceptionInfo->ContextRecord->X25)
+								<< ((void *)_pExceptionInfo->ContextRecord->X26)
+								<< ((void *)_pExceptionInfo->ContextRecord->X27)
+								<< ((void *)_pExceptionInfo->ContextRecord->X28)
+							;
+				#elif defined(DArchitecture_x64)
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Integer registers:\r\n"
 								"rdi=0x{} rsi=0x{} rax=0x{}\r\n"
 								"rbx=0x{} rcx=0x{} rdx=0x{}\r\n"
@@ -425,7 +466,7 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->R13)
 								<< ((void *)_pExceptionInfo->ContextRecord->R14)
 								<< ((void *)_pExceptionInfo->ContextRecord->R15)
-								;
+							;
 				#else
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Integer registers:\r\n"
 								"edi=0x{} esi=0x{} eax=0x{}\r\n"
@@ -436,12 +477,27 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->Ebx)
 								<< ((void *)_pExceptionInfo->ContextRecord->Ecx)
 								<< ((void *)_pExceptionInfo->ContextRecord->Edx)
-								;
+							;
 				#endif
 						}
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_CONTROL)
 						{
-				#ifdef DArchitecture_x64
+				#if defined(DArchitecture_arm64)
+							ExceptionInfo 
+								+= NStr::CStrNonTracked::CFormat("Control registers:\r\n"
+								"cpsr=0x{nfh,sj8,sf0}\r\n"
+								"fp=0x{}\r\n"
+								"lr=0x{}\r\n"
+								"sp=0x{}\r\n"
+								"pc=0x{}\r\n"
+								"\r\n")
+								<< ((uint32)_pExceptionInfo->ContextRecord->Cpsr)
+								<< ((void *)_pExceptionInfo->ContextRecord->Fp)
+								<< ((void *)_pExceptionInfo->ContextRecord->Lr)
+								<< ((void *)_pExceptionInfo->ContextRecord->Sp)
+								<< ((void *)_pExceptionInfo->ContextRecord->Pc)
+							;
+				#elif defined(DArchitecture_x64)
 							ExceptionInfo 
 								+= NStr::CStrNonTracked::CFormat("Control registers:\r\n"
 								"rip=0x{} rbp=0x{} rsp=0x{}\r\n"
@@ -476,6 +532,35 @@ namespace NMib
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_DEBUG_REGISTERS)
 						{
+				#if defined(DArchitecture_arm64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat("Debug registers:\r\n"
+								"bcr0=0x{nfh,sf0,sj8} bcr1=0x{nfh,sf0,sj8} bcr2=0x{nfh,sf0,sj8} bcr3=0x{nfh,sf0,sj8} bcr4=0x{nfh,sf0,sj8} bcr5=0x{nfh,sf0,sj8} bcr6=0x{nfh,sf0,sj8} bcr7=0x{nfh,sf0,sj8}\r\n"
+								"wcr0=0x{nfh,sf0,sj8} wcr1=0x{nfh,sf0,sj8}\r\n"
+								"bcr0=0x{} bcr1=0x{} bcr2=0x{} bcr3=0x{} bcr4=0x{} bcr5=0x{} bcr6=0x{} bcr7=0x{}\r\n"
+								"wcr0=0x{} wcr1=0x{}\r\n"
+								"\r\n")
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[0])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[1])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[2])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[3])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[4])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[5])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[6])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[7])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Wcr[0])
+								<< ((uint32)_pExceptionInfo->ContextRecord->Wcr[1])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[0])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[1])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[2])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[3])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[4])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[5])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[6])
+								<< ((void *)_pExceptionInfo->ContextRecord->Bvr[7])
+								<< ((void *)_pExceptionInfo->ContextRecord->Wvr[0])
+								<< ((void *)_pExceptionInfo->ContextRecord->Wvr[1])
+							;
+				#else
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Debug registers:\r\n"
 								"Dr0=0x{} Dr1=0x{} Dr2=0x{}\r\n"
 								"Dr3=0x{} Dr6=0x{} Dr7=0x{}\r\n\r\n")
@@ -485,10 +570,11 @@ namespace NMib
 								<< ((mint)_pExceptionInfo->ContextRecord->Dr3)
 								<< ((mint)_pExceptionInfo->ContextRecord->Dr6)
 								<< ((mint)_pExceptionInfo->ContextRecord->Dr7)
-								;
+							;
+				#endif
 						}
 
-				#ifndef DArchitecture_x64
+				#ifdef DArchitecture_x86
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_SEGMENTS)
 						{
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Segment registers:\r\n"
@@ -541,9 +627,7 @@ namespace NMib
 								<< (*((uint64 *)&FloatSaveArea.RegisterArea[7*10]))
 								;
 						}
-				#endif
 
-				#ifndef DArchitecture_x64
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_EXTENDED_REGISTERS)
 						{
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("SSE registers:\r\n"
@@ -570,6 +654,43 @@ namespace NMib
 								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[17*16+8]))
 								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[17*16]))
 								;
+						}
+				#elif defined(DArchitecture_arm64)
+						// CONTEXT_FLOATING_POINT specifies Fpcr, Fpsr and Q0-Q31 / D0-D31 / S0-S31
+						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
+						{
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Floating point registers:\r\n"
+									"fpcr={nfh,sf0,sj8} fpsr=0x{nfh,sf0,sj8}\r\n"
+									"\r\n"
+								)
+								<< (uint32)_pExceptionInfo->ContextRecord->Fpcr
+								<< (uint32)_pExceptionInfo->ContextRecord->Fpsr
+							;
+							ExceptionInfo += "Vector registers:\r\n";
+
+							mint iRegister = 0;
+							for (auto &Register : _pExceptionInfo->ContextRecord->V)
+							{
+								ExceptionInfo += NStr::CStrNonTracked::CFormat
+									(
+										"v{}=0x{nfh,sf0,sj16}{nfh,sf0,sj16} d0={} d1={} s0={} s1={} s2={} s3={}\r\n"
+									)
+									<< iRegister
+									<< Register.High
+									<< Register.Low
+									<< Register.D[0]
+									<< Register.D[1]
+									<< Register.S[0]
+									<< Register.S[1]
+									<< Register.S[2]
+									<< Register.S[3]
+								;
+
+
+								++iRegister;
+							}
 						}
 				#else
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
@@ -690,8 +811,6 @@ namespace NMib
 								<< _pExceptionInfo->ContextRecord->VectorRegister[24].Low
 								<< _pExceptionInfo->ContextRecord->VectorRegister[25].High
 								<< _pExceptionInfo->ContextRecord->VectorRegister[25].Low
-
-
 							;
 						}
 
@@ -701,14 +820,14 @@ namespace NMib
 						// Stack trace
 						//
 						{
-							ExceptionInfo += "StackTrace: \r\n";
-							int iMaxDepth = 1024;
-
 							CUndocumentedTEB *pTEB = fg_GetTEB();
 							mint StackStart = (mint)pTEB->Tib.StackBase;
 							mint StackEnd = (mint)pTEB->Tib.StackLimit;
 
 
+#ifndef DArchitecture_arm64
+							ExceptionInfo += "StackTrace: \r\n";
+							int iMaxDepth = 1024;
 							try
 							{
 				#ifdef DArchitecture_x64
@@ -749,6 +868,7 @@ namespace NMib
 							catch(...)
 							{
 							}
+#endif
 
 							//
 							// Stack
@@ -863,6 +983,7 @@ namespace NMib
 							}
 						}
 
+#ifndef DArchitecture_arm64
 						if (bContinue)
 						{
 							if (!_pGeneratedLogs)
@@ -876,14 +997,13 @@ namespace NMib
 							return EXCEPTION_CONTINUE_EXECUTION;
 						}
 						else
+#endif
 						{
 							if (g_fOrgTerminateProcess)
 								g_fOrgTerminateProcess(GetCurrentProcess(), 201);
 							else
 								TerminateProcess(GetCurrentProcess(), 201);
 						}
-
-
 
 						return EXCEPTION_CONTINUE_SEARCH;
 					}
