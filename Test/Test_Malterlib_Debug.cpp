@@ -687,9 +687,9 @@ public:
 			zfp32 AutoClear_zfp32 = fp32(5.6f);
 
 			using namespace NMib::NEncoding;
-			CJSON JSON(EJSONType_Object);
+			CJSONSorted JSON(EJSONType_Object);
 			{
-				CJSON &ToReturn = JSON;
+				CJSONSorted &ToReturn = JSON;
 
 				ToReturn["Key"] = "Value";
 				ToReturn["KeyTrue"] = true;
@@ -697,7 +697,7 @@ public:
 				ToReturn["KeyNull"] = nullptr;
 				ToReturn["KeyInt"] = 25;
 				ToReturn["KeyFloat"] = 167.6;
-				ToReturn["KeyInvalid"] = CJSON{};
+				ToReturn["KeyInvalid"] = CJSONSorted{};
 
 				auto &Object = ToReturn["KeyObject"];
 				Object["Key"] = "Value";
@@ -721,9 +721,9 @@ public:
 				ArrayObject["KeyFloat"] = 167.6;
 			}
 
-			CEJSON EnhancedJSON(EJSONType_Object);
+			CEJSONSorted EnhancedJSON(EJSONType_Object);
 			{
-				CEJSON &ToReturn = EnhancedJSON;
+				CEJSONSorted &ToReturn = EnhancedJSON;
 
 				ToReturn["Key"] = "Value";
 				ToReturn["KeyTrue"] = true;
@@ -731,7 +731,7 @@ public:
 				ToReturn["KeyNull"] = nullptr;
 				ToReturn["KeyInt"] = 25;
 				ToReturn["KeyFloat"] = 167.6;
-				ToReturn["KeyInvalid"] = CEJSON{};
+				ToReturn["KeyInvalid"] = CEJSONSorted{};
 
 				auto &Object = ToReturn["KeyObject"];
 				Object["Key"] = "Value";
@@ -744,7 +744,7 @@ public:
 				Object["KeyObject"] = EJSONType_Object;
 				Object["KeyBinary"] = CByteVector{0,1,2};
 				Object["KeyDate"] = CTime::fs_NowUTC();
-				Object["KeyUser"] = CEJSONUserType{"TestType", JSON};
+				Object["KeyUser"] = CEJSONUserTypeSorted{"TestType", JSON};
 
 
 				auto &Array = ToReturn["KeyArray"];

@@ -266,7 +266,8 @@ def fg_MibLLDBInit_Json(_Debugger):
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CJSONBoolean, "(^|^const )NMib::NEncoding::NPrivate::CJSONBoolean$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CJSONNull, "(^|^const )NMib::NEncoding::NPrivate::CJSONNull$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJSONUserType, "(^|^const )NMib::NEncoding::CEJSONUserType$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJSONUserType, "(^|^const )NMib::NEncoding::CEJSONUserTypeSorted$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJSONUserType, "(^|^const )NMib::NEncoding::CEJSONUserTypeOrdered$", True)
 
 
 	return
