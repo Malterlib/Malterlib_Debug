@@ -40,279 +40,279 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		switch(_Packet)
 		{
-			case EPacket_Mem_AllocatorName:
-				{
-					CMemPacket_AllocatorName Packet;
+		case EPacket_Mem_AllocatorName:
+			{
+				CMemPacket_AllocatorName Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_AllocatorName(
-									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
-								,	Packet.m_Name
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_AllocatorName(
+								Packet.m_ThreadID
+							,	Packet.m_MemoryAllocator
+							,	Packet.m_Name
+							, StackTrace
+						);
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_AllocatorDelete:
+			{
+				CMemPacket_AllocatorDelete Packet;
+
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
+
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_AllocatorDelete(
+								Packet.m_ThreadID
+							,	Packet.m_MemoryAllocator
+							, StackTrace
+						);
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_ScopeEnter:
+			{
+				CMemPacket_ScopeEnter Packet;
+
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
+
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_ScopeEnter(
+								Packet.m_ThreadID
+							,	Packet.m_MemoryAllocator
+							, StackTrace
+						);
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_ScopeExit:
+			{
+				CMemPacket_ScopeExit Packet;
+
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
+
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_ScopeExit(
+								Packet.m_ThreadID
+							,	Packet.m_MemoryAllocator
+							, StackTrace
+						);
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Alloc:
+			{
+				CMemPacket_Alloc Packet;
+
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
+
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Alloc
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_Address
+								, Packet.m_RequestedAlignment
+								, Packet.m_RequestedSize
+								, Packet.m_ReturnedSize
+								, Packet.m_nBytesOverhead
 								, StackTrace
-							);
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_AllocatorDelete:
-				{
-					CMemPacket_AllocatorDelete Packet;
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Resize:
+			{
+				CMemPacket_Resize Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_AllocatorDelete(
-									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Resize
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_OldAddress
+								, Packet.m_Address
+								, Packet.m_RequestedAlignment
+								, Packet.m_RequestedSize
+								, Packet.m_ReturnedSize
+								, Packet.m_nBytesOverhead
 								, StackTrace
-							);
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_ScopeEnter:
-				{
-					CMemPacket_ScopeEnter Packet;
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Realloc:
+			{
+				CMemPacket_Realloc Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_ScopeEnter(
-									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Realloc
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_OldAddress
+								, Packet.m_Address
+								, Packet.m_RequestedAlignment
+								, Packet.m_RequestedSize
+								, Packet.m_ReturnedSize
+								, Packet.m_nBytesOverhead
 								, StackTrace
-							);
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_ScopeExit:
-				{
-					CMemPacket_ScopeExit Packet;
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Free:
+			{
+				CMemPacket_Free Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_ScopeExit(
-									Packet.m_ThreadID
-								,	Packet.m_MemoryAllocator
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Free
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_Address
 								, StackTrace
-							);
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Alloc:
-				{
-					CMemPacket_Alloc Packet;
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_GetSize:
+			{
+				CMemPacket_GetSize Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Alloc
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_Address
-									, Packet.m_RequestedAlignment
-									, Packet.m_RequestedSize
-									, Packet.m_ReturnedSize
-									, Packet.m_nBytesOverhead
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Resize:
-				{
-					CMemPacket_Resize Packet;
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_GetSize
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_Address
+								, Packet.m_Size
+								, StackTrace
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Protect:
+			{
+				CMemPacket_Protect Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Resize
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_OldAddress
-									, Packet.m_Address
-									, Packet.m_RequestedAlignment
-									, Packet.m_RequestedSize
-									, Packet.m_ReturnedSize
-									, Packet.m_nBytesOverhead
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Realloc:
-				{
-					CMemPacket_Realloc Packet;
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Protect
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_Address
+								, Packet.m_Size
+								, Packet.m_Protect
+								, StackTrace
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Commit:
+			{
+				CMemPacket_Commit Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Realloc
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_OldAddress
-									, Packet.m_Address
-									, Packet.m_RequestedAlignment
-									, Packet.m_RequestedSize
-									, Packet.m_ReturnedSize
-									, Packet.m_nBytesOverhead
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Free:
-				{
-					CMemPacket_Free Packet;
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Commit
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_Address
+								, Packet.m_Size
+								, StackTrace
+							)
+						;
+					}
+				);
+			}
+			break;
+		case EPacket_Mem_Decommit:
+			{
+				CMemPacket_Decommit Packet;
 
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
+				Packet.f_Read(Stream);
+				fl_ReadStackTrace();
 
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Free
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_Address
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_GetSize:
-				{
-					CMemPacket_GetSize Packet;
-
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
-
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_GetSize
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_Address
-									, Packet.m_Size
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Protect:
-				{
-					CMemPacket_Protect Packet;
-
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
-
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Protect
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_Address
-									, Packet.m_Size
-									, Packet.m_Protect
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Commit:
-				{
-					CMemPacket_Commit Packet;
-
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
-
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Commit
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_Address
-									, Packet.m_Size
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-			case EPacket_Mem_Decommit:
-				{
-					CMemPacket_Decommit Packet;
-
-					Packet.f_Read(Stream);
-					fl_ReadStackTrace();
-
-					mp_Settings.m_MemoryDispatcher(
-						[this, Packet, StackTrace]()
-						{
-							mp_Settings.m_pMemoryReporter->f_Decommit
-								(
-									Packet.m_ThreadID
-									, Packet.m_MemoryAllocator
-									, Packet.m_Address
-									, Packet.m_Size
-									, StackTrace
-								)
-							;
-						}
-					);
-				}
-				break;
-
+				mp_Settings.m_MemoryDispatcher(
+					[this, Packet, StackTrace]()
+					{
+						mp_Settings.m_pMemoryReporter->f_Decommit
+							(
+								Packet.m_ThreadID
+								, Packet.m_MemoryAllocator
+								, Packet.m_Address
+								, Packet.m_Size
+								, StackTrace
+							)
+						;
+					}
+				);
+			}
+			break;
+		default: break;
 		}
 	}
 

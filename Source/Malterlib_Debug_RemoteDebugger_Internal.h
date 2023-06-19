@@ -87,7 +87,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		EPacket m_PacketID;
 		CDataBuffer m_Data;
 
-		DMibListLinkDS_Link(CConnection::CPacket, m_Link);
+		DMibListLinkDS_Link(CPacket, m_Link);
 	};
 
 	class CConnection;
@@ -209,7 +209,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		NNetwork::CSocket mp_Socket;
 
-		NThread::CSemaphoreAggregate* mp_pReportTo;
+		NThread::CSemaphoreAggregate *mp_pReportTo = nullptr;
 
 		NAtomic::TCAtomic<uint32> mp_bDataToSend;
 		NThread::CMutual mp_SendLock;
@@ -227,6 +227,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			NThread::CEventAutoReset mp_FreePacketsAvailable;
 
 		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> mp_pThread;
+		NThread::CEvent mp_Initialized;
 
 		void fp_Process();
 		void fp_StartThread();
@@ -236,13 +237,13 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	public:
 		CConnection(NThread::CSemaphoreAggregate* _pReportTo); // Should be private. Do not use.
-		CConnection(EMode _Mode, NStr::CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate* _pReportTo);
+		CConnection(EMode _Mode, NStr::CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate *_pReportTo);
 		~CConnection();
 
 		EState f_GetState() const;
 		bool f_IsConnected() const;
 
-		bool f_Connect(); // Used with EMode_DelayedConnect
+		bool f_Connect(NThread::CSemaphoreAggregate *_pReportTo); // Used with EMode_DelayedConnect
 
 		// For connection connections :-)
 
@@ -282,6 +283,8 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		EFeature mp_Features;
 
+		NThread::CEvent mp_InitializedEvent;
+
 		NMemory::CReportMemory* mp_pOldReporter;
 		NStorage::TCUniquePointer<CReportMemoryToRemote, NMemory::CAllocator_NonTrackedHeap> mp_pMemoryReporter;
 
@@ -311,6 +314,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> mp_pConnection;
 
 		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> mp_pThread;
+		NThread::CEvent mp_ThreadStarted;
 
 		uint64 mp_ClientPID;
 

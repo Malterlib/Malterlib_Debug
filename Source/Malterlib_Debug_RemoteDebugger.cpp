@@ -3,6 +3,7 @@
 
 #include <Mib/Core/Core>
 #include <Mib/Debug/RemoteDebugger>
+#include <Mib/Process/Platform>
 
 #if DMibRemoteDebugger_Enabled
 
@@ -37,7 +38,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			mp_FreePackets.f_Insert(TCRemoteDebuggerPool<CPacket>::fs_New());
 	}
 
-	CConnection::CConnection(EMode _Mode, CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate* _pReportTo)
+	CConnection::CConnection(EMode _Mode, CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate *_pReportTo)
 		: mp_pReportTo(_pReportTo)
 		, mp_Mode(_Mode)
 		, mp_Address(_Address)
@@ -50,7 +51,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		case EMode_DelayedConnect:
 			break;
 		case EMode_Connect:
-			f_Connect();
+			f_Connect(_pReportTo);
 			break;
 		case EMode_Listen:
 			{
@@ -74,7 +75,11 @@ namespace NMib::NDebug::NRemoteDebugger
 	CConnection::~CConnection()
 	{
 		if (!!mp_pThread)
+		{
+			mp_pThread->f_Stop(false);
+			mp_Initialized.f_SetSignaled();
 			mp_pThread->f_Stop(true);
+		}
 		mp_Socket.f_Close();
 		while(!mp_ReceivedPackets.f_IsEmpty())
 			TCRemoteDebuggerPool<CPacket>::fs_Delete(mp_ReceivedPackets.f_Pop());
@@ -86,12 +91,15 @@ namespace NMib::NDebug::NRemoteDebugger
 			TCRemoteDebuggerPool<CDataBlock>::fs_Delete(mp_FreeDataBlocks.f_Pop());
 	}
 
-	bool CConnection::f_Connect()
+	bool CConnection::f_Connect(NThread::CSemaphoreAggregate *_pReportTo)
 	{
+		mp_pReportTo = _pReportTo;
 		DMibFastCheck(		(mp_Mode == EMode_Connect)
 						||	( (mp_Mode == EMode_DelayedConnect) && !mp_pThread)  );
 
 		fp_StartThread();
+
+		mp_Initialized.f_SetSignaled();
 		return true;
 	}
 
@@ -169,7 +177,10 @@ namespace NMib::NDebug::NRemoteDebugger
 			mp_SendData.f_InsertLast(_pBlock);
 		}
 		if (mp_bDataToSend.f_Exchange(1) == 0)
-			mp_pThread->m_EventWantQuit.f_Signal();
+		{
+			if (mp_pThread)
+				mp_pThread->m_EventWantQuit.f_Signal();
+		}
 	}
 
 	CPacketReference CConnection::f_ReceivePacket()
@@ -192,13 +203,14 @@ namespace NMib::NDebug::NRemoteDebugger
 		DMibFastCheck(mp_Mode == EMode_Listen);
 
 		TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> pNewConn = fg_Construct(_pReportTo);
+		pNewConn->fp_StartThread();
 
 		pNewConn->mp_Socket.f_Accept(&mp_Socket, &pNewConn->mp_pThread->m_EventWantQuit);
 
 		if (pNewConn->mp_Socket.f_IsValid())
 		{
 			mp_ConnectionState.f_Store(EState_Connected);
-			pNewConn->fp_StartThread();
+			pNewConn->mp_Initialized.f_SetSignaled();
 			return fg_Move(pNewConn);
 		}
 		else
@@ -210,6 +222,9 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CConnection::fp_Process()
 	{
+		if (mp_pThread->f_GetState() == NThread::EThreadState_EventWantQuit)
+			return;
+
 		if (mp_Mode != EMode_Listen)
 		{
 			// We perform the connection here as at the moment the network subsystem does not support
@@ -270,8 +285,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		bool bSendStuffed = false;
 
-		auto fl_SendDisconnect =
-			[&]()
+		auto fl_SendDisconnect = [&]()
 			{
 				CPacket* pNewPacket = TCRemoteDebuggerPool<CPacket>::fs_New();
 				pNewPacket->m_Channel = EChannel_System;
@@ -287,9 +301,10 @@ namespace NMib::NDebug::NRemoteDebugger
 				mp_ConnectionState.f_Store(EState_Disconnected);
 
 				mp_pThread->f_Stop(false);
-			};
+			}
+		;
 
-		while(mp_pThread->f_GetState() != NThread::EThreadState_EventWantQuit)
+		while (mp_pThread->f_GetState() != NThread::EThreadState_EventWantQuit)
 		{
 			ENetTCPState SocketState = mp_Socket.f_GetState();
 
@@ -434,14 +449,17 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CConnection::fp_StartThread()
 	{
-		mp_pThread = CThreadObjectNonTracked::fs_StartThread(
-					[this](CThreadObjectNonTracked *_pThread) -> aint
-					{
-						this->fp_Process();
-						return 0;
-					}
-				,	"RemoteDebuggerConnection"
-		);
+		mp_pThread = CThreadObjectNonTracked::fs_StartThread
+			(
+				[this](CThreadObjectNonTracked *_pThread) -> aint
+				{
+					mp_Initialized.f_Wait();
+					this->fp_Process();
+					return 0;
+				}
+				, "RemoteDebuggerConnection"
+			)
+		;
 	}
 
 
@@ -467,7 +485,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		{
 			fp_Initialize(mp_Features);
 
-			mp_pConnection = fg_Construct(CConnection::EMode_DelayedConnect, mp_Address, mp_Port, &mp_pThread->m_EventWantQuit);
+			mp_pConnection = fg_Construct(CConnection::EMode_DelayedConnect, mp_Address, mp_Port, nullptr);
 
 			{
 				// Notify server of PID
@@ -478,10 +496,13 @@ namespace NMib::NDebug::NRemoteDebugger
 					NProcess::NPlatform::fg_Process_GetCurrentUID()
 				};
 
-				mp_pConnection->f_SendPacket(EChannel_System, EPacket_Sys_ClientConnect
-					, Packet
-					, nullptr
-					);
+				mp_pConnection->f_SendPacket
+					(
+						EChannel_System, EPacket_Sys_ClientConnect
+						, Packet
+						, nullptr
+					)
+				;
 			}
 		}
 	}
@@ -507,16 +528,21 @@ namespace NMib::NDebug::NRemoteDebugger
 		if (!mp_pConnection)
 			return false;
 
-		mp_pConnection->f_Connect();
+		mp_pThread = CThreadObjectNonTracked::fs_StartThread
+			(
+				[this](NThread::CThreadObjectNonTracked *_pThread) -> aint
+				{
+					mp_InitializedEvent.f_Wait();
+					this->fp_Process();
+					return 0;
+				}
+				, "RemoteDebuggerClient"
+			)
+		;
 
-		mp_pThread = CThreadObjectNonTracked::fs_StartThread(
-					[this](NThread::CThreadObjectNonTracked *_pThread) -> aint
-					{
-						this->fp_Process();
-						return 0;
-					}
-				,	"RemoteDebuggerClient"
-		);
+		mp_pConnection->f_Connect(&mp_pThread->m_EventWantQuit);
+
+		mp_InitializedEvent.f_SetSignaled();
 
 		return true;
 	}
@@ -607,16 +633,20 @@ namespace NMib::NDebug::NRemoteDebugger
 		if (!!mp_pThread)
 			return false; // Already running.
 
-		mp_pThread = CThreadObjectNonTracked::fs_StartThread(
-					[this](NThread::CThreadObjectNonTracked *_pThread) -> aint
-					{
-						this->fp_Process();
-						return 0;
-					}
-				,	"RemoteDebuggerServer"
-		);
+		mp_pThread = CThreadObjectNonTracked::fs_StartThread
+			(
+				[this](NThread::CThreadObjectNonTracked *_pThread) -> aint
+				{
+					this->fp_Process();
+					return 0;
+				}
+				, "RemoteDebuggerServer"
+			)
+		;
 
-				return true;
+		mp_ThreadStarted.f_SetSignaled();
+
+		return true;
 	}
 
 	bool CServer::f_IsRunning()
@@ -639,6 +669,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CServer::fp_Process()
 	{
+		mp_ThreadStarted.f_Wait();
 		while(mp_pThread->f_GetState() != NThread::EThreadState_EventWantQuit)
 		{
 			if (!mp_pConnection)
@@ -695,34 +726,39 @@ namespace NMib::NDebug::NRemoteDebugger
 					break;
 				switch (Packet.f_Channel())
 				{
-					case EChannel_System:
-						switch (Packet.f_PacketID())
+				case EChannel_System:
+					switch (Packet.f_PacketID())
+					{
+					case EPacket_Sys_Disconnected:
 						{
-						case EPacket_Sys_Disconnected:
 							{
-								mp_pConnection = nullptr;
-								return;
+								auto ReleasePacket = fg_Move(Packet);
 							}
-							break;
-						case EPacket_Sys_ClientConnect:
-							{
-								auto &Data = Packet.f_Data();
-								NStream::CBinaryStreamMemoryPtr<> Stream;
-								Stream.f_OpenRead(Data.f_GetArray(), Data.f_GetLen());
-
-								CSysPacket_ClientConnect Packet;
-								Packet.f_Read(Stream);
-
-								mp_ClientPID = Packet.m_PID;
-								fp_EmitEvent(EServerEvent_Connected);
-							}
-							break;
+							mp_pConnection = nullptr;
+							return;
 						}
 						break;
-					case EChannel_Memory:
-						if (mp_Settings.m_pMemoryReporter)
-							fp_DecodeMemoryPacket(Packet.f_PacketID(), Packet.f_Data());
+					case EPacket_Sys_ClientConnect:
+						{
+							auto &Data = Packet.f_Data();
+							NStream::CBinaryStreamMemoryPtr<> Stream;
+							Stream.f_OpenRead(Data.f_GetArray(), Data.f_GetLen());
+
+							CSysPacket_ClientConnect Packet;
+							Packet.f_Read(Stream);
+
+							mp_ClientPID = Packet.m_PID;
+							fp_EmitEvent(EServerEvent_Connected);
+						}
 						break;
+					default: break;
+					}
+					break;
+				case EChannel_Memory:
+					if (mp_Settings.m_pMemoryReporter)
+						fp_DecodeMemoryPacket(Packet.f_PacketID(), Packet.f_Data());
+					break;
+				default: break;
 				}
 			}
 
