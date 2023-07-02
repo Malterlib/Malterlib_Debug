@@ -833,7 +833,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;::TIterator&lt;*&gt;">
+  <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;::TCIterator&lt;*&gt;">
     <DisplayString Condition="m_iStack >= 0">
       {*((CNode *)((mint)m_pStack[m_iStack] - $T1))}
     </DisplayString>

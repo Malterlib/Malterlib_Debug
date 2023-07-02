@@ -434,8 +434,8 @@ def fg_MibLLDBInit_AVLTree(_Debugger):
 	fg_AddSynth(_Debugger, CSynthProvider_TCAVLTreeAggregate, '(^|^const )NMib::NIntrusive::TCAVLTree<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerMapLimited, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerMapLimited, '(^|^const )NMib::NIntrusive::TCAVLTree<.*>$', True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCAVLTreeAggregate_CIterator, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::TIterator<.*>$', True, 1)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::TIterator<.*>$', True, 1)
+	fg_AddSynth(_Debugger, CSynthProvider_TCAVLTreeAggregate_CIterator, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::TCIterator<.*>$', True, 1)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::TCIterator<.*>$', True, 1)
 
 	# Map
 	fg_AddSynth(_Debugger, CSynthProvider_TCMap, '(^|^const )NMib::NContainer::TCMap<.*>$', True)
