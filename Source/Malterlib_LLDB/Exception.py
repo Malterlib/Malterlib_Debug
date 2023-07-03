@@ -149,7 +149,7 @@ def fg_MibLLDBInit_Exception(_Debugger):
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NAOQT::NDesktopIntegration::CUnityException$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NAOCC::NNetwork::CExceptionConnectionManager$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NAOUI::CExceptionAOUI$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NBuildServer::CExceptionSlaveProtocol$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NBuild::CExceptionRunnerProtocol$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CExceptionBase$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::CDynamicLibraryException$", True)
@@ -169,8 +169,8 @@ def fg_MibLLDBInit_Exception(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NAOQT::NDesktopIntegration::CUnityException$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NAOCC::NNetwork::CExceptionConnectionManager$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NAOUI::CExceptionAOUI$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NBuildServer::CExceptionSlaveProtocol$", True)
-	
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NBuild::CExceptionRunnerProtocol$", True)
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CDebugException.*$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CException.*$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NContract::CContractException.*$", True)
