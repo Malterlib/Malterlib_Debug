@@ -957,7 +957,7 @@ namespace NMib
 							SupportEmail = "unknown@example.com";
 						bool bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
 		
-						bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
+						[[maybe_unused]] bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
 						if (!bDaemon)
 						{
 							for (mint i = 0; i < nCache; ++i)

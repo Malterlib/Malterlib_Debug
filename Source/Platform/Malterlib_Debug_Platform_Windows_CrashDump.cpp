@@ -152,7 +152,6 @@ namespace NMib
 				auto fl_GenerateException
 					= [&_pExceptionMemoryData, _pExceptionInfo](NThread::CThreadObjectNonTracked *_pThread) -> aint
 					{
-						mint nCache = EWindowCache;
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
 
 						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>(NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("MalterlibCrashDumpDir")));

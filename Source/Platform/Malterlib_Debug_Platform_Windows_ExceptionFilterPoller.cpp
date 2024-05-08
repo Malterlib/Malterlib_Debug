@@ -79,7 +79,7 @@ namespace NMib
 			{
 				if (m_pSystem->m_bPollCheckExceptionFilter || m_pSystem->m_bPollCheckExceptionFilterTimes)
 				{
-					int64 Timer = NMib::NTime::NPlatform::fg_TimerRaw_PreciseGet();
+					[[maybe_unused]] int64 Timer = NMib::NTime::NPlatform::fg_TimerRaw_PreciseGet();
 					//DMibDTrace("Checking Exception Filter {} {}\r\n", m_pSystem->m_bPollCheckExceptionFilterTimes << Timer);
 					if (m_pSystem->m_bPollCheckExceptionFilterTimes)
 						--m_pSystem->m_bPollCheckExceptionFilterTimes;

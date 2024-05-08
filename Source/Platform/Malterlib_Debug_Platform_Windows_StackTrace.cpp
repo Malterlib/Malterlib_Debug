@@ -310,7 +310,7 @@ namespace NMib
 				mint nChars = UnDecorateSymbolName(_pName, _pDestination, _MaxLen, Flags);
 				if (!nChars)
 				{
-					HRESULT LastError = GetLastError();
+					[[maybe_unused]] HRESULT LastError = GetLastError();
 					DMibDTraceSafe("UnDecorateSymbolName: {}\r\n", NMib::NPlatform::fg_Win32_GetLastErrorStr(LastError));
 				}
 			}
