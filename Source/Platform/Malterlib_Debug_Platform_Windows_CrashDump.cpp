@@ -220,7 +220,7 @@ namespace NMib
 										MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE )(MiniDumpWithHandleData | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData);
 										if (!SubSystem.m_StackTrace.MiniDumpWriteDump(SubSystem.m_StackTrace.m_hProcess, GetCurrentProcessId(), File.f_GetOSFile(), DumpType, &Info, nullptr, &CallbackInfo))
 										{
-											NStr::CFStr256 ErrorStr = NStr::CFStr256::CFormat("Could not write mini dump. The error was: {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError());
+											[[maybe_unused]] NStr::CFStr256 ErrorStr = NStr::CFStr256::CFormat("Could not write mini dump. The error was: {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError());
 											DMibDTrace("{}\n", ErrorStr);
 										}
 									}
