@@ -67,6 +67,7 @@ namespace NMib
 
 			void CSubSystem_Debug_Platform_Windows::f_EnableCrashDumps()
 			{
+#if !defined(DMibSanitizerEnabled_Address)
 				if (!g_bIsDll)
 				{
 					m_pPrevExceptionFilter = SetUnhandledExceptionFilter(&fsp_UnhandledException);
@@ -74,6 +75,7 @@ namespace NMib
 					f_InstallExceptionFilterCallback(true);
 				}
 				else
+#endif
 				{
 					f_InstallExceptionFilterCallback(false);
 				}
