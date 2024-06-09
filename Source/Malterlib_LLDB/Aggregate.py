@@ -18,7 +18,7 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 			self.m_bConstructed = self.m_ValueObject.GetChildMemberWithName('m_bConstructed')
 			if fg_IsValidSBValue(self.m_bConstructed):
 				self.m_bEmpty = self.m_bConstructed.GetValueAsUnsigned() == 0
-			self.m_Data = fg_ChildPath(self.m_ValueObject, 'm_ObjectSpace.m_Aligned')
+			self.m_Data = fg_ChildPath(self.m_ValueObject, 'm_ObjectSpace')
 			if not self.fp_ExtractType():
 				return
 			self.m_bValid = True
