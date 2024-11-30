@@ -371,15 +371,15 @@
   </Type>
 
     <Type Name="NMib::NConcurrency::TCActorInternal&lt;*&gt;">
-    <DisplayString Condition="mp_pActorUnsafe._Storage._Value != 0">
-      {*(($T1 *)mp_pActorUnsafe._Storage._Value)}
+    <DisplayString Condition="mp_pActorUnsafeLocal != 0">
+      {*(($T1 *)mp_pActorUnsafeLocal)}
     </DisplayString>
     <DisplayString>
       Destroyed
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="mp_pActorUnsafe._Storage._Value != 0">
-        *(($T1 *)mp_pActorUnsafe._Storage._Value)
+      <ExpandedItem Condition="mp_pActorUnsafeLocal != 0">
+        *(($T1 *)mp_pActorUnsafeLocal)
       </ExpandedItem>
       <Item Name="[Ref Count]">
         m_RefCount._Storage._Value + 1
@@ -394,15 +394,15 @@
   </Type>
 
   <Type Name="NMib::NConcurrency::CActorHolder">
-    <DisplayString Condition="mp_pActorUnsafe._Storage._Value != 0">
-      {*mp_pActorUnsafe._Storage._Value}
+    <DisplayString Condition="mp_pActorUnsafeLocal != 0">
+      {*mp_pActorUnsafeLocal}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="mp_pActorUnsafe._Storage._Value != 0">
-        *mp_pActorUnsafe._Storage._Value
+      <ExpandedItem Condition="mp_pActorUnsafeLocal != 0">
+        *mp_pActorUnsafeLocal
       </ExpandedItem>
       <Item Name="[Internal Actor Raw View]">
         *this,!
