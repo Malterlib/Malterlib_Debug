@@ -45,7 +45,7 @@ class CSynthProvider_TCActor(CSynthProvider_Common):
 				self.m_ActorTypeType = fg_GetValueType(self.m_ActorType)
 				self.m_RefCount = fg_ChildPath(self.m_ActorHolder, 'm_RefCount.m_RefCount.__a_.__a_value')
 				self.m_WeakRefCount = fg_ChildPath(self.m_ActorHolder, 'm_RefCount.m_WeakRefCount.__a_.__a_value')
-				self.m_Value = fg_ChildPath(self.m_ActorHolder, 'mp_pActorUnsafeLocal')
+				self.m_Value = fg_ChildPath(self.m_ActorHolder, 'mp_pActorUnsafe.__a_.__a_value')
 				if self.m_Value is not None:
 					self.m_DataType = fg_GetPointerValueType(self.m_Value)
 					fg_PrecacheType(self.m_DataType)
