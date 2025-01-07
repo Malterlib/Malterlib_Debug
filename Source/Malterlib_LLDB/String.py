@@ -456,44 +456,44 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "ch8 *const");
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const ch8 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const ch8 *const")
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 \[[0-9]+]", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 const\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 const\\[[0-9]+]", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "char *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "char *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const char *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const char *const")
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char \[[0-9]+]", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char const\[[0-9]+]", True)
-	
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char const\\[[0-9]+]", True)
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "ch16 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "ch16 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const ch16 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const ch16 *const")
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 \[[0-9]+]", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 const\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 const\\[[0-9]+]", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "char16_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "char16_t *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const char16_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const char16_t *const")
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t \[[0-9]+]", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t const\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t const\\[[0-9]+]", True)
 	
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "ch32 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "ch32 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const ch32 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const ch32 *const")
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32 \[[0-9]+]", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32 const\[[0-9]+]", True)
-	
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32 \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32 const\\[[0-9]+]", True)
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "char32_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "char32_t *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const char32_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const char32_t *const")
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t \[[0-9]+]", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t const\[[0-9]+]", True)
-	
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t const\\[[0-9]+]", True)
+
 	# Ptr
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)CStrTraitsPtr_CStr>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CStr>$", True)
