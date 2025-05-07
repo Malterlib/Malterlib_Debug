@@ -5,10 +5,10 @@ import lldb, traceback, sys
 from .Common import *
 from .StringHelpers import *
 
-class CSynthProvider_TCJSONValueBase(CSynthProvider_Common):
+class CSynthProvider_TCJsonValueBase(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
 		self.m_NumExtraChildren = 0
-		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary, "NMib::NEncoding::NPrivate::TCJSONValueBase")
+		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary, "NMib::NEncoding::NPrivate::TCJsonValueBase")
 
 	def update(self):
 		CSynthProvider_Common.update(self)
@@ -61,10 +61,10 @@ class CSynthProvider_TCJSONValueBase(CSynthProvider_Common):
 	def fp_NumChildren(self):
 		return 1 + self.m_NumExtraChildren
 
-class CSynthProvider_TCJSONObject(CSynthProvider_Common):
+class CSynthProvider_TCJsonObject(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
 		self.m_NumExtraChildren = 0
-		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary, "NMib::NEncoding::TCJSONObject")
+		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary, "NMib::NEncoding::TCJsonObject")
 
 	def update(self):
 		CSynthProvider_Common.update(self)
@@ -194,7 +194,7 @@ def fg_SummaryProvider_TCObjectEntry(_Value, dict):
 		print('(fg_SummaryProvider_TCObjectEntry) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_TCJSONObject(_Value, dict):
+def fg_SummaryProvider_TCJsonObject(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
@@ -205,10 +205,10 @@ def fg_SummaryProvider_TCJSONObject(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_TCJSONObject) error: ', error, ' path: ', _Value.get_expr_path())
+		print('(fg_SummaryProvider_TCJsonObject) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_CEJSONUserType(_Value, dict):
+def fg_SummaryProvider_CEJsonUserType(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
@@ -223,10 +223,10 @@ def fg_SummaryProvider_CEJSONUserType(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CEJSONUserType) error: ', error, ' path: ', _Value.get_expr_path())
+		print('(fg_SummaryProvider_CEJsonUserType) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_CJSONBoolean(_Value, dict):
+def fg_SummaryProvider_CJsonBoolean(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
@@ -239,35 +239,35 @@ def fg_SummaryProvider_CJSONBoolean(_Value, dict):
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CJSONBoolean) error: ', error, ' path: ', _Value.get_expr_path())
+		print('(fg_SummaryProvider_CJsonBoolean) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
-def fg_SummaryProvider_CJSONNull(_Value, dict):
+def fg_SummaryProvider_CJsonNull(_Value, dict):
 	try:
 		return "null";
 
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CJSONNull) error: ', error, ' path: ', _Value.get_expr_path())
+		print('(fg_SummaryProvider_CJsonNull) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Json(_Debugger):
 	
-	fg_AddSynth(_Debugger, CSynthProvider_TCJSONValueBase, "(^|^const )NMib::NEncoding::TCJSONValue<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCJSONValueBase, "(^|^const )NMib::NEncoding::TCEJSONValue<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NEncoding::TCJSONValue<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NEncoding::TCEJSONValue<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCJsonValueBase, "(^|^const )NMib::NEncoding::TCJsonValue<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCJsonValueBase, "(^|^const )NMib::NEncoding::TCEJsonValue<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NEncoding::TCJsonValue<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NEncoding::TCEJsonValue<.*>$", True)
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCObjectEntry, "(^|^const )NMib::NEncoding::NPrivate::TCObjectEntry<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCObjectEntry, "(^|^const )NMib::NEncoding::NPrivate::TCObjectEntry<.*>$", True)
 
-	fg_AddSynth(_Debugger, CSynthProvider_TCJSONObject, "(^|^const )NMib::NEncoding::TCJSONObject<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_TCJSONObject, "(^|^const )NMib::NEncoding::TCJSONObject<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCJsonObject, "(^|^const )NMib::NEncoding::TCJsonObject<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCJsonObject, "(^|^const )NMib::NEncoding::TCJsonObject<.*>$", True)
 
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CJSONBoolean, "(^|^const )NMib::NEncoding::NPrivate::CJSONBoolean$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CJSONNull, "(^|^const )NMib::NEncoding::NPrivate::CJSONNull$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJSONUserType, "(^|^const )NMib::NEncoding::CEJSONUserTypeSorted$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJSONUserType, "(^|^const )NMib::NEncoding::CEJSONUserTypeOrdered$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CJsonBoolean, "(^|^const )NMib::NEncoding::NPrivate::CJsonBoolean$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CJsonNull, "(^|^const )NMib::NEncoding::NPrivate::CJsonNull$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJsonUserType, "(^|^const )NMib::NEncoding::CEJsonUserTypeSorted$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_CEJsonUserType, "(^|^const )NMib::NEncoding::CEJsonUserTypeOrdered$", True)
 
 
 	return

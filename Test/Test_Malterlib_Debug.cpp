@@ -42,8 +42,8 @@ inline_never mint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, mint _M
 #include <Mib/Storage/Reference>
 #include <Mib/Storage/Indirection>
 #include <Mib/String/Mixed>
-#include <Mib/Encoding/JSON>
-#include <Mib/Encoding/EJSON>
+#include <Mib/Encoding/Json>
+#include <Mib/Encoding/EJson>
 
 class CDebug_Tests : public NMib::NTest::CTest
 {
@@ -680,9 +680,9 @@ public:
 			zfp32 AutoClear_zfp32 = fp32(5.6f);
 
 			using namespace NMib::NEncoding;
-			CJSONSorted JSON(EJSONType_Object);
+			CJsonSorted Json(EJsonType_Object);
 			{
-				CJSONSorted &ToReturn = JSON;
+				CJsonSorted &ToReturn = Json;
 
 				ToReturn["Key"] = "Value";
 				ToReturn["KeyTrue"] = true;
@@ -690,7 +690,7 @@ public:
 				ToReturn["KeyNull"] = nullptr;
 				ToReturn["KeyInt"] = 25;
 				ToReturn["KeyFloat"] = 167.6;
-				ToReturn["KeyInvalid"] = CJSONSorted{};
+				ToReturn["KeyInvalid"] = CJsonSorted{};
 
 				auto &Object = ToReturn["KeyObject"];
 				Object["Key"] = "Value";
@@ -699,24 +699,24 @@ public:
 				Object["KeyNull"] = nullptr;
 				Object["KeyInt"] = 25;
 				Object["KeyFloat"] = 167.6;
-				Object["KeyArray"] = EJSONType_Array;
-				Object["KeyObject"] = EJSONType_Object;
+				Object["KeyArray"] = EJsonType_Array;
+				Object["KeyObject"] = EJsonType_Object;
 
 				auto &Array = ToReturn["KeyArray"];
 				Array.f_Insert(25);
 				Array.f_Insert(167.6);
 				Array.f_Insert(true);
 				Array.f_Insert(false);
-				Array.f_Insert(EJSONType_Array);
+				Array.f_Insert(EJsonType_Array);
 
 				auto &ArrayObject = Array.f_Insert();
 				ArrayObject["KeyInt"] = 25;
 				ArrayObject["KeyFloat"] = 167.6;
 			}
 
-			CEJSONSorted EnhancedJSON(EJSONType_Object);
+			CEJsonSorted EnhancedJson(EJsonType_Object);
 			{
-				CEJSONSorted &ToReturn = EnhancedJSON;
+				CEJsonSorted &ToReturn = EnhancedJson;
 
 				ToReturn["Key"] = "Value";
 				ToReturn["KeyTrue"] = true;
@@ -724,7 +724,7 @@ public:
 				ToReturn["KeyNull"] = nullptr;
 				ToReturn["KeyInt"] = 25;
 				ToReturn["KeyFloat"] = 167.6;
-				ToReturn["KeyInvalid"] = CEJSONSorted{};
+				ToReturn["KeyInvalid"] = CEJsonSorted{};
 
 				auto &Object = ToReturn["KeyObject"];
 				Object["Key"] = "Value";
@@ -733,11 +733,11 @@ public:
 				Object["KeyNull"] = nullptr;
 				Object["KeyInt"] = 25;
 				Object["KeyFloat"] = 167.6;
-				Object["KeyArray"] = EJSONType_Array;
-				Object["KeyObject"] = EJSONType_Object;
+				Object["KeyArray"] = EJsonType_Array;
+				Object["KeyObject"] = EJsonType_Object;
 				Object["KeyBinary"] = CByteVector{0,1,2};
 				Object["KeyDate"] = CTime::fs_NowUTC();
-				Object["KeyUser"] = CEJSONUserTypeSorted{"TestType", JSON};
+				Object["KeyUser"] = CEJsonUserTypeSorted{"TestType", Json};
 
 
 				auto &Array = ToReturn["KeyArray"];
@@ -745,7 +745,7 @@ public:
 				Array.f_Insert(167.6);
 				Array.f_Insert(true);
 				Array.f_Insert(false);
-				Array.f_Insert(EJSONType_Array);
+				Array.f_Insert(EJsonType_Array);
 
 				auto &ArrayObject = Array.f_Insert();
 				ArrayObject["KeyInt"] = 25;
@@ -754,7 +754,7 @@ public:
 
 			auto fTestLambda = [&]
 				{
-					(void)EnhancedJSON;
+					(void)EnhancedJson;
 				}
 			;
 

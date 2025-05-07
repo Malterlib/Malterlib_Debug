@@ -314,7 +314,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NEncoding::TCJSONObject&lt;*&gt;">
+  <Type Name="NMib::NEncoding::TCJsonObject&lt;*&gt;">
     <DisplayString>
       {mp_Objects}
     </DisplayString>
@@ -327,7 +327,7 @@
       </Item>
     </Expand>
   </Type>
-  <Type Name="NMib::NEncoding::TCJSONValue&lt;*&gt;">
+  <Type Name="NMib::NEncoding::TCJsonValue&lt;*&gt;">
     <DisplayString>
       {mp_Value}
     </DisplayString>
@@ -1023,11 +1023,11 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NEncoding::NPrivate::CJSONBoolean">
+  <Type Name="NMib::NEncoding::NPrivate::CJsonBoolean">
     <DisplayString>{m_bValue}</DisplayString>
   </Type>
 
-  <Type Name="NMib::NEncoding::NPrivate::CJSONNull">
+  <Type Name="NMib::NEncoding::NPrivate::CJsonNull">
     <DisplayString>null</DisplayString>
   </Type>
 
