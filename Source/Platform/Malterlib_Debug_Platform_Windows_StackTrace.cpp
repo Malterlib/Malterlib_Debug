@@ -362,19 +362,23 @@ namespace NMib
 					if (SymGetLineFromAddr64(m_hProcess, _Address, &Displacement, &LineInfo))
 					{
 						const ch8 *pName = LineInfo.FileName;
-						const ch8 *pCrtStrip[] = {"f:\\rtm\\vctools\\crt_bld\\self_x86\\crt\\src\\", "f:\\sp\\vctools\\crt_bld\\self_x86\\crt\\src\\", "f:\\dd\\vctools\\crt_bld\\self_x86\\crt\\src\\"
-		//											,"f:\\dd\\vctools\\crt_bld\\self_x86\\crt\\prebuild\\eh\\"
-													};
-						mint nCrtStrip = sizeof(pCrtStrip) / sizeof(pCrtStrip[0]);
+						constexpr static const ch8 *c_pCrtStrip[] =
+							{
+								"f:\\rtm\\vctools\\crt_bld\\self_x86\\crt\\src\\"
+								, "f:\\sp\\vctools\\crt_bld\\self_x86\\crt\\src\\"
+								, "f:\\dd\\vctools\\crt_bld\\self_x86\\crt\\src\\"
+								// ,"f:\\dd\\vctools\\crt_bld\\self_x86\\crt\\prebuild\\eh\\"
+							}
+						;
 				
 						NStr::CStr Temp;
-						for (mint i = 0; i < nCrtStrip; ++i)
+						for (auto &pStrip : c_pCrtStrip)
 						{
-							aint CrtPos = NStr::fg_StrFind(pName, pCrtStrip[i]);
+							aint CrtPos = NStr::fg_StrFind(pName, pStrip);
 							if (CrtPos == 0)
 							{
 								Temp = "X:\\Apps\\Dev\\VS.2010\\VC\\Crt\\src\\";
-								Temp += (pName + NStr::fg_StrLen(pCrtStrip[i]));
+								Temp += (pName + NStr::fg_StrLen(pStrip));
 								pName = Temp;
 								break;
 							}
