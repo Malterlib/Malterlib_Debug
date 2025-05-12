@@ -90,6 +90,7 @@ namespace NMib
 				NStr::CStrNonTracked m_CrashDumpUserNotifyFormat_CanContinueMessage;
 				NStr::CStrNonTracked m_CrashDumpUserNotifyFormat_NoContinueMessage;
 				NThread::CMutual m_DumpExceptionInfoLock;
+				NStr::CStrNonTracked m_DumpMetadataTemplate;
 
 				NThread::CMutual m_RandomLock;
 				NMisc::CAutoRandom m_Random;

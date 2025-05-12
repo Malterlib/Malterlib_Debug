@@ -2,12 +2,16 @@
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
-#include <Mib/Debug/Debug>
-#include <Mib/Core/PlatformSpecific/WindowsString>
-#include <Mib/Core/PlatformSpecific/WindowsRegistry>
+
 #include <Mib/Core/PlatformSpecific/Windows>
+#include <Mib/Core/PlatformSpecific/WindowsRegistry>
+#include <Mib/Core/PlatformSpecific/WindowsString>
 #include <Mib/Core/PlatformSpecific/WindowsUndocumented>
+#include <Mib/Debug/Debug>
+#include <Mib/Encoding/EJson>
+#include <Mib/Encoding/JsonShortcuts>
 #include <Mib/Process/ProcessLaunch>
+
 #include "Malterlib_Debug_Platform_Windows.h"
 
 #include <Windows.h>
@@ -28,6 +32,8 @@ namespace NMib
 				, m_bPollCheckExceptionFilter(true)
 				, m_pDllNotificationCookie(nullptr)
 			{
+				using namespace NMib::NStr;
+				using namespace NMib::NEncoding;
 
 				m_ExceptionFilterPoller.m_pSystem = this;
 
@@ -40,6 +46,30 @@ namespace NMib
 
 				for (mint i = 0; i < EWindowCache; ++i)
 					m_CacheWindows[i] = nullptr;
+
+				auto BuildMetadata = NSys::fg_GetBuildMetadata();
+
+				NEncoding::CEJsonSorted Metadata
+					{
+						"Product"_ = BuildMetadata.m_pProduct
+						, "Application"_ = BuildMetadata.m_pApplication
+						, "Configuration"_ = BuildMetadata.m_pConfiguration
+						, "GitBranch"_ = BuildMetadata.m_pGitBranch
+						, "GitCommit"_ = BuildMetadata.m_pGitCommit
+						, "Platform"_ = BuildMetadata.m_pPlatform
+						, "Version"_ = BuildMetadata.m_pVersion
+#if defined(DMibContract_AnyEnabled) || DMibEnableSafeCheck > 0
+						, "ExceptionInfo"_ = "{ExceptionInfo}"
+#endif
+					}
+				;
+
+				auto &OutTags = Metadata["Tags"].f_Array();
+
+				for (mint iTag = 0; iTag < BuildMetadata.m_nTags; ++iTag)
+					OutTags.f_Insert(BuildMetadata.m_pTags[iTag]);
+
+				m_DumpMetadataTemplate = Metadata.f_ToString();
 			}
 
 			CSubSystem_Debug_Platform_Windows::~CSubSystem_Debug_Platform_Windows()

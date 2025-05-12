@@ -2,11 +2,14 @@
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
-#include <Mib/Debug/Debug>
-#include <Mib/Core/PlatformSpecific/WindowsFilePath>
-#include <Mib/Core/PlatformSpecific/WindowsError>
-#include <Mib/Core/PlatformSpecific/WindowsUndocumented>
+
 #include <Mib/Core/PlatformSpecific/Windows>
+#include <Mib/Core/PlatformSpecific/WindowsError>
+#include <Mib/Core/PlatformSpecific/WindowsFilePath>
+#include <Mib/Core/PlatformSpecific/WindowsUndocumented>
+#include <Mib/Debug/Debug>
+#include <Mib/Encoding/JsonGenerate>
+
 #include "Malterlib_Debug_Platform_Windows.h"
 
 #include <Windows.h>
@@ -27,6 +30,7 @@ namespace NMib
 					NMib::NStr::CStrNonTracked const &_FileName,
 					NMib::NStr::CStrNonTracked const &_FileNameDumpMini,
 					NMib::NStr::CStrNonTracked const &_FileNameDump,
+					NMib::NStr::CStrNonTracked const &_FileNameMetadata,
 					bool _bAllowContinue
 				)
 			;
@@ -215,7 +219,7 @@ namespace NMib
 						NStr::CStrNonTracked FileName;
 						NStr::CStrNonTracked FileNameDumpMini;
 						NStr::CStrNonTracked FileNameDump;
-
+						NStr::CStrNonTracked FileNameMetadata;
 						{
 							NTime::CTimeConvert::CDateTime DateTime;
 							NTime::CTimeConvert(NTime::CTime::fs_NowLocal()).f_ExtractDateTime(DateTime);
@@ -226,13 +230,39 @@ namespace NMib
 
 							uint32 RandomValue = SubSystem.f_GetRandom();
 
-							FileName = CrashDumpPath + (NStr::CStrNonTracked::CFormat("/CrashLog_{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0}.{sj8,sf0,nfh}.txt")
-								<< DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth << DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << Fraction << RandomValue).f_GetStr();
-							FileNameDump = CrashDumpPath + (NStr::CStrNonTracked::CFormat("/FullDump_{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0}.{sj8,sf0,nfh}.dmp")
-								<< DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth << DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << Fraction << RandomValue).f_GetStr();
-							FileNameDumpMini = CrashDumpPath + (NStr::CStrNonTracked::CFormat("/MiniDump_{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0}.{sj8,sf0,nfh}.dmp")
-								<< DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth << DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << Fraction << RandomValue).f_GetStr();
+							NStr::CStrNonTracked CrashDumpID = NStr::CStrNonTracked::CFormat("{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0}.{sj8,sf0,nfh}")
+								<< DateTime.m_Year
+								<< DateTime.m_Month
+								<< DateTime.m_DayOfMonth
+								<< DateTime.m_Hour
+								<< DateTime.m_Minute
+								<< DateTime.m_Second
+								<< Fraction
+								<< RandomValue
+							;
+							
+							FileName = NStr::CStrNonTracked::CFormat("{}/CrashLog_{}.txt") << CrashDumpPath << CrashDumpID;
+							FileNameDump = NStr::CStrNonTracked::CFormat("{}/FullDump_{}.dmp") << CrashDumpPath << CrashDumpID;
+							FileNameDumpMini = NStr::CStrNonTracked::CFormat("{}/MiniDump_{}.dmp") << CrashDumpPath << CrashDumpID;
+							FileNameMetadata = NStr::CStrNonTracked::CFormat("{}/Metadata_{}.json") << CrashDumpPath << CrashDumpID;
 						}
+
+						{
+							auto Metadata = SubSystem.m_DumpMetadataTemplate;
+#if defined(DMibContract_AnyEnabled) || DMibEnableSafeCheck > 0
+							NStr::CStrNonTracked ExceptionInfoJson;
+							{
+								NStr::CStrNonTracked::CAppender Appender(ExceptionInfoJson);
+
+								auto ExceptionInfo = NSys::fg_System_GetContractViolationMessage();
+								NEncoding::NJson::fg_GenerateJsonString<'\"', NEncoding::NJson::CParseContext, false>(Appender, ExceptionInfo);
+							}
+
+							Metadata = Metadata.f_Replace("{ExceptionInfo}", ExceptionInfoJson);
+#endif
+							NFile::CFile::fs_WriteStringToFile(FileNameMetadata, Metadata, false);
+						}
+
 						// Mini dump
 						NStr::CStrNonTracked ExceptionInfo;
 						if (!_Message.f_IsEmpty())
@@ -953,8 +983,6 @@ namespace NMib
 						NStr::CStrNonTracked ProgramNameCopy = ProgramName;
 						ProgramName = NStr::CStrNonTracked::CFormat("{} ({})") << ProgramNameCopy << (mint)GetCurrentProcessId();
 						NStr::CStrNonTracked SupportEmail = fg_GetSys()->f_GetSupportEmailNonTracked();
-						if (SupportEmail.f_IsEmpty())
-							SupportEmail = "unknown@example.com";
 						bool bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
 		
 						[[maybe_unused]] bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
@@ -973,13 +1001,9 @@ namespace NMib
 							{
 
 								if (SubSystem.m_pCrashDumpUserNotifyFunction && !NMib::NSys::fg_ConsoleErrorOutputValid())
-								{
 									bContinue = (*(SubSystem.m_pCrashDumpUserNotifyFunction))(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, bCanContinue);
-								}
 								else
-								{
-									bContinue = fg_DefaultCrashDumpUserNotify(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, bCanContinue);
-								}
+									bContinue = fg_DefaultCrashDumpUserNotify(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, FileNameMetadata, bCanContinue);
 							}
 						}
 
@@ -1032,6 +1056,7 @@ namespace NMib
 					, NStr::CStrNonTracked const &_FileName
 					, NStr::CStrNonTracked const &_FileNameDumpMini
 					, NStr::CStrNonTracked const &_FileNameDump
+					, NStr::CStrNonTracked const &_FileNameMetadata
 					, bool _bAllowContinue
 				)
 			{
@@ -1041,46 +1066,108 @@ namespace NMib
 
 				if (_CustomMessage.f_IsEmpty())
 				{
+					NStr::CStrNonTracked EmailMessage;
+					
+					if (_SupportEmail)
+					{
+						EmailMessage = NStr::CStrNonTracked::CFormat
+							(
+								" Please send the following crash log files to {0} along with a description of what you were doing when the program crashed."
+							)
+							<< _SupportEmail
+						;
+					}
+
 					if (_bAllowContinue)
 					{
 						if (SubSystem.m_CrashDumpUserNotifyFormat_CanContinueMessage.f_IsEmpty())
-							MessageText = NStr::CStrNonTracked::CFormat("{0} has encountered an unhandled exception. Please send the following crash log files to {1}"\
-							" along with a description of what you were doing when the program crashed.\r\n\r\n"\
-							"{2}\r\n"\
-							"{3}\r\n"\
-							"\r\nAlso please save the following crash log file for future reference:\r\n\r\n"\
-							"{4}\r\n"\
-							"\r\nDo you want to continue execution?") << _ProgramName << _SupportEmail << _FileName << _FileNameDumpMini << _FileNameDump;
+						{
+							MessageText = NStr::CStrNonTracked::CFormat
+								(
+									"{0} has encountered an unhandled exception.{1}\r\n\r\n"
+									"{2}\r\n"
+									"{3}\r\n"
+									"\r\nPlease save the following files for future reference:\r\n\r\n"
+									"{4}\r\n"
+									"{5}\r\n"
+									"\r\nDo you want to continue execution?"
+								) 
+								<< _ProgramName 
+								<< EmailMessage
+								<< _FileName 
+								<< _FileNameDumpMini 
+								<< _FileNameDump
+								<< _FileNameMetadata
+							;
+						}
 						else
 							MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CanContinueMessage)
-								<< _ProgramName << _SupportEmail << _FileName << _FileNameDumpMini << _FileNameDump;
+								<< _ProgramName << _SupportEmail << _FileName << _FileNameDumpMini << _FileNameDump << _FileNameMetadata;
 					}
 					else
 					{
 						if (SubSystem.m_CrashDumpUserNotifyFormat_NoContinueMessage.f_IsEmpty())
-							MessageText = NStr::CStrNonTracked::CFormat("{0} has encountered an unhandled exception. Please send the following crash log files to {1}"\
-							" along with a description of what you were doing when the program crashed.\r\n\r\n"\
-							"{2}\r\n"\
-							"{3}\r\n"\
-							"\r\nAlso please save the following crash log file for future reference:\r\n\r\n"\
-							"{4}\r\n") << _ProgramName << _SupportEmail << _FileName << _FileNameDumpMini << _FileNameDump;
+						{
+							MessageText = NStr::CStrNonTracked::CFormat
+								(
+									"{0} has encountered an unhandled exception.{1}\r\n\r\n"
+									"{2}\r\n"
+									"{3}\r\n"
+									"\r\nPlease save the following files for future reference:\r\n\r\n"
+									"{4}\r\n"
+									"{5}\r\n"
+								) 
+								<< _ProgramName 
+								<< EmailMessage
+								<< _FileName 
+								<< _FileNameDumpMini 
+								<< _FileNameDump 
+								<< _FileNameMetadata
+							;
+						}
 						else
+						{
 							MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_NoContinueMessage)
-								<< _ProgramName << _SupportEmail << _FileName << _FileNameDumpMini << _FileNameDump;
+								<< _ProgramName 
+								<< _SupportEmail 
+								<< _FileName 
+								<< _FileNameDumpMini 
+								<< _FileNameDump 
+								<< _FileNameMetadata
+							;
+						}
 					}
 				}
 				else
 				{
 					if (SubSystem.m_CrashDumpUserNotifyFormat_CustomMessage.f_IsEmpty())
-						MessageText = NStr::CStrNonTracked::CFormat(
-						"{0}\r\n\r\n"\
-						"{1}\r\n"\
-						"{2}\r\n"\
-						"\r\nAlso please save the following crash log file for future reference:\r\n\r\n" \
-						"{3}") << _CustomMessage << _FileName << _FileNameDumpMini << _FileNameDump;
+					{
+						MessageText = NStr::CStrNonTracked::CFormat
+							(
+								"{0}\r\n\r\n"
+								"{1}\r\n"
+								"{2}\r\n"
+								"\r\nPlease save the following files for future reference:\r\n\r\n"
+								"{3}"
+								"{4}"
+							) 
+							<< _CustomMessage 
+							<< _FileName 
+							<< _FileNameDumpMini 
+							<< _FileNameDump 
+							<< _FileNameMetadata
+						;
+					}
 					else
-						MessageText = NStr::CStrNonTracked::CFormat( SubSystem.m_CrashDumpUserNotifyFormat_CustomMessage ) 
-							<< _CustomMessage << _FileName << _FileNameDumpMini << _FileNameDump;
+					{
+						MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CustomMessage)
+							<< _CustomMessage 
+							<< _FileName 
+							<< _FileNameDumpMini 
+							<< _FileNameDump 
+							<< _FileNameMetadata
+						;
+					}
 				}
 
 				if (NMib::NSys::fg_ConsoleErrorOutputValid())
