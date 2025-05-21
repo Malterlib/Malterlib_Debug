@@ -9,9 +9,7 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-
-			typedef NStr::CStrNonTracked CSymStr;
-
+			using CSymStr = NStr::CStrNonTracked;
 
 			// 
 			// CLinuxStackTraceInfo

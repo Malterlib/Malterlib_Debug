@@ -11,7 +11,7 @@ namespace NMib::NDebug::NRemoteDebugger
 	template <typename t_CType, mint t_GrowSize = 512>
 	class TCRemoteDebuggerPool : public NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>
 	{
-		typedef NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking> CSuper;
+		using CSuper = NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>;
 	public:
 		static t_CType *fs_New()
 		{
@@ -52,7 +52,7 @@ namespace NMib::NDebug::NRemoteDebugger
 	template <typename t_CType, mint t_GrowSize = 512>
 	class TCRemoteDebuggerPool
 	{
-		typedef NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking> CSuper;
+		using CSuper = NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>;
 	public:
 		template <typename ...tfp_CParams>
 		static t_CType *fs_New(tfp_CParams &&...p_Params)
@@ -69,7 +69,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	};
 
-	typedef NContainer::TCVector<uint8, NMemory::CAllocator_NonTrackedHeap, NContainer::TCVectorOptions<64, false>> CDataBuffer;
+	using CDataBuffer = NContainer::TCVector<uint8, NMemory::CAllocator_NonTrackedHeap, NContainer::TCVectorOptions<64, false>>;
 
 	struct CPacket
 	{

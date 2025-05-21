@@ -53,17 +53,14 @@ namespace NMib
 				void f_RemoveUnused();
 				void f_ReleaseStackTraceInfo(CLocalStackTraceInfo *_pInfo);
 
-
-				typedef BOOL (__stdcall FSymInitialize)(IN HANDLE hProcess, IN PWSTR UserSearchPath, IN BOOL fInvadeProcess);
-				typedef BOOL (__stdcall FSymCleanup)(IN HANDLE hProcess);
-				typedef BOOL (__stdcall FSymRefreshModuleList)(__in HANDLE hProcess);
-
-				typedef BOOL (__stdcall FSymGetSymFromAddr64)(IN HANDLE hProcess,IN DWORD64 Address,OUT PDWORD64 Displacement,IN OUT PIMAGEHLP_SYMBOL64 Symbol);
-				typedef BOOL (__stdcall FSymGetLineFromAddr64)(IN HANDLE hProcess,IN DWORD64 dwAddr, OUT PDWORD pdwDisplacement, OUT PIMAGEHLP_LINE64 Line);
-				typedef BOOL (__stdcall FSymGetModuleInfo64)(IN HANDLE hProcess,IN DWORD64 qwAddr, OUT PIMAGEHLP_MODULE64 ModuleInfo);
-				typedef BOOL (__stdcall FMiniDumpWriteDump)(HANDLE hProcess,DWORD ProcessId,HANDLE hFile,MINIDUMP_TYPE DumpType,PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
-
-				typedef DWORD (__stdcall FUnDecorateSymbolName)(PCSTR DecoratedName, PSTR UnDecoratedName, DWORD UndecoratedLength, DWORD Flags);
+				using FSymInitialize = BOOL __stdcall (IN HANDLE hProcess, IN PWSTR UserSearchPath, IN BOOL fInvadeProcess);
+				using FSymCleanup = BOOL __stdcall (IN HANDLE hProcess);
+				using FSymRefreshModuleList = BOOL __stdcall (__in HANDLE hProcess);
+				using FSymGetSymFromAddr64 = BOOL __stdcall (IN HANDLE hProcess,IN DWORD64 Address,OUT PDWORD64 Displacement,IN OUT PIMAGEHLP_SYMBOL64 Symbol);
+				using FSymGetLineFromAddr64 = BOOL __stdcall (IN HANDLE hProcess,IN DWORD64 dwAddr, OUT PDWORD pdwDisplacement, OUT PIMAGEHLP_LINE64 Line);
+				using FSymGetModuleInfo64 = BOOL __stdcall (IN HANDLE hProcess,IN DWORD64 qwAddr, OUT PIMAGEHLP_MODULE64 ModuleInfo);
+				using FMiniDumpWriteDump = BOOL __stdcall (HANDLE hProcess,DWORD ProcessId,HANDLE hFile,MINIDUMP_TYPE DumpType,PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
+				using FUnDecorateSymbolName = DWORD __stdcall (PCSTR DecoratedName, PSTR UnDecoratedName, DWORD UndecoratedLength, DWORD Flags);
 
 				NTime::CClock m_Timer;
 

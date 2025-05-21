@@ -41,8 +41,7 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-
-			typedef NMib::NStr::CStrNonTracked CSymStr;
+			using CSymStr = NMib::NStr::CStrNonTracked;
 
 			struct CAddressInfo
 			{
@@ -177,7 +176,7 @@ namespace NMib
 			using namespace NMib::NStr;
 			using namespace NMib::NContainer;
 
-			typedef CStr CSymStr;
+			using CSymStr = CStr;
 
 			struct CFile
 			{
