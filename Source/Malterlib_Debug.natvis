@@ -236,13 +236,13 @@
 
   <Type Name="NMib::NNumeric::TCFloat&lt;*,*,*,float,*,*&gt;">
     <DisplayString>
-      {*((float const *)&amp;m_Data)}
+      {m_DataStorage}
     </DisplayString>
   </Type>
 
   <Type Name="NMib::NNumeric::TCFloat&lt;*,*,*,double,*,*&gt;">
     <DisplayString>
-      {*((double const *)&amp;m_Data)}
+      {m_DataStorage}
     </DisplayString>
   </Type>
 

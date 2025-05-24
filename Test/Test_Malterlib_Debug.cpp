@@ -44,6 +44,7 @@ inline_never mint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, mint _M
 #include <Mib/String/Mixed>
 #include <Mib/Encoding/Json>
 #include <Mib/Encoding/EJson>
+#include <Mib/Numeric/fp80>
 
 class CDebug_Tests : public NMib::NTest::CTest
 {
@@ -465,9 +466,11 @@ public:
 			CTimeSpan TimeSpan = CTimeSpanConvert::fs_CreateSpan(0,5,3,2);
 
 			fp16 Float16 = fp32(0.5f);
-			NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, true, short> Float16_2 = fp32(0.66f);
+			NMib::NNumeric::TCFloat<1, 5, 10, 0, NMib::NNumeric::CNoImplicit, true, short> Float16_2 = fp32(0.66f);
 			fp32 Float32 = 5.5f;
 			fp64 Float64 = 6.8;
+			fp80 Float80 = fp64(0.6666666666666666666);
+			CIEEEFloat80Emu Float80Emu = Float80;
 
 			static NStorage::TCAggregate<int32> Aggregate = { DAggregateInit };
 			static NStorage::TCAggregate<int32> AggregateEmpty = { DAggregateInit };
@@ -500,10 +503,10 @@ public:
 
 			TCVariant<int32, fp32, fp16> Variant0;
 			TCVariant<int32, fp32, fp16> Variant1;
-			TCVariant<int32, fp32, NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>> Variant2;
+			TCVariant<int32, fp32, NMib::NNumeric::TCFloat<1, 5, 10, 0, NMib::NNumeric::CNoImplicit, 1, short>> Variant2;
 			TCVariant<int32, fp32, TCVariant<int32, fp32, fp16>> Variant3;
 
-			NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short> FloatWhat(fp32(3.4f));
+			NMib::NNumeric::TCFloat<1, 5, 10, 0, NMib::NNumeric::CNoImplicit, 1, short> FloatWhat(fp32(3.4f));
 			Variant0 = 3;
 			Variant1.f_Set<1>(3.3f);
 			Variant2.f_Set<2>(fp32(3.4f));
@@ -532,7 +535,7 @@ public:
 					int
 					, NStorage::TCMember<int32, 0>
 					, NStorage::TCMember<fp32, 1>
-					, NStorage::TCMember<NMib::NNumeric::TCFloat<1, 5, 10, NMib::NNumeric::CNoImplicit, 1, short>, 2>
+					, NStorage::TCMember<NMib::NNumeric::TCFloat<1, 5, 10, 0, NMib::NNumeric::CNoImplicit, 1, short>, 2>
 				>
 				StreamableVariant2
 			;
