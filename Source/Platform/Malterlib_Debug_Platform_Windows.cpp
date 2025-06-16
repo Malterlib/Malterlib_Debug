@@ -317,7 +317,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 					)
 				;
 
-				Params.m_bAllowLaunchedInForground = true;
+				Params.m_bAllowLaunchedInForeground = true;
 
 				NMib::NProcess::CProcessLaunch Launch(Params, NProcess::EProcessLaunchCloseFlag_None);
 			}
