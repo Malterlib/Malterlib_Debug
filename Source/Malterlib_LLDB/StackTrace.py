@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys, os
@@ -35,7 +35,7 @@ class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 		global g_CodeAddress_File
 		global g_CodeAddress_Line
 		global g_CodeAddress_Function
-		
+
 		ValueObject = self.m_ValueObjectDeref
 		ValueType = ValueObject.GetType()
 		if not g_CodeAddress_File:
@@ -149,6 +149,69 @@ def fg_SummaryProvider_CCodeAddressLine(_Value, dict):
 		print('(fg_SummaryProvider_CCodeAddressLine) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
+def fg_ExtractFunctionName(full_name):
+	"""Extract just the function name from a full C++ function signature."""
+	if not full_name:
+		return None
+	
+	# Special handling for operator() - we need to keep the first () as part of the name
+	if '::operator()' in full_name or full_name.startswith('operator()'):
+		# Find operator() and skip past it before looking for parameters
+		op_idx = full_name.find('operator()')
+		if op_idx != -1:
+			# Start looking for parameters after 'operator()'
+			search_start = op_idx + len('operator()')
+			if '(' in full_name[search_start:]:
+				param_idx = full_name.index('(', search_start)
+				full_name = full_name[:param_idx]
+	else:
+		# Normal function - remove parameter list by finding matching parentheses
+		paren_count = 0
+		template_count = 0
+		param_start = -1
+		
+		for i, c in enumerate(full_name):
+			if c == '<':
+				template_count += 1
+			elif c == '>':
+				template_count -= 1
+			elif c == '(' and template_count == 0:
+				if param_start == -1:
+					param_start = i
+				paren_count += 1
+			elif c == ')' and template_count == 0:
+				paren_count -= 1
+				if paren_count == 0 and param_start != -1:
+					# Found the end of parameters, truncate here
+					full_name = full_name[:param_start]
+					break
+	
+	# Now remove template parameters
+	template_count = 0
+	template_start = -1
+	
+	for i, c in enumerate(full_name):
+		if c == '<':
+			if template_count == 0:
+				template_start = i
+			template_count += 1
+		elif c == '>':
+			template_count -= 1
+			if template_count == 0 and template_start != -1:
+				# Found a complete template, remove it
+				full_name = full_name[:template_start] + full_name[i+1:]
+				break
+	
+	# Extract just the function name after the last '::'
+	if '::' in full_name:
+		parts = full_name.split('::')
+		function_name = parts[-1]
+	else:
+		function_name = full_name
+	
+	# Clean up any remaining whitespace
+	return function_name.strip()
+
 def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)
@@ -176,10 +239,14 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
 			Function = Address.GetFunction()
 			if Function.IsValid():
-				FunctionName = Function.GetType().GetName()
+				FullName = Function.GetDisplayName()
+				if FullName:
+					FunctionName = fg_ExtractFunctionName(FullName)
+				if not FunctionName:
+					FunctionName = Function.GetName()
 
 		if FunctionName is not None and FileSummary is not None and LineSummary is not None and FileSummary != "Unknown" and LineSummary != "Unknown":
-			return FunctionName + " - " + os.path.basename(FileSummary) + ":" + LineSummary
+			return FunctionName + " - " + FileSummary + ":" + LineSummary
 
 		if FunctionName is not None:
 			return FunctionName;
@@ -191,7 +258,7 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 		return
 
 def fg_MibLLDBInit_StackTrace(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_CMibCodeAddress, "CMibCodeAddressType *")
 	fg_AddSynth(_Debugger, CSynthProvider_CMibCodeAddress, "CMibCodeAddressType *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CMibCodeAddress, "CMibCodeAddressType *")
@@ -202,5 +269,5 @@ def fg_MibLLDBInit_StackTrace(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CCodeAddressFile, "CMibCodeAddressType::CCodeAddressFile *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CCodeAddressLine, "CMibCodeAddressType::CCodeAddressLine *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CCodeAddressLine, "CMibCodeAddressType::CCodeAddressLine *const")
-	
+
 	return

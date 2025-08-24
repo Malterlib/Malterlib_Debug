@@ -36,8 +36,6 @@ inline_never mint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, mint _M
 	return Value;
 }
 
-
-
 #include "Test_Malterlib_Debug.h"
 #include <Mib/Storage/Reference>
 #include <Mib/Storage/Indirection>
@@ -218,6 +216,14 @@ public:
 		     */
 		};
 	#endif
+
+		DMibTestSuite("VisualizersMini")
+		{
+			CMibCodeAddress StackTrace[16];
+			NSys::fg_System_GetStackTrace(StackTrace, 16);
+
+			DMibTest(DMibExpr(StackTrace[0]) != DMibExpr(nullptr))(ETest_FailAndStop);
+		};
 
 		DMibTestSuite("Visualizers")
 		{
