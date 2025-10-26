@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -27,6 +27,14 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
+			static LRESULT WINAPI fs_WindowCacheProc(HWND _hWnd, UINT _Message, WPARAM _wParam, LPARAM _lParam)
+			{
+				if (_Message == WM_ENDSESSION || _Message == WM_QUERYENDSESSION)
+					NMib::NPlatform::fg_ReportIsShuttingDown();
+
+				return DefWindowProc(_hWnd, _Message, _wParam, _lParam);
+			}
+
 			CSubSystem_Debug_Platform_Windows::CSubSystem_Debug_Platform_Windows()
 				: m_pCrashDumpUserNotifyFunction(nullptr)
 				, m_bPollCheckExceptionFilter(true)
@@ -40,7 +48,7 @@ namespace NMib
 				WNDCLASSA WndClass;
 				memset(&WndClass, 0, sizeof(WndClass));
 				WndClass.lpszClassName = "MalterlibCrashDumpWindowCache";
-				WndClass.lpfnWndProc = DefWindowProc;
+				WndClass.lpfnWndProc = fs_WindowCacheProc;
 				WndClass.hInstance = g_hDllInstance;
 				RegisterClassA(&WndClass);
 
@@ -127,7 +135,7 @@ namespace NMib
 
 			bool CSubSystem_Debug_Platform_Windows::fs_CheckAccessRights(NStr::CStrNonTracked &_Path)
 			{
-				try 
+				try
 				{
 					auto &SubSystem = fg_Debug_Platfrom_Windows();
 					uint32 RandomValue = SubSystem.f_GetRandom();
@@ -153,8 +161,8 @@ namespace NMib
 				{
 					return false;
 				}
-			}			
-	
+			}
+
 
 			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination)
 			{
@@ -178,10 +186,10 @@ namespace NMib
 
 			void CSubSystem_Debug_Platform_Windows::f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 			{
-				return m_StackTrace.f_ReleaseStackTraceInfo((CStackTraceContext::CLocalStackTraceInfo *)_pInfo);                
+				return m_StackTrace.f_ReleaseStackTraceInfo((CStackTraceContext::CLocalStackTraceInfo *)_pInfo);
 			}
 
-			
+
 			constinit NMib::TCSubSystem<CSubSystem_Debug_Platform_Windows, NMib::ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Windows = {DAggregateInit};
 
 			CSubSystem_Debug_Platform_Windows &fg_Debug_Platfrom_Windows()
@@ -191,7 +199,7 @@ namespace NMib
 		}
 	}
 }
-			
+
 void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib::NStr::CStr const &_Message)
 {
 	class CMessageBoxThread : public NMib::NThread::CThread
@@ -383,7 +391,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 	DMibDeadlockDetectorPause;
 
 	NMib::EDebugCheckFailureAction Ret;
-	auto fl_DisplayMessage 
+	auto fl_DisplayMessage
 		= [&] (NThread::CThreadObjectNonTracked *_pThread) -> aint
 		{
 		#if defined(DDebug) && 0
