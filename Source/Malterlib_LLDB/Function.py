@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -22,7 +22,7 @@ class CSynthProvider_TCFunction(CSynthProvider_Common):
 				return
 			if self.m_ValueObjectType.IsPointerType():
 				return
-				
+
 			if fg_IsArm64(self.m_ValueObject):
 				return
 

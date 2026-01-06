@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -28,7 +28,7 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 			return
 
 	def fp_ExtractType(self):
-		
+
 		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
@@ -37,7 +37,7 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 			return False
 
 		fg_PrecacheType(DataType)
-		
+
 		self.m_DataType = DataType
 		return True
 
@@ -58,11 +58,11 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 		return 1
 
 def fg_MibLLDBInit_Aggregate(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCAggregate, "(^|^const )NMib::NStorage::TCAggregate<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCAggregate<.*>$", True)
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCAggregate, "(^|^const )NMib::NStorage::TCAggregateSimple<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCAggregateSimple<.*>$", True)
-		
+
 	return

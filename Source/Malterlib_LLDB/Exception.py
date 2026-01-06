@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -111,7 +111,7 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 			Value = Current.GetValue()
 			if Value is not None:
 				Summary = str(Value)
-		
+
 		if Summary is not None:
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + "   " + Summary
@@ -123,10 +123,10 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 		return
 
 def fg_MibLLDBInit_Exception(_Debugger):
-	
+
 	# Exceptions
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CCallstack, "(^|^const )NMib::NException::CCallstack$", True)
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NException::CDebugException.*$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NException::CException.*$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_NException_CExceptionBase, "(^|^const )NMib::NContract::CContractException.*$", True)
@@ -170,9 +170,9 @@ def fg_MibLLDBInit_Exception(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NAOCC::NNetwork::CExceptionConnectionManager$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NAOUI::CExceptionAOUI$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NBuildServer::CExceptionSlaveProtocol$", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CDebugException.*$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NException::CException.*$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CExceptionBase, "(^|^const )NMib::NContract::CContractException.*$", True)
-	
+
 	return

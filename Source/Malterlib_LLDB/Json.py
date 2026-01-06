@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -252,7 +252,7 @@ def fg_SummaryProvider_CJsonNull(_Value, dict):
 		return
 
 def fg_MibLLDBInit_Json(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCJsonValueBase, "(^|^const )NMib::NEncoding::TCJsonValue<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCJsonValueBase, "(^|^const )NMib::NEncoding::TCEJsonValue<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NEncoding::TCJsonValue<.*>$", True)

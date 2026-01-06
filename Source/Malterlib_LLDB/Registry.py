@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -71,7 +71,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
-		
+
 		ValueName = fg_ChildPath(_Value, 'mp_Key.m_Name')
 		if not fg_IsValidSBValue(ValueName):
 			return None
@@ -81,7 +81,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		pRootChild = fg_ChildPath(_Value, 'mp_Children.m_Tree.m_Root')
 		if not fg_IsValidSBValue(pRootChild):
 			return None
-		
+
 		bLeaf = pRootChild.GetValueAsUnsigned() >> 1 == 0
 
 		Name = fg_GetValueRawSummary(ValueName)
@@ -90,12 +90,12 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 			Name = ""
 		if Data is None:
 			Data = ""
-		
+
 		if bLeaf:
 			Value = '"' + Name + '" "' + Data + '"'
 		else:
 			Value = '"' + Name + '" "' + Data + '" {'
-		
+
 		if ValueType.IsPointerType():
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
@@ -105,10 +105,10 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		return
 
 def fg_MibLLDBInit_Registry(_Debugger):
-	
+
 	# TCRegistry
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCRegistry, "(^|^const )NMib::NContainer::TCRegistry<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCRegistry, "(^|^const )NMib::NContainer::TCRegistry<.*>$", True)
-	
+
 	return

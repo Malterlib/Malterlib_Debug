@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -11,7 +11,7 @@ namespace NMib
 		{
 			using CSymStr = NStr::CStrNonTracked;
 
-			// 
+			//
 			// CLinuxStackTraceInfo
 			//
 
@@ -25,7 +25,7 @@ namespace NMib
 				CLinuxStackTraceInfo(CSymStr&& _FuncName, CSymStr&& _ModuleName, CSymStr&& _FileName, int _iLine)
 					: m_FunctionName(std::move(_FuncName))
 					, m_ModuleName(std::move(_ModuleName))
-					, m_FileName(std::move(_FileName))				
+					, m_FileName(std::move(_FileName))
 				{
 					this->m_pContext = nullptr;
 					m_pFunctionName = m_FunctionName.f_GetStr();
@@ -52,7 +52,7 @@ namespace NMib
 						,	NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>
 						,	NMib::CSort_Default
 						,	NMemory::CAllocator_NonTrackedHeap> mp_IndexLookup;
-						
+
 			public:
 				CSymbols();
 				~CSymbols();

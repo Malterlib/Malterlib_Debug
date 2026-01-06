@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -56,7 +56,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 			return False
 
 		fg_PrecacheType(DataType)
-		
+
 		self.m_DataType = DataType
 		return True
 
@@ -67,7 +67,7 @@ class CSynthProvider_TCThreadLocal(CSynthProvider_Common):
 		else:
 			if _Name == '[Value]':
 				return self.m_NumExtraChildren
-		
+
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
@@ -88,9 +88,9 @@ def fg_MibLLDBInit_ThreadLocal(_Debugger):
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCThreadLocal, "(^|^const )NMib::NThread::TCThreadLocal<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NThread::TCThreadLocal<.*>$", True)
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCThreadLocal, "(^|^const )NMib::NThread::TCThreadLocalDynamic<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NThread::TCThreadLocalDynamic<.*>$", True)
-	
+
 	return
 

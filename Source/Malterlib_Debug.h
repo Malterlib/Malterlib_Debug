@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #pragma once
@@ -9,7 +9,7 @@
 namespace NMib
 {
 	void fg_MalterlibFatalError(const ch8 *_pMessage);
-	
+
 	NStr::CStr fg_DebugColor(NStr::CStr const &_Data);
 
 	/***************************************************************************************************\
@@ -44,7 +44,7 @@ namespace NMib
 #				define DMibEnableDTrace 0
 #			endif
 #		endif
-				
+
 #		if DMibEnableDTrace > 0
 #			define DMibDTrace(_Format, _Args)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
 #			define DMibDTraceRaw(_Args) NMib::NSys::fg_DebugOutput(_Args)
@@ -64,7 +64,7 @@ namespace NMib
 #			define DMibDTraceSafe2(...) (void)0
 #			define DMibDTraceTimed2(...) (void)0
 #		endif
-				
+
 #		ifndef DMibPNoShortCuts
 #			define DDTrace DMibDTrace
 #			define DDTraceRaw DMibDTraceRaw
@@ -104,13 +104,13 @@ namespace NMib
 #			define DMibTraceSafe2(...) (void)0
 #			define DMibTraceTimed2(...) (void)0
 #		endif
-				
+
 #		ifndef DMibPNoShortCuts
 #			define DTrace DMibTrace
 #			define DTraceRaw DMibTraceRaw
 #			define DTraceSafe DMibTraceSafe
 #			define DTraceTimed DMibTraceTimed
-		
+
 #			define DTrace2 DMibTrace2
 #			define DTraceSafe2 DMibTraceSafe2
 #			define DTraceTimed2 DMibTraceTimed2
@@ -166,7 +166,7 @@ namespace NMib
 #define DMibContract_AnyEnabled
 #endif
 
-#ifndef DMibContractConfigure_AllEnabled 
+#ifndef DMibContractConfigure_AllEnabled
 #	ifdef DMibContract_AnyEnabled
 		DMibCompilerMessage("-- Contracts enabled")
 #	else
@@ -199,7 +199,7 @@ namespace NMib
 		DMibCompilerMessage("-- Memory shims forcefully disabled")
 #	endif
 #endif
-	
+
 }
 
 #ifndef DMibPNoShortCuts

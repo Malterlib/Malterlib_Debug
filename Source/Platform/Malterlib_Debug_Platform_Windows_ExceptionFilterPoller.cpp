@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -18,7 +18,7 @@ namespace NMib
 		namespace NPlatform
 		{
 
-			typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA 
+			typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
 			{
 				ULONG Flags;                    //Reserved.
 				PCUNICODE_STRING FullDllName;   //The full path name of the DLL module.
@@ -27,7 +27,7 @@ namespace NMib
 				ULONG SizeOfImage;              //The size of the DLL image, in bytes.
 			} LDR_DLL_LOADED_NOTIFICATION_DATA, *PLDR_DLL_LOADED_NOTIFICATION_DATA;
 
-			typedef struct _LDR_DLL_UNLOADED_NOTIFICATION_DATA 
+			typedef struct _LDR_DLL_UNLOADED_NOTIFICATION_DATA
 			{
 				ULONG Flags;                    //Reserved.
 				PCUNICODE_STRING FullDllName;   //The full path name of the DLL module.
@@ -36,13 +36,13 @@ namespace NMib
 				ULONG SizeOfImage;              //The size of the DLL image, in bytes.
 			} LDR_DLL_UNLOADED_NOTIFICATION_DATA, *PLDR_DLL_UNLOADED_NOTIFICATION_DATA;
 
-			typedef union _LDR_DLL_NOTIFICATION_DATA 
+			typedef union _LDR_DLL_NOTIFICATION_DATA
 			{
 				LDR_DLL_LOADED_NOTIFICATION_DATA Loaded;
 				LDR_DLL_UNLOADED_NOTIFICATION_DATA Unloaded;
 			} LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
 
-	
+
 			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION )(ULONG NotificationReason, const PLDR_DLL_NOTIFICATION_DATA NotificationData, PVOID Context);
 
 			static VOID NTAPI DllLoadedCallback(ULONG NotificationReason, const PLDR_DLL_NOTIFICATION_DATA NotificationData, PVOID Context)
@@ -70,7 +70,7 @@ namespace NMib
 			CSubSystem_Debug_Platform_Windows::CExceptionFilterPoller::CExceptionFilterPoller()
 			{
 			}
-		
+
 			CSubSystem_Debug_Platform_Windows::CExceptionFilterPoller::~CExceptionFilterPoller()
 			{
 			}

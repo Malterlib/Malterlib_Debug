@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -123,8 +123,8 @@ namespace NMib
 					// Apperantly some bug in Dbghelp.dll causes symsrv.dll to be unloaded while other modules are still holding a handle to it. Try to prevent this here by adding a reference to the library.
 					if (!m_hSymSrv)
 					{
-						NStr::CStrNonTracked SymServDLL = "\\DebugHelp" DMibPlatformDir "\\SymSrv.dll"; 
-					
+						NStr::CStrNonTracked SymServDLL = "\\DebugHelp" DMibPlatformDir "\\SymSrv.dll";
+
 						m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(ProgramRoot + SymServDLL);
 
 						if (!m_hSymSrv)
@@ -153,7 +153,7 @@ namespace NMib
 					this->SymGetModuleInfo64 = (FSymGetModuleInfo64*)GetProcAddress(m_hDbgHelp, "SymGetModuleInfo64");
 					this->MiniDumpWriteDump = (FMiniDumpWriteDump*)GetProcAddress(m_hDbgHelp, "MiniDumpWriteDump");
 					this->UnDecorateSymbolName = (FUnDecorateSymbolName*)GetProcAddress(m_hDbgHelp, "UnDecorateSymbolName");
-		
+
 
 					if (!this->SymInitialize || !this->SymCleanup || !this->SymGetSymFromAddr64 || !this->SymGetLineFromAddr64 || !this->SymGetModuleInfo64 || !this->MiniDumpWriteDump || !this->SymRefreshModuleList)
 					{
@@ -169,7 +169,7 @@ namespace NMib
 						}
 						DMibDTrace("---------------------------------------------------------------------------------------------------------------------\n", 0);
 						return false;
-					}			
+					}
 					return true;
 				};
 
@@ -179,7 +179,7 @@ namespace NMib
 					return false;
 
 				m_bInitializedDll = true;
-				return true;	
+				return true;
 			}
 
 			bool CStackTraceContext::f_Init(NStr::CStrNonTracked &_Error)
@@ -339,7 +339,7 @@ namespace NMib
 					return pLocalInfo;
 				}
 
-				DWORD64 Displacement;			
+				DWORD64 Displacement;
 				m_pSymbolInfo->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
 				m_pSymbolInfo->MaxNameLength = 4096;
 				if (!SymGetSymFromAddr64(m_hProcess, _Address, &Displacement, m_pSymbolInfo))
@@ -370,7 +370,7 @@ namespace NMib
 								// ,"f:\\dd\\vctools\\crt_bld\\self_x86\\crt\\prebuild\\eh\\"
 							}
 						;
-				
+
 						NStr::CStr Temp;
 						for (auto &pStrip : c_pCrtStrip)
 						{
@@ -412,13 +412,13 @@ namespace NMib
 						pStr[0] = 0;
 					}
 				}
-				return pLocalInfo;                
+				return pLocalInfo;
 			}
 
 			void CStackTraceContext::f_RemoveUnused()
-			{			
+			{
 				while (m_Usused.f_GetFirst())
-				{		
+				{
 					CLocalStackTraceInfo *pInfo = m_Usused.f_Pop();
 
 					m_TraceInfoTree.f_Remove(pInfo);
@@ -431,7 +431,7 @@ namespace NMib
 						NMemory::CAllocator_NonTrackedHeap::f_Free((ch8 *)pInfo->m_pSourceFileName, NStr::fg_StrLen(pInfo->m_pSourceFileName) + 1);
 
 					NStorage::TCUniquePointer<CLocalStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfoDel = fg_Explicit(pInfo);
-				}			
+				}
 			}
 
 			void CStackTraceContext::f_ReleaseStackTraceInfo(CLocalStackTraceInfo *_pInfo)

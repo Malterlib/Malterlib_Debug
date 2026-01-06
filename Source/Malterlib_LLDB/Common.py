@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -341,7 +341,7 @@ def fg_SummaryProvider_IteratorCommon(_Value, dict):
 					Value = Current.GetValue()
 					if Value is not None:
 						Value = str(Value)
-					
+
 		if Value is not None:
 			if Type.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + "   " + Value
@@ -364,7 +364,7 @@ def fg_SummaryProvider_IteratorCommon(_Value, dict):
 
 				if AddedFirst:
 					ReturnString += ", "
-				
+
 				AddedFirst = True
 				ReturnString += Child.GetName() + " = " + Summary
 
@@ -387,7 +387,7 @@ class CSynthProvider_Common:
 			self.m_ValueObject = fg_GetBaseValue(self.m_ValueObject, _ExpectedTypeName)
 
 		self.m_ValueObjectType = fg_GetValidCanonicalType(self.m_ValueObject.GetType())
-		
+
 		if self.m_ValueObjectType.IsPointerType():
 			self.m_ValueObjectDeref = self.m_ValueObject.Dereference()
 		else:
@@ -405,7 +405,7 @@ class CSynthProvider_Common:
 		try:
 			self.m_nOriginalChildren = self.m_ValueObject.GetNumChildren()
 			self.m_OriginalNameMap = {};
-			
+
 			for iOriginalChild in range(0, self.m_nOriginalChildren):
 				Child = self.m_ValueObject.GetChildAtIndex(iOriginalChild)
 				if not Child.IsValid():
@@ -419,7 +419,7 @@ class CSynthProvider_Common:
 
 	def has_children(self):
 		return True
-				
+
 	def num_children(self):
 		try:
 			if not self.m_bUpdated:
@@ -434,7 +434,7 @@ class CSynthProvider_Common:
 						traceback.print_exc(file=sys.stdout)
 						print('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 						self.m_Count = 0
-			
+
 			return int(self.m_Count + self.m_nOriginalChildren)
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
@@ -490,7 +490,7 @@ class CSynthProvider_Common:
 
 	def fp_GetChildAtIndex(self, _iChild):
 		return None
-	
+
 	def fp_NumChildren(self):
 		return 0
 

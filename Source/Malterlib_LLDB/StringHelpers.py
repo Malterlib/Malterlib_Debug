@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -9,7 +9,7 @@ def fg_MakeStringFromData_ch8(_Value, _Length, _Type):
 		return 'Invalid'
 	elif _Type > 3:
 		return 'Corrupt'
-		
+
 	if _Length > 4096:
 		_Length = 4096
 	try:
@@ -42,7 +42,7 @@ def fg_MakeStringFromData_ch8(_Value, _Length, _Type):
 			return 'u8(invalid)   "' + str(Ret) + '" ' + str(error)
 		elif _Type == 2:	# EStrType_UTF
 			return 'utf8(invalid)   "' + str(Ret) + '" ' + str(error)
-		
+
 
 	return "Internal error"
 
@@ -52,7 +52,7 @@ def fg_MakeStringFromData_ch8_Raw(_Value, _Length, _Type):
 		return 'Invalid'
 	elif _Type > 3:
 		return 'Corrupt'
-		
+
 	if _Length > 4096:
 		_Length = 4096
 	try:
@@ -169,7 +169,7 @@ def fg_MakeStringFromData_ch32(_Value, _Length, _Type):
 		return 'Invalid'
 	elif _Type > 3:
 		return 'Corrupt'
-	
+
 	if _Length > 4096:
 		_Length = 4096
 
@@ -204,7 +204,7 @@ def fg_MakeStringFromData_ch32_Raw(_Value, _Length, _Type):
 		return 'Invalid'
 	elif _Type > 3:
 		return 'Corrupt'
-	
+
 	if _Length > 4096:
 		_Length = 4096
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -254,10 +254,10 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 				Value = Current.GetValue()
 				if Value is not None:
 					Summary = str(Value)
-			
+
 			RefCount = _Value.GetChildMemberWithName('[Count]')
 			WeakRefCount = _Value.GetChildMemberWithName('[WeakCount]')
-			
+
 			if Summary is not None:
 				if fg_IsValidSBValue(RefCount):
 					if fg_IsValidSBValue(WeakRefCount):
@@ -291,7 +291,7 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 
 
 def fg_MibLLDBInit_Pointer(_Debugger):
-	
+
 	# Pointers
 	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtr<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_Pointer, "(^|^const )NMib::NStorage::TCAutoClearPtrDebug<.*>$", True)

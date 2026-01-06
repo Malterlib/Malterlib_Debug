@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -43,7 +43,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 	{
 		if (!NMib::NFile::CFile::fs_FileExists(CStr(*iProgram)))
 			continue;
-			
+
 		CStr TempDir = NMib::NFile::CFile::fs_GetTemporaryDirectory();
 		NMib::NFile::CFile::fs_CreateDirectory(TempDir);
 		CStr FirstFile = NMib::NFile::CFile::fs_AppendPath
@@ -75,7 +75,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 
 void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
-	
+
 }
 
 void NMib::NSys::fg_Debug_GenerateMemoryDump
@@ -101,12 +101,12 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCode
 		_oInfo.m_pContext = pInfo;
 		return true;
 	}
-	
+
 	_oInfo.m_pContext = (void *)1;
 
 	Dl_info DLInfo;
 	int DLResult = dladdr((void const *)_Address, &DLInfo);
-	
+
 	if (DLResult == 0)
 		return false;
 
@@ -145,9 +145,9 @@ extern "C"
 NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _Address)
 {
 	auto &Symbols = NMib::NDebug::NPlatform::fg_GetSymbols();
-	
+
 	auto &Cache = Symbols.f_GetCache((mint)_Address);
-	
+
 	if (Cache.m_bValidCache)
 	{
 		if (Cache.m_bSuccessful)
@@ -155,7 +155,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 		else
 			return nullptr;
 	}
-	
+
 	DMibLock(Cache.m_Lock);
 	if (Cache.m_bValidCache)
 	{
@@ -164,14 +164,14 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 		else
 			return nullptr;
 	}
-	
+
 	Cache.m_bValidCache = true;
-	
+
 	Dl_info DLInfo;
 	int DLResult = dladdr((void const *)_Address, &DLInfo);
 
 	NMib::NDebug::NPlatform::CAddressInfo AddrInfo;
-	
+
 	if (Symbols.f_Lookup((mint)_Address, AddrInfo))
 	{
 		if (DLResult)
@@ -201,7 +201,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 		Cache.m_StackTraceInfo.m_ModuleName = DLInfo.dli_fname;
 		Cache.m_StackTraceInfo.m_pModuleName = Cache.m_StackTraceInfo.m_ModuleName;
 		int Status = 1;
-		
+
 		{
 			char *pDemangled;
 #if !defined(_LIBCPP_BUILD_STATIC)
@@ -210,7 +210,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 			else
 #endif
 				pDemangled = abi::__cxa_demangle(DLInfo.dli_sname, nullptr, nullptr, &Status);
-			
+
 			if (Status == 0)
 			{
 				Cache.m_StackTraceInfo.m_FunctionName = pDemangled;

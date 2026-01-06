@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -101,9 +101,9 @@ class CSynthProvider_TCVariantCommon(CSynthProvider_Common):
 		return 3
 
 def fg_MibLLDBInit_Variant(_Debugger):
-	
+
 	# TCVariant
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCVariantCommon, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCVariantCommon, "(^|^const )NMib::NStorage::TCVariantCommon<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NStorage::TCVariant<.*>$", True)

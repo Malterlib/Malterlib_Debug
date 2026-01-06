@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Nonna Holding AB 
+# Copyright (C) 2019 Nonna Holding AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -212,7 +212,7 @@ class CSynthProvider_CThisActor(CSynthProvider_Common):
 
 
 def fg_MibLLDBInit_Concurrency(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCActor, "(^|^const )NMib::NConcurrency::TCActor<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_ActorHolder, "(^|^const )NMib::NConcurrency::TCActorInternal<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_CThisActor, "(^|^const )NMib::NConcurrency::NPrivate::CThisActor$", True)

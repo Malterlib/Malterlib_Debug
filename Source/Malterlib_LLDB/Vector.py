@@ -19,7 +19,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
 			self.m_pData = fg_ChildPath(self.m_ValueObject, 'mp_StaticData.m_pData')
-			
+
 			if self.m_pData.GetValueAsUnsigned() == 0:
 				self.m_pDataAddress = 0
 			else:
@@ -37,7 +37,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 		return self.m_ValueObject.CreateValueFromAddress('[' + str(_iChild) + ']', Address, self.m_DataType)
 
 	def fp_ExtractType(self):
-		
+
 		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
@@ -47,7 +47,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 
 		fg_PrecacheType(DataType)
 		self.m_DataType = DataType
-			
+
 		return True
 
 	def fp_ContainerNumChildren(self):

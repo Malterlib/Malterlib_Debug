@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include "Malterlib_Debug_Platform_MacOS_Symbols.h"
@@ -19,14 +19,14 @@ namespace NMib
 				{
 				}
 			};
-			
+
 			constinit TCSubSystem<CSubSystem_Debug_Platform_MacOS_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_MacOS_Symbols = {DAggregateInit};
-			
+
 			CSymbols &fg_GetSymbols()
 			{
 				return g_SubSystem_Debug_Platform_MacOS_Symbols->m_Symbols;
 			}
-			
+
 			template <typename tf_CCompare, typename t_CFind>
 			aint fg_BinarySearchLowerBound(mint _nItems, tf_CCompare &&_fCompare, const t_CFind &_ToFind)
 			{
@@ -110,7 +110,7 @@ namespace NMib
 			{
 				fp_Unload();
 			}
-			
+
 			void CSymbols::f_SetSymbolsFile(char const* _pFilename)
 			{
 				DMibLock(mp_Lock);
@@ -158,7 +158,7 @@ namespace NMib
 			CSymStr CSymbols::fp_ReadString(uint32 _Offset)
 			{
 				uint32 Offset = _Offset + mp_Header.m_StringDataOffset;
-				
+
 				uint32 nBytes;
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, &nBytes, Offset, sizeof(nBytes));
 				Offset += sizeof(nBytes);
@@ -167,7 +167,7 @@ namespace NMib
 				char* pRawStr = Str.f_GetStr(nBytes + 1);
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, pRawStr, Offset, nBytes);
 				pRawStr[nBytes] = 0;
-				
+
 				return fg_Move(Str);
 			}
 
@@ -186,7 +186,7 @@ namespace NMib
 
 
 			bool CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
-			{			
+			{
 				DMibLock(mp_Lock);
 
 				if (!fp_EnsureLoaded())
@@ -279,7 +279,7 @@ namespace NMib
 					return false;
 				}
 			}
-			
+
 			extern NMib::NStorage::TCAggregateSimple<CSymbols> g_Symbols;
 
 			/*
@@ -494,7 +494,7 @@ namespace NMib
 							{
 								mp_lFiles.f_Insert(fg_Move(NewFile));
 							}
-							else								
+							else
 							{
 								lErrors.f_Insert(CSymStr::CFormat("Invalid FILE line at line # {}") << iLine);
 							}
@@ -504,7 +504,7 @@ namespace NMib
 							CFunction NewFunc;
 
 							aint nParsed = -1;
-							(CSymStr::CParse("{nfh} {nfh} {nfh} {}") 
+							(CSymStr::CParse("{nfh} {nfh} {nfh} {}")
 									>> NewFunc.m_Address
 									>> NewFunc.m_Size
 									>> NewFunc.m_StackParamSize
@@ -524,7 +524,7 @@ namespace NMib
 						else if (FirstToken == "PUBLIC")
 						{
 							// Unused
-						}					
+						}
 						else if (FirstToken == "STACK")
 						{
 							// Unused
@@ -538,7 +538,7 @@ namespace NMib
 							CLine NewLine;
 
 							aint nParsed = -1;
-							(CSymStr::CParse("{nfh} {nfh} {} {}") 
+							(CSymStr::CParse("{nfh} {nfh} {} {}")
 									>> NewLine.m_Address
 									>> NewLine.m_Size
 									>> NewLine.m_Line
@@ -583,7 +583,7 @@ namespace NMib
 				{
 					(*FIter).m_lLines.f_Sort(LineSorter);
 				}
-				
+
 				return true;
 			}
 

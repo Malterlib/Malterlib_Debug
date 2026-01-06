@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -54,7 +54,7 @@ class CSynthProvider_TCIterator(CSynthProvider_Common):
 			while ParentType.GetName().startswith("NMib::NIterator::TCIterator"):
 				Parent = Parent.GetChildAtIndex(0)
 				ParentType = Parent.GetType()
-			
+
 			self.m_Parent = Parent
 			self.m_ParentType = ParentType
 			self.m_bValid = True
@@ -130,13 +130,13 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 			while not fg_IsValidSBValue(FrontArray) and fg_IsValidSBValue(Parent):
 				Parent = Parent.GetNonSyntheticValue().GetChildAtIndex(0)
 				FrontArray = Parent.GetChildMemberWithName('mp_pArray')
-			
+
 			BackArray = Back.GetChildMemberWithName('mp_pArray')
 			Parent = Back
 			while not fg_IsValidSBValue(BackArray) and fg_IsValidSBValue(Parent):
 				Parent = Parent.GetNonSyntheticValue().GetChildAtIndex(0)
 				BackArray = Parent.GetChildMemberWithName('mp_pArray')
-			
+
 			if fg_IsValidSBValue(FrontArray) and fg_IsValidSBValue(BackArray):
 				FrontArrayType = FrontArray.GetType()
 				BackArrayType = BackArray.GetType()
@@ -171,7 +171,7 @@ def fg_SummaryProvider_TCRange(_Value, dict):
 							FrontArray = _Value.CreateValueFromExpression("[TempData]", "(char32_t *)" + hex(FrontAddress + 4));
 						#FrontArray = _Value.CreateValueFromAddress("[TempData]", FrontAddress + 4, _Value.GetType().GetBasicType(lldb.eBasicTypeChar32).GetPointerType())
 						return fg_SummaryProvider_Str_ArrayPtr_ch32(FrontArray, None, None, int(Length/4))
-				
+
 		Summary = Front.GetSummary()
 		return Summary
 	except Exception as error:
@@ -206,7 +206,7 @@ def fg_SummaryProvider_TCIterator_UTFAdaptor(_Value, dict):
 		while not fg_IsValidSBValue(Current) and fg_IsValidSBValue(Parent):
 			Parent = Parent.GetNonSyntheticValue().GetChildAtIndex(0)
 			Current = Parent.GetChildMemberWithName('mp_iCurrent')
-		
+
 		if not fg_IsValidSBValue(Current):
 			return None
 
@@ -222,7 +222,7 @@ def fg_SummaryProvider_CNullTerminatedBackIterator(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
-		
+
 		return "Null terminated sentinel"
 	except Exception as error:
 		traceback.print_exc(file=sys.stdout)
@@ -234,7 +234,7 @@ def fg_MibLLDBInit_Iterator(_Debugger):
 	# Iterator
 	fg_AddSynth(_Debugger, CSynthProvider_TCIterator, "(^|^const )NMib::NIterator::TCIterator<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCRange, "(^|^const )NMib::NIterator::TCRange<.*>$", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCIterator, "(^|^const )NMib::NIterator::TCIterator<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCRange, "(^|^const )NMib::NIterator::TCRange<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCArrayIterator, "(^|^const )NMib::NIterator::TCArrayIterator<.*>$", True)
@@ -243,7 +243,7 @@ def fg_MibLLDBInit_Iterator(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCIterator_UTFAdaptor, "(^|^const )NMib::NStr::TCIterator_UTF8AdaptorWithBackward<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCIterator_UTFAdaptor, "(^|^const )NMib::NStr::TCIterator_UTF16AdaptorWithBackward<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CNullTerminatedBackIterator, "(^|^const )NMib::NStr::CNullTerminatedBackIterator$", True)
-	
-	
+
+
 	return
 

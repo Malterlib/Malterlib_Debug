@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -47,7 +47,7 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 			Value = Current.GetValue()
 			if Value is not None:
 				Summary = str(Value)
-		
+
 		if Summary is not None:
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + "   " + Summary

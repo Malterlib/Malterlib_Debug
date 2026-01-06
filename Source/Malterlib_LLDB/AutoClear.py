@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -33,7 +33,7 @@ class CSynthProvider_TCAutoClear(CSynthProvider_Common):
 
 	def fp_ExtractType(self):
 		self.m_DataType = self.m_Value.GetType()
-		fg_PrecacheType(self.m_DataType)		
+		fg_PrecacheType(self.m_DataType)
 		return True
 
 	def fp_GetChildIndex(self, _Name):
@@ -78,7 +78,7 @@ class CSynthProvider_TCAutoClearInt(CSynthProvider_Common):
 
 	def fp_ExtractType(self):
 		self.m_DataType = self.m_Value.GetType()
-		fg_PrecacheType(self.m_DataType)		
+		fg_PrecacheType(self.m_DataType)
 		return True
 
 	def fp_GetChildIndex(self, _Name):
@@ -97,7 +97,7 @@ class CSynthProvider_TCAutoClearInt(CSynthProvider_Common):
 		return 1 + self.m_NumExtraChildren
 
 def fg_MibLLDBInit_AutoClear(_Debugger):
-	
+
 	fg_AddSynth(_Debugger, CSynthProvider_TCAutoClear, "(^|^const )NMib::TCAutoClear<.*>$", True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCAutoClearInt, "(^|^const )NMib::TCAutoClearInt<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::TCAutoClear<.*>$", True)

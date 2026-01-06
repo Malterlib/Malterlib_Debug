@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -39,7 +39,7 @@ namespace NMib
 						, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 					)
 				;
-	
+
 				void f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify);
 				void f_SetCrashDumpUserNotifyFormats(const NStr::CStrNonTracked &_CustomMessage, const NStr::CStrNonTracked &_CanContinueMessage, const NStr::CStrNonTracked &_NoContinueMessage);
 
@@ -51,7 +51,7 @@ namespace NMib
 
 				static NStr::CStrNonTracked fs_FormatTimeFileName(const NTime::CTime &_Time);
 				static bool fs_CheckAccessRights(NStr::CStrNonTracked &_Path);
-	
+
 				static LONG WINAPI fsp_DumpExceptionInformation(struct _EXCEPTION_POINTERS *_pExceptionInfo, const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs, bool _bDisplayGUI);
 				static BOOL CALLBACK fp_DumpExceptionMemoryCallback(PVOID _pParam,const PMINIDUMP_CALLBACK_INPUT _pInput,PMINIDUMP_CALLBACK_OUTPUT _pOutput);
 				static LONG WINAPI fsp_DumpExceptionMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, CExceptionMemoryData * _pExceptionMemoryData);
@@ -111,4 +111,4 @@ namespace NMib
 		}
 	}
 }
-			
+

@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -48,31 +48,31 @@ class CSynthProvider_TCAVLTreeAggregate_Iterator:
 			Depth = Depth + 1
 			if Depth > 16:
 				break;
-	
+
 	def f_Next(self, _Max):
 		if len(self.m_pStack) == 0:
 			return False
-		
+
 		if _Max[0] <= 0:
 			return False
 
 		self.m_Position = self.m_Position + 1
 		pCurrent = self.m_pStack.pop()
 		pCurrent = pCurrent.m_Right
-		
+
 		_Max[0] = _Max[0] - 1
 		if _Max[0] <= 0:
 			return False
-		
+
 		while pCurrent.m_Value != 0:
 			self.m_pStack.append(pCurrent)
 			pCurrent = pCurrent.m_Left
 			_Max[0] = _Max[0] - 1
 			if _Max[0] <= 0:
 				return False
-			
+
 		return True
-				
+
 	def f_Advance(self, _nSteps, _Max):
 		for iOriginalChild in range(0, _nSteps):
 			if not self.f_Next([_Max]):
@@ -80,7 +80,7 @@ class CSynthProvider_TCAVLTreeAggregate_Iterator:
 
 	def f_Position(self):
 		return self.m_Position
-	
+
 	def f_Node(self):
 		return self.m_pStack[-1]
 
@@ -104,7 +104,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 			self.m_Root = self.m_ValueObject.CreateValueFromAddress('[TempData]', (self.m_Root.GetValueAsUnsigned() >> 2) << 2, self.m_NodeType).AddressOf()
 
 			self.m_DataSize = self.m_DataType.GetByteSize()
-		 
+
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
@@ -115,12 +115,12 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 		Address = self.m_ChildMap[_iChild]
 		if Address is None or Address < self.m_Offset:
 			return None
-		
+
 		RetValue = fg_CreateDynamicValue(self.m_ValueObject, '[' + str(_iChild) + ']', Address - self.m_Offset, self.m_DataType)
 		return RetValue
-			
+
 	def fp_ExtractType(self):
-		
+
 		ValueType = self.m_ValueObjectType;
 		if not ValueType.IsValid() or ValueType.IsPointerType():
 			return False
@@ -139,7 +139,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 		self.m_Offset = int(self.m_ValueObjectType.GetName().split('<')[1].split(',')[0])
 
 		return True
-		
+
 	def fp_ContainerNumChildren(self):
 		global g_MaxSynthChildren
 		pNode = CSynthProvider_TCAVLTreeAggregate_Node(self.m_Root, self.m_NodeType)
@@ -154,7 +154,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 				nChildren = g_MaxSynthChildren
 				break
 			iNode.f_Next(Max)
-			
+
 		return nChildren;
 
 class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
@@ -193,7 +193,7 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 			return
 
 	def fp_ExtractType(self):
-		
+
 		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
 		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetTree');
 		if not MemberFunctionHelper:
@@ -212,7 +212,7 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(NodeType)
-		
+
 		self.m_Offset = int(AVLTreeType.GetName().split('<')[1].split(',')[0])
 		return True
 
@@ -248,12 +248,12 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 				return
 
 			self.m_Root = self.m_ValueObject.CreateValueFromAddress('[TempData]', (self.m_Root.GetValueAsUnsigned() >> 2) << 2, self.m_NodeType).AddressOf()
-			
+
 			self.m_DataSize = self.m_DataType.GetByteSize()
-		 
+
 			pNode = CSynthProvider_TCAVLTreeAggregate_Node(self.m_Root, self.m_NodeType)
 			iNode = CSynthProvider_TCAVLTreeAggregate_Iterator(pNode)
-	
+
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
@@ -264,12 +264,12 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 		Address = self.m_ChildMap[_iChild]
 		if Address is None or Address < self.m_Offset:
 			return None
-		
+
 		RetValue =  fg_CreateDynamicValue(self.m_ValueObject, '[' + str(_iChild) + ']', Address - self.m_Offset, self.m_DataType)
 		return RetValue
-			
+
 	def fp_ExtractType(self):
-		
+
 		ValueType = fg_GetInheritedType(fg_GetValueType(self.m_Tree), 'NMib::NIntrusive::TCAVLTreeAggregate')
 
 		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetNode')
@@ -283,17 +283,17 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(NodeType)
-		
+
 		self.m_DataType = DataType
 		self.m_NodeType = NodeType
 
 		self.m_Offset = int(ValueType.GetName().split('<')[1].split(',')[0])
 
 		return True
-		
+
 	def fp_ContainerNumChildren(self):
 		global g_MaxSynthChildren
-		
+
 		pNode = CSynthProvider_TCAVLTreeAggregate_Node(self.m_Root, self.m_NodeType)
 		iNode = CSynthProvider_TCAVLTreeAggregate_Iterator(pNode)
 		Max = [g_MaxSynthChildren * 2]
@@ -306,7 +306,7 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 				nChildren = g_MaxSynthChildren
 				break
 			iNode.f_Next(Max)
-	
+
 		return nChildren;
 
 class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
@@ -338,7 +338,7 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 					self.m_Value = fg_GetEmptyValue(self.m_ValueObject)
 			else:
 				self.m_Value = fg_GetEmptyValue(self.m_ValueObject)
-			
+
 			self.m_bValid = True
 		except Exception as error:
 			traceback.print_exc(file=sys.stdout)
@@ -362,7 +362,7 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(NodeType)
-		
+
 		self.m_DataType = DataType
 		self.m_NodeType = NodeType
 
@@ -399,7 +399,7 @@ def fg_SummaryProvider_TCMapNode(_Value, dict):
 			KeySummary = KeyMember.GetValue()
 
 		ValueMember = _Value.GetChildMemberWithName('m_Value')
-		
+
 		if ValueMember is None or not ValueMember.IsValid():
 			Value = KeySummary;
 		else:
@@ -449,5 +449,5 @@ def fg_MibLLDBInit_AVLTree(_Debugger):
 	fg_AddSynth(_Debugger, CSynthProvider_TCMap_CIterator, '(^|^const )NMib::NContainer::TCMap<.*>::TCIterator<.*>$', True, 1)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCMapNode, '(^|^const )(NMib::NContainer::)TCMapNode<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NContainer::TCMap<.*>::TCIterator<.*>$', True, 1)
-	
+
 	return

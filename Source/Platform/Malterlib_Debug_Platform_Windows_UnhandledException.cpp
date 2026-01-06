@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -76,7 +76,7 @@ namespace NMib
 					fGetModuleBaseNameW *pGetModuleBaseName = (fGetModuleBaseNameW *)GetProcAddress(hPSAPI, "GetModuleBaseNameW");
 					fGetModuleFileNameExW *pGetModuleFileNameEx = (fGetModuleFileNameExW *)GetProcAddress(hPSAPI, "GetModuleFileNameExW");
 					fGetProcessImageFileNameW *pGetProcessImageFileName = (fGetProcessImageFileNameW *)GetProcAddress(hPSAPI, "GetProcessImageFileNameW");
-			
+
 					if (pEnumProcesses)
 					{
 						NStr::CStrNonTracked Ret = "\r\n\r\nDump of GDI and User Objects\r\n\r\n";
@@ -107,7 +107,7 @@ namespace NMib
 		#if 1
 									if (pGetProcessImageFileName)
 										pGetProcessImageFileName(hProcess, BaseName.f_GetStr(1024), 1024);
-									else 
+									else
 		#endif
 										if (pGetModuleFileNameEx)
 										pGetModuleFileNameEx(hProcess, nullptr, BaseName.f_GetStr(1024), 1024);
@@ -161,9 +161,9 @@ namespace NMib
 
 						if (GetModuleInformation(hProcess, hModule, &ModuleInfo, sizeof(ModuleInfo)))
 						{
-							Ret 
-								+= NStr::CStrNonTracked::CFormat(pFormatStr) 
-								<< ModuleName 
+							Ret
+								+= NStr::CStrNonTracked::CFormat(pFormatStr)
+								<< ModuleName
 								<< NStr::CFStr64(NStr::CFStr64::CFormat("0x{}") << ModuleInfo.lpBaseOfDll)
 								<< NStr::CFStr64(NStr::CFStr64::CFormat("0x{}") << (void *)((mint)ModuleInfo.lpBaseOfDll + ModuleInfo.SizeOfImage))
 								<< NStr::CFStr64(NStr::CFStr64::CFormat("{}") << ModuleInfo.SizeOfImage)
@@ -239,7 +239,7 @@ namespace NMib
 								<< Fraction
 								<< RandomValue
 							;
-							
+
 							FileName = NStr::CStrNonTracked::CFormat("{}/CrashLog_{}.txt") << CrashDumpPath << CrashDumpID;
 							FileNameDump = NStr::CStrNonTracked::CFormat("{}/FullDump_{}.dmp") << CrashDumpPath << CrashDumpID;
 							FileNameDumpMini = NStr::CStrNonTracked::CFormat("{}/MiniDump_{}.dmp") << CrashDumpPath << CrashDumpID;
@@ -281,7 +281,7 @@ namespace NMib
 								bRet = SubSystem.m_StackTrace.f_InitDll(Info);
 								StackTraceError = Info;
 							}
-					
+
 							if (bRet)
 							{
 								if (SubSystem.m_StackTrace.MiniDumpWriteDump)
@@ -333,22 +333,22 @@ namespace NMib
 								NStr::CFStr256 ErrorStr = NStr::CFStr256::CFormat("Could not initialize debug help context. The error was: {}") << StackTraceError;
 								DMibDTrace("{}\n", ErrorStr);
 								ExceptionInfo += ErrorStr + "\r\n\r\n";
-				
+
 							}
-						} 
+						}
 
 						ExceptionInfo += "Unhandled exception\r\n\r\n";
 
-						// 
+						//
 						// Type
 						//
 						NStr::CStrNonTracked Code;
 						switch (_pExceptionInfo->ExceptionRecord->ExceptionCode)
-						{		
+						{
 						case EXCEPTION_ACCESS_VIOLATION:
 							{
 								if (_pExceptionInfo->ExceptionRecord->ExceptionInformation[0])
-									Code = NStr::CStrNonTracked::CFormat("Access violation trying to write to address: 0x{nfh,sf0,sj*}") << 
+									Code = NStr::CStrNonTracked::CFormat("Access violation trying to write to address: 0x{nfh,sf0,sj*}") <<
 									((mint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(mint) * 2)
 									;
 								else
@@ -387,7 +387,7 @@ namespace NMib
 										Code = NStr::CStrNonTracked::CFormat("{} in {}\r\n" DMibPFileLineFormat " {}") << pException->f_GetClass() << pException->f_GetFunction() << pException->f_GetFile() << pException->f_GetLine() << pException->f_GetErrorStrNonTracked();
 									}
 								}
-						
+
 							}
 						}
 
@@ -425,7 +425,7 @@ namespace NMib
 						else
 						{
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*1}\r\n\r\n") << ((mint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(mint) * 2);
-						}		
+						}
 
 						//
 						// Register information
@@ -512,7 +512,7 @@ namespace NMib
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_CONTROL)
 						{
 				#if defined(DArchitecture_arm64)
-							ExceptionInfo 
+							ExceptionInfo
 								+= NStr::CStrNonTracked::CFormat("Control registers:\r\n"
 								"cpsr=0x{nfh,sj8,sf0}\r\n"
 								"fp=0x{}\r\n"
@@ -527,7 +527,7 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->Pc)
 							;
 				#elif defined(DArchitecture_x64)
-							ExceptionInfo 
+							ExceptionInfo
 								+= NStr::CStrNonTracked::CFormat("Control registers:\r\n"
 								"rip=0x{} rbp=0x{} rsp=0x{}\r\n"
 								"SegCs=0x{nfh,sj4,sf0} SegDs=0x{nfh,sj4,sf0}\r\n"
@@ -724,7 +724,7 @@ namespace NMib
 				#else
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
 						{
-							ExceptionInfo 
+							ExceptionInfo
 								+= NStr::CStrNonTracked::CFormat
 								(
 									"Floating point registers:\r\n"
@@ -884,14 +884,14 @@ namespace NMib
 									else
 									{
 										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}\r\n") << (LastCode) << (sizeof(mint) * 2);
-									}		
+									}
 									ExceptionInfo += NStr::CStrNonTracked::CFormat("StackFrame: 0x{nfh,sf0,sj*1}\r\n") << (StackFrame) << (sizeof(mint) * 2);
 									ExceptionInfo += "\r\n";
 
 									LastCode = CodePtr;
 
 									StackFrame = *((mint *)(StackFrame));
-									--iMaxDepth;			
+									--iMaxDepth;
 								}
 							}
 							catch(...)
@@ -908,7 +908,7 @@ namespace NMib
 				//				DMibDTrace("StackEnd {nfh,sj8,sf0} StackStart {nfh,sj8,sf0}", StackEnd << StackStart);
 								NStr::CStrNonTracked Stack;
 								int iRowSize = 32;
-								int iRow = iRowSize;			
+								int iRow = iRowSize;
 								Stack += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}: ") << (StackEnd) << (sizeof(mint) * 2);
 								while (StackEnd < StackStart)
 								{
@@ -966,7 +966,7 @@ namespace NMib
 							ExceptionInfo += fs_FixLineEndings(_ExtraLog);
 						}
 
-						{ 
+						{
 							NFile::CFile::fs_WriteStringToFile(FileName, ExceptionInfo);
 							if (_pGeneratedLogs)
 								_pGeneratedLogs->f_Insert(FileName);
@@ -983,7 +983,7 @@ namespace NMib
 						ProgramName = NStr::CStrNonTracked::CFormat("{} ({})") << ProgramNameCopy << (mint)GetCurrentProcessId();
 						NStr::CStrNonTracked SupportEmail = fg_GetSys()->f_GetSupportEmailNonTracked();
 						bool bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
-		
+
 						[[maybe_unused]] bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
 						if (!bDaemon)
 						{
@@ -1031,7 +1031,7 @@ namespace NMib
 						return EXCEPTION_CONTINUE_SEARCH;
 					}
 				;
-		
+
 				if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				{
 					// If Dll lock is held we will get a deadlock here
@@ -1045,7 +1045,7 @@ namespace NMib
 					pThread->f_Stop();
 					return pThread->f_GetReturnValue();
 				}
-			}	
+			}
 
 			static bool fg_DefaultCrashDumpUserNotify
 				(
@@ -1066,7 +1066,7 @@ namespace NMib
 				if (_CustomMessage.f_IsEmpty())
 				{
 					NStr::CStrNonTracked EmailMessage;
-					
+
 					if (_SupportEmail)
 					{
 						EmailMessage = NStr::CStrNonTracked::CFormat
@@ -1090,11 +1090,11 @@ namespace NMib
 									"{4}\r\n"
 									"{5}\r\n"
 									"\r\nDo you want to continue execution?"
-								) 
-								<< _ProgramName 
+								)
+								<< _ProgramName
 								<< EmailMessage
-								<< _FileName 
-								<< _FileNameDumpMini 
+								<< _FileName
+								<< _FileNameDumpMini
 								<< _FileNameDump
 								<< _FileNameMetadata
 							;
@@ -1115,23 +1115,23 @@ namespace NMib
 									"\r\nPlease save the following files for future reference:\r\n\r\n"
 									"{4}\r\n"
 									"{5}\r\n"
-								) 
-								<< _ProgramName 
+								)
+								<< _ProgramName
 								<< EmailMessage
-								<< _FileName 
-								<< _FileNameDumpMini 
-								<< _FileNameDump 
+								<< _FileName
+								<< _FileNameDumpMini
+								<< _FileNameDump
 								<< _FileNameMetadata
 							;
 						}
 						else
 						{
 							MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_NoContinueMessage)
-								<< _ProgramName 
-								<< _SupportEmail 
-								<< _FileName 
-								<< _FileNameDumpMini 
-								<< _FileNameDump 
+								<< _ProgramName
+								<< _SupportEmail
+								<< _FileName
+								<< _FileNameDumpMini
+								<< _FileNameDump
 								<< _FileNameMetadata
 							;
 						}
@@ -1149,21 +1149,21 @@ namespace NMib
 								"\r\nPlease save the following files for future reference:\r\n\r\n"
 								"{3}"
 								"{4}"
-							) 
-							<< _CustomMessage 
-							<< _FileName 
-							<< _FileNameDumpMini 
-							<< _FileNameDump 
+							)
+							<< _CustomMessage
+							<< _FileName
+							<< _FileNameDumpMini
+							<< _FileNameDump
 							<< _FileNameMetadata
 						;
 					}
 					else
 					{
 						MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CustomMessage)
-							<< _CustomMessage 
-							<< _FileName 
-							<< _FileNameDumpMini 
-							<< _FileNameDump 
+							<< _CustomMessage
+							<< _FileName
+							<< _FileNameDumpMini
+							<< _FileNameDump
 							<< _FileNameMetadata
 						;
 					}

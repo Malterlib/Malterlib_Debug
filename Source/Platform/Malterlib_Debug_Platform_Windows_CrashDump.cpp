@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -24,7 +24,7 @@ namespace NMib
 			public:
 				bool m_bDisplayGUI;
 				NMib::NContainer::TCVector<NMib::NStr::CStr> &m_GeneratedLogs;
-				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI) 
+				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 					: m_GeneratedLogs(_GeneratedLogs)
 					, m_bDisplayGUI(_bDisplayGUI)
 				{
@@ -74,7 +74,7 @@ namespace NMib
 					(
 						NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
 						, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
-					) 
+					)
 					: m_Locations(_Locations)
 					, m_Sizes(_Sizes)
 					, m_iCurrentLocation(0)
@@ -100,7 +100,7 @@ namespace NMib
 				NMib::NPlatform::fg_GenerateExcetionHandler(&Data, &fsp_ExceptionGenerateHandlerMemory);
 			}
 
-	
+
 			void CSubSystem_Debug_Platform_Windows::f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
 			{
 				m_pCrashDumpUserNotifyFunction = _pCrashDumpUserNotify;
@@ -115,10 +115,10 @@ namespace NMib
 
 			BOOL CALLBACK CSubSystem_Debug_Platform_Windows::fp_DumpExceptionMemoryCallback
 				(
-					PVOID _pParam, 
-					const PMINIDUMP_CALLBACK_INPUT _pInput, 
-					PMINIDUMP_CALLBACK_OUTPUT _pOutput 
-				) 
+					PVOID _pParam,
+					const PMINIDUMP_CALLBACK_INPUT _pInput,
+					PMINIDUMP_CALLBACK_OUTPUT _pOutput
+				)
 			{
 				if (_pInput->CallbackType == MemoryCallback)
 				{
@@ -199,7 +199,7 @@ namespace NMib
 								bRet = SubSystem.m_StackTrace.f_InitDll(Info);
 								StackTraceError = Info;
 							}
-					
+
 							if (bRet)
 							{
 								if (SubSystem.m_StackTrace.MiniDumpWriteDump)
@@ -208,9 +208,9 @@ namespace NMib
 									Info.ClientPointers = false;
 									Info.ExceptionPointers = _pExceptionInfo;
 									Info.ThreadId = GetCurrentThreadId();
-							
-									MINIDUMP_CALLBACK_INFORMATION CallbackInfo; 
-									CallbackInfo.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)&fp_DumpExceptionMemoryCallback; 
+
+									MINIDUMP_CALLBACK_INFORMATION CallbackInfo;
+									CallbackInfo.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)&fp_DumpExceptionMemoryCallback;
 									CallbackInfo.CallbackParam = (void*)_pExceptionMemoryData;
 
 									NFile::CFile File;
@@ -226,12 +226,12 @@ namespace NMib
 									}
 								}
 							}
-						} 
+						}
 
 						return EXCEPTION_CONTINUE_EXECUTION;
 					}
 				;
-		
+
 				if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				{
 					// If Dll lock is held we will get a deadlock here
@@ -245,7 +245,7 @@ namespace NMib
 					pThread->f_Stop();
 					return pThread->f_GetReturnValue();
 				}
-			}	
+			}
 
 		}
 	}

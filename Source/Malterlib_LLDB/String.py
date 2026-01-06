@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -40,13 +40,13 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + '   "" nullptr 8'
 			return '"" nullptr 8'
-		
+
 		Data = pData.Dereference()
-		
+
 		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
 		Type = fg_GetStringType(_Value)
 		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
-		
+
 		DataType = Data.GetType()
 		pStrData = pData.CreateValueFromAddress("[TempData]", DataAddress + DataType.GetByteSize(), DataType.GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
 
@@ -78,13 +78,13 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + '   "" nullptr 16'
 			return '"" nullptr 16'
-		
+
 		Data = pData.Dereference()
-		
+
 		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
 		Type = fg_GetStringType(_Value)
 		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
-		
+
 		DataType = Data.GetType()
 		pStrData = pData.CreateValueFromAddress("[TempData]", DataAddress + DataType.GetByteSize(), DataType.GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
 
@@ -113,9 +113,9 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + '   "" nullptr 32'
 			return '"" nullptr 32'
-		
+
 		Data = pData.Dereference()
-		
+
 		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
 		Type = fg_GetStringType(_Value)
 		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
@@ -440,10 +440,10 @@ def fg_SummaryProvider_Char_ch32(_Value, dict):
 		return
 
 def fg_MibLLDBInit_String(_Debugger):
-	
-	# 
+
+	#
 	# String Formatters
-	# 
+	#
 
 	# Array
 
@@ -451,7 +451,7 @@ def fg_MibLLDBInit_String(_Debugger):
 	#fg_AddSummary(_Debugger, fg_SummaryProvider_Char_ch8 "unsigned char")
 	#fg_AddSummary(_Debugger, fg_SummaryProvider_Char_ch8 "signed char")
 	#fg_AddSummary(_Debugger, fg_SummaryProvider_Char_ch8 "ch8")
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "ch8 *");
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "ch8 *const");
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const ch8 *")
@@ -479,7 +479,7 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const char16_t *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t const\\[[0-9]+]", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "ch32 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "ch32 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const ch32 *")
@@ -504,7 +504,7 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CWStr>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams> > > >$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams> > > >$", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)CStrTraitsPtr_CUStr>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CUStr>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams> > > >$", True)
@@ -521,7 +521,7 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CWStr[a-zA-Z]*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*> > > >$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*> > > >$", True)
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)CStrTraits_CUStr[a-zA-Z]*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CUStr[a-zA-Z]*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*> > > >$", True)
@@ -539,5 +539,5 @@ def fg_MibLLDBInit_String(_Debugger):
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch32, "(^|^const )(NMib::NStr::)TCStrAggregate<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*> > >$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*> > >$", True)
-	
+
 	return

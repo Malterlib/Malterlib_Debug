@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -14,7 +14,7 @@ namespace NMib
 		namespace NPlatform
 		{
 
-			// 
+			//
 			// CSymbolsIndex
 			//
 
@@ -84,7 +84,7 @@ namespace NMib
 
 				EFlag m_Flags;
 				Dwarf_Die m_pDie;
-				Dwarf_Signed m_nLines;			
+				Dwarf_Signed m_nLines;
 				Dwarf_Line* m_lLines;
 				NContainer::TCVector<CLineEntry, NMemory::CAllocator_NonTrackedHeap> m_lSortedLines;
 				NContainer::TCVector<CFunction, NMemory::CAllocator_NonTrackedHeap> m_lSortedFunctions;

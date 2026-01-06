@@ -153,7 +153,7 @@ def fg_ExtractFunctionName(full_name):
 	"""Extract just the function name from a full C++ function signature."""
 	if not full_name:
 		return None
-	
+
 	# Special handling for operator() - we need to keep the first () as part of the name
 	if '::operator()' in full_name or full_name.startswith('operator()'):
 		# Find operator() and skip past it before looking for parameters
@@ -169,7 +169,7 @@ def fg_ExtractFunctionName(full_name):
 		paren_count = 0
 		template_count = 0
 		param_start = -1
-		
+
 		for i, c in enumerate(full_name):
 			if c == '<':
 				template_count += 1
@@ -185,11 +185,11 @@ def fg_ExtractFunctionName(full_name):
 					# Found the end of parameters, truncate here
 					full_name = full_name[:param_start]
 					break
-	
+
 	# Now remove template parameters
 	template_count = 0
 	template_start = -1
-	
+
 	for i, c in enumerate(full_name):
 		if c == '<':
 			if template_count == 0:
@@ -201,14 +201,14 @@ def fg_ExtractFunctionName(full_name):
 				# Found a complete template, remove it
 				full_name = full_name[:template_start] + full_name[i+1:]
 				break
-	
+
 	# Extract just the function name after the last '::'
 	if '::' in full_name:
 		parts = full_name.split('::')
 		function_name = parts[-1]
 	else:
 		function_name = full_name
-	
+
 	# Clean up any remaining whitespace
 	return function_name.strip()
 

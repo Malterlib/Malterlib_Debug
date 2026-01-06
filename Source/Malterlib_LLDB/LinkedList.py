@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -40,7 +40,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
 			LinkType = fg_GetValidCanonicalType(LinkType)
@@ -84,7 +84,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 			return None # We are at end of list
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
-			
+
 	def fp_ContainerGetError(self):
 		if not self.m_bValid:
 			return "Failed to extract type"
@@ -98,7 +98,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 			return 0
 
 		self.m_ChildMap = []
-		
+
 		ChildDict = {}
 		self.m_bLooped = False
 
@@ -165,7 +165,7 @@ class CSynthProvider_TCDLinkListAggregate_CIterator(CSynthProvider_Common):
 			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
 			LinkType = fg_GetValidCanonicalType(LinkType)
@@ -174,7 +174,7 @@ class CSynthProvider_TCDLinkListAggregate_CIterator(CSynthProvider_Common):
 
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(LinkType)
-		
+
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
 
@@ -261,13 +261,13 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
-		
+
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(LinkType)
-		
+
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
-		
+
 		MemberFunctionHelper = fg_GetMemberFunction(ContainerType, 'fs_Debug_GetOffset')
 		if not MemberFunctionHelper:
 			return False
@@ -389,7 +389,7 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
 			LinkType = fg_GetValidCanonicalType(LinkType)
@@ -398,7 +398,7 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(LinkType)
-		
+
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
 
@@ -477,7 +477,7 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 	def fp_ExtractType(self):
 		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
 		ContainerType = fg_GetInheritedType(ContainerType, "NMib::NIntrusive::TCSLinkListAggregate")
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
 			DataType = fg_GetValidCanonicalType(DataType)
@@ -489,10 +489,10 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 			LinkType = fg_GetValidCanonicalType(LinkType)
 		else:
 			return False
-		
+
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(LinkType)
-		
+
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
 
@@ -520,7 +520,7 @@ class CSynthProvider_TCSLinkListAggregate(CSynthProvider_Container):
 			return None # We are at end of list
 
 		return self.fp_GetData(NodeAddress, '[' + str(_iChild) + ']')
-			
+
 	def fp_ContainerGetError(self):
 		if not self.m_bValid:
 			return "Failed to extract type"
@@ -598,7 +598,7 @@ class CSynthProvider_TCSLinkListAggregate_CIterator(CSynthProvider_Common):
 			DataType = fg_GetValidCanonicalType(DataType)
 		else:
 			return False
-		
+
 		if ContainerType.GetNumberOfTemplateArguments() > 2:
 			LinkType = ContainerType.GetTemplateArgumentType(2)
 			LinkType = fg_GetValidCanonicalType(LinkType)
@@ -607,14 +607,14 @@ class CSynthProvider_TCSLinkListAggregate_CIterator(CSynthProvider_Common):
 
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(LinkType)
-		
+
 		self.m_DataType = DataType
 		self.m_LinkType = LinkType
 
 		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetOffset')
 		if not MemberFunctionHelper:
 			return False
-		
+
 		OffsetType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
 		self.m_Offset = int(OffsetType.GetName().split(',')[-1].split('>')[0])
 
@@ -668,5 +668,5 @@ def fg_MibLLDBInit_LinkedList(_Debugger):
 	fg_AddSynth(_Debugger, CSynthProvider_TCLinkedList_CIterator, "(^|^const )NMib::NContainer::TCLinkedList<.*>::CIteratorConst$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NContainer::TCLinkedList<.*>::CIterator$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NContainer::TCLinkedList<.*>::CIteratorConst$", True)
-	
+
 	return

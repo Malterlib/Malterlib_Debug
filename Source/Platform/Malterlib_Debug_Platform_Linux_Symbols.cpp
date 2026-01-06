@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -34,15 +34,15 @@ namespace NMib
 				{
 				}
 			};
-			
+
 			constinit TCSubSystem<CSubSystem_Debug_Platform_Linux_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Linux_Symbols = {DAggregateInit};
-			
+
 			CSymbols &fg_GetSymbols()
 			{
 				return g_SubSystem_Debug_Platform_Linux_Symbols->m_Symbols;
 			}
 
-			// 
+			//
 			// CSymbolsIndex Imp
 			//
 
@@ -132,7 +132,7 @@ namespace NMib
 								LineNumber = -1; // ?
 							}
 
-							// Search for the filename by examining the containing line entry and 
+							// Search for the filename by examining the containing line entry and
 							// then searching backwards if we don't find a file source entry.
 							{
 								char const* pFileName = "unknown";
@@ -144,7 +144,7 @@ namespace NMib
 									if (dwarf_linesrc((*UnitIter).m_lLines[iL], const_cast<char**>(&pFileName), &Error) == DW_DLV_OK)
 									{
 										break;
-									}							
+									}
 								}
 								*/
 								FileName = pFileName;
@@ -158,7 +158,7 @@ namespace NMib
 									//CDisableHeapOverrideScope Scope;
 									int Status = -1;
 									char *pDemangled = abi::__cxa_demangle(pFunc->m_pName, nullptr, nullptr, &Status);
-									
+
 									if (Status == 0)
 									{
 										FunctionName = pDemangled;
@@ -182,7 +182,7 @@ namespace NMib
 						}
 					}
 				}
-				
+
 				return nullptr;
 			}
 
@@ -207,7 +207,7 @@ namespace NMib
 							{
 								return _Entry.m_PC <=> _ToFind;
 							}
-						,	_Address					
+						,	_Address
 					)
 				;
 
@@ -224,7 +224,7 @@ namespace NMib
 
 						--iLine;
 					}
-				
+
 					return _Unit.m_lSortedLines[iLine].m_iLine;
 				}
 				else
@@ -253,7 +253,7 @@ namespace NMib
 				;
 
 				if (iFunc < _Unit.m_lSortedFunctions.f_GetLen() && iFunc >= 0)
-				{			
+				{
 					if (_Address < _Unit.m_lSortedFunctions[iFunc].m_LowPC)
 					{
 						if (iFunc == 0)
@@ -272,7 +272,7 @@ namespace NMib
 			}
 
 			bool CSymbolsIndex::fp_CollectUnits()
-			{		
+			{
 				int Result;
 				Dwarf_Error Error;
 				Dwarf_Die pDie;
@@ -453,7 +453,7 @@ namespace NMib
 						NewFunc.m_LowPC = LowPC;
 						NewFunc.m_HighPC = HighPC;
 						NewFunc.m_pName = "unknown";
-			
+
 						Dwarf_Attribute NameAttr, SpecAttr;
 						char* pFuncName;
 
@@ -545,7 +545,7 @@ namespace NMib
 				while (_pDie && Ret == DW_DLV_OK)
 				{
 					Ret = dwarf_siblingof(mp_Dwarf, _pDie, &pRetDie, &Error);
-					
+
 					dwarf_dealloc(mp_Dwarf, _pDie, DW_DLA_DIE);
 					_pDie = nullptr;
 
@@ -557,7 +557,7 @@ namespace NMib
 					else if (Ret == DW_DLV_OK)
 					{
 						_pDie = pRetDie;
-						bRecurseRet = fp_CollectFunction(_pDie, _Unit);		
+						bRecurseRet = fp_CollectFunction(_pDie, _Unit);
 					}
 					else
 					{
@@ -608,7 +608,7 @@ namespace NMib
 					int Status = -1;
 					char *pDemangled = nullptr;
 					pDemangled = abi::__cxa_demangle(Info.dli_sname, nullptr, nullptr, &Status);
-					
+
 					if (pDemangled && Status == 0)
 					{
 						FunctionName = (const char *)pDemangled;
@@ -621,7 +621,7 @@ namespace NMib
 					else
 						FunctionName = Info.dli_sname;
 				}
-				
+
 				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp
 					= fg_Construct(fg_Move(FunctionName), CSymStr(Info.dli_fname ? Info.dli_fname : ""), CSymStr(), 0)
 				;
@@ -665,7 +665,7 @@ namespace NMib
 
 					pIndex = pNewIndex.f_Get();
 
-					mp_IndexLookup[ModuleFilename] = std::move(pNewIndex);				
+					mp_IndexLookup[ModuleFilename] = std::move(pNewIndex);
 				}
 
 				if (pIndex)
@@ -677,7 +677,7 @@ namespace NMib
 						pInfo->m_FunctionName = Info.dli_sname;
 						pInfo->m_pFunctionName = pInfo->m_FunctionName.f_GetStr();
 					}
-					
+
 					if (!pInfo)
 					{
 						NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp
@@ -697,7 +697,7 @@ namespace NMib
 
 					NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
 						= fg_Construct(std::move(FunctionName), std::move(ModuleName), std::move(FileName), LineNumber);
-					
+
 					return pInfo.f_Detach();
 				}
 	#endif

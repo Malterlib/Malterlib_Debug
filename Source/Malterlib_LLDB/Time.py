@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Hansoft AB 
+# Copyright (C) 2015 Hansoft AB
 # Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 import lldb, traceback, sys
@@ -40,8 +40,8 @@ def fg_SummaryProvider_CTimeSpan(_Value, dict):
 
 
 def fg_MibLLDBInit_Time(_Debugger):
-	
+
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CTime, "(^|^const )NMib::NTime::CTime$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_CTimeSpan, "(^|^const )NMib::NTime::CTimeSpan$", True)
-	
+
 	return

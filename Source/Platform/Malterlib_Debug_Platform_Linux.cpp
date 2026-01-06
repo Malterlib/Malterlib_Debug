@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 #include <Mib/Core/Core>
@@ -22,12 +22,12 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo & _oInfo, CMibCod
 		_oInfo.m_pContext = pInfo;
 		return true;
 	}
-	
+
 	_oInfo.m_pContext = (void *)1;
 
 	Dl_info DLInfo;
 	int DLResult = dladdr((void const *)_Address, &DLInfo);
-	
+
 	if (DLResult == 0)
 		return false;
 
@@ -96,7 +96,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 
 void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
-	
+
 }
 
 NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const ch8 *_pFileName, int32 _Line, void *_pCodePointer, const NMib::NStr::CStrNonTracked &_ErrorMessage)
