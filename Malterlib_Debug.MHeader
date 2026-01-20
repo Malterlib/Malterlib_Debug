@@ -1,4 +1,4 @@
-// Copyright © 2015 Hansoft AB 
+// Copyright © 2015 Hansoft AB
 // Distributed under the MIT license, see license text in LICENSE.Malterlib
 
 Import "../Core/Lib_Malterlib.MTarget"
@@ -92,7 +92,7 @@ Property
 Property
 {
 	!!MalterlibEnableInternalTests true
-	
+
 	MalterlibTests =+ "Malterlib_Debug"
 	MalterlibTestFiles_Malterlib_Debug: [type(CEntity)] = ["Test/*"->MakeAbsolute()]
 	MalterlibTestExtraGroups_Malterlib_Debug: [string] = ["{Test}/{Malterlib_Debug}"]
@@ -108,6 +108,6 @@ Target.ExtraGroups =+ "~Automatic/NatVis"
 	&
 	{
 		TargetIsExecutable true
-		GeneratorFamily "VisualStudio"
+		PlatformFamily "Windows"
 	}
 }
