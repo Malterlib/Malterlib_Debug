@@ -136,7 +136,6 @@ namespace NMib
 			{
 				HANDLE hProcess = GetCurrentProcess();
 				NContainer::TCVector<HMODULE, NMemory::CAllocator_NonTrackedHeap> Modules;
-				Modules;
 				DWORD NeededBytes = 0;
 				EnumProcessModules(hProcess, 0, 0, &NeededBytes);
 				Modules.f_SetLen((NeededBytes * 2) / sizeof(HMODULE));
