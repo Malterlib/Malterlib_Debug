@@ -3,20 +3,20 @@
 
   <!-- CStr -->
 
-    <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStr&gt;">
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStr&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStr&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrNonTracked&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrNonTracked&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrNonTracked&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrSecure&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrSecure&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrSecure&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrVMem&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CWStrVMem&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CUStrVMem&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Dynamic&lt;*&gt; &gt; &gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraits_CStrAnsi&gt;"></AlternativeType>
+    <Type Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CStr&gt;">
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CWStr&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CUStr&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CStrNonTracked&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CWStrNonTracked&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CUStrNonTracked&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CStrSecure&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CWStrSecure&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CUStrSecure&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CStrVMem&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CWStrVMem&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CUStrVMem&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Dynamic&lt;*&gt; &gt; &gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraits_CStrAnsi&gt;"></AlternativeType>
 
         <DisplayString Condition="(m_pData == 0)">
       ""
@@ -102,10 +102,10 @@
     </Expand>
   </Type>
 
-    <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraitsPtr_CStr&gt;">
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraitsPtr_CWStr&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::CStrTraitsPtr_CUStr&gt;"></AlternativeType>
-    <AlternativeType Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Ptr&lt;*&gt; &gt; &gt;"></AlternativeType>
+    <Type Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraitsPtr_CStr&gt;">
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraitsPtr_CWStr&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::CStrTraitsPtr_CUStr&gt;"></AlternativeType>
+    <AlternativeType Name="NMib::NStr::TCStr&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Ptr&lt;*&gt; &gt; &gt;"></AlternativeType>
     <DisplayString Condition="(m_pData == 0)">
       ""
     </DisplayString>
@@ -154,7 +154,7 @@
     </Expand>
   </Type>
 
-  <Type Name="NMib::NStr::TCStrAggregate&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Fixed&lt;*,*&gt; &gt; &gt;">
+  <Type Name="NMib::NStr::TCStr&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Fixed&lt;*,*&gt; &gt; &gt;">
     <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
       {m_lData,s8}
     </DisplayString>

@@ -254,27 +254,12 @@ public:
 			TCStr<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> Str1_0(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			TCStr<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> Str2_0(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
 
-			CStrAggregate &Str3 = Str0;
-			CWStrAggregate &Str4 = Str1;
-			CUStrAggregate &Str5 = Str2;
-
-			TCStrAggregate<TCStrTraits_Eval<ch8, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> &Str3_0 = Str0_0;
-			TCStrAggregate<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> &Str4_0 = Str1_0;
-			TCStrAggregate<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsDeflauts>::CType> &Str5_0 = Str2_0;
-
 			CFStr128 Str6(str_utf8("CFStr128 実際にあっ 24bit:𠀀"));
 			CFStr256 Str7(str_utf8("CFStr256 実際にあっ 24bit:𠀀"));
 			CFWStr128 Str8(str_utf16("CFWStr128 実際にあっ 24bit:𠀀"));
 			CFWStr256 Str9(str_utf16("CFWStr256 実際にあっ 24bit:𠀀"));
 			CFUStr128 Str10(str_utf16("CFUStr128 実際にあっ 24bit:𠀀"));
 			CFUStr256 Str11(str_utf16("CFUStr256 実際にあっ 24bit:𠀀"));
-
-			CFStrAggregate128 &Str6_0 = Str6;
-			CFStrAggregate256 &Str7_0 = Str7;
-			CFWStrAggregate128 &Str8_0 = Str8;
-			CFWStrAggregate256 &Str9_0 = Str9;
-			CFUStrAggregate128 &Str10_0 = Str10;
-			CFUStrAggregate256 &Str11_0 = Str11;
 
 			CStrVMem Str12(str_utf8("CStr 実際にあっ 24bit:𠀀"));
 			CWStrVMem Str13(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
@@ -284,14 +269,6 @@ public:
 			TCStr<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsVirtual>::CType> Str13_0(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			TCStr<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsVirtual>::CType> Str14_0(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
 
-			TCStrAggregate<CStrTraits_CStrVMem> &Str15 = Str12;
-			TCStrAggregate<CStrTraits_CWStrVMem> &Str16 = Str13;
-			TCStrAggregate<CStrTraits_CUStrVMem> &Str17 = Str14;
-
-			TCStrAggregate<TCStrTraits_Eval<ch8, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsVirtual>::CType> &Str15_0 = Str12_0;
-			TCStrAggregate<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsVirtual>::CType> &Str16_0 = Str13_0;
-			TCStrAggregate<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsVirtual>::CType> &Str17_0 = Str14_0;
-
 			CStrSecure Str18(str_utf8("CStr 実際にあっ 24bit:𠀀"));
 			CWStrSecure Str19(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			CUStrSecure Str20(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
@@ -299,14 +276,6 @@ public:
 			TCStr<TCStrTraits_Eval<ch8, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsSecure>::CType> Str18_0(str_utf8("CStr 実際にあっ 24bit:𠀀"));
 			TCStr<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsSecure>::CType> Str19_0(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			TCStr<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsSecure>::CType> Str20_0(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
-
-			TCStrAggregate<CStrTraits_CStrSecure> &Str21 = Str18;
-			TCStrAggregate<CStrTraits_CWStrSecure> &Str22 = Str19;
-			TCStrAggregate<CStrTraits_CUStrSecure> &Str23 = Str20;
-
-			TCStrAggregate<TCStrTraits_Eval<ch8, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsSecure>::CType> &Str21_0 = Str18_0;
-			TCStrAggregate<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsSecure>::CType> &Str22_0 = Str19_0;
-			TCStrAggregate<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsSecure>::CType> &Str23_0 = Str20_0;
 
 			CStrNonTracked Str24(str_utf8("CStr 実際にあっ 24bit:𠀀"));
 			CWStrNonTracked Str25(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
@@ -316,14 +285,6 @@ public:
 			TCStr<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> Str25_0(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			TCStr<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> Str26_0(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
 
-			TCStrAggregate<CStrTraits_CStrNonTracked> &Str27 = Str24;
-			TCStrAggregate<CStrTraits_CWStrNonTracked> &Str28 = Str25;
-			TCStrAggregate<CStrTraits_CUStrNonTracked> &Str29 = Str26;
-
-			TCStrAggregate<TCStrTraits_Eval<ch8, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> &Str27_0 = Str24_0;
-			TCStrAggregate<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> &Str28_0 = Str25_0;
-			TCStrAggregate<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> &Str29_0 = Str26_0;
-
 			CStrPtr Str30; Str30.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
 			CWStrPtr Str31; Str31.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
 			CUStrPtr Str32; Str32.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
@@ -331,14 +292,6 @@ public:
 			TCStr<TCStrTraitsPtr<ch8, EStrType_UTF>::CType> Str30_0; Str30_0.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
 			TCStr<TCStrTraitsPtr<ch16, EStrType_UTF>::CType> Str31_0; Str31_0.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
 			TCStr<TCStrTraitsPtr<ch32, EStrType_Unicode>::CType> Str32_0; Str32_0.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
-
-			TCStrAggregate<CStrTraitsPtr_CStr> &Str33 = Str30;
-			TCStrAggregate<CStrTraitsPtr_CWStr> &Str34 = Str31;
-			TCStrAggregate<CStrTraitsPtr_CUStr> &Str35 = Str32;
-
-			TCStrAggregate<TCStrTraitsPtr<ch8, EStrType_UTF>::CType> &Str33_0 = Str30_0;
-			TCStrAggregate<TCStrTraitsPtr<ch16, EStrType_UTF>::CType> &Str34_0 = Str31_0;
-			TCStrAggregate<TCStrTraitsPtr<ch32, EStrType_Unicode>::CType> &Str35_0 = Str32_0;
 
 			CMStrDeprecated MixedStr8(CStr(str_utf8("CStr")));
 			CMStrDeprecated MixedStr16(CStr(str_utf8("CWStr 実際にあっ")));
