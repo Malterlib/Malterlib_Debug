@@ -904,7 +904,7 @@ namespace NMib
 
 							try
 							{
-				//				DMibDTrace("StackEnd {nfh,sj8,sf0} StackStart {nfh,sj8,sf0}", StackEnd << StackStart);
+				//				DMibDTrace("StackEnd {nfh,sj8,sf0} StackStart {nfh,sj8,sf0}", StackEnd, StackStart);
 								NStr::CStrNonTracked Stack;
 								int iRowSize = 32;
 								int iRow = iRowSize;

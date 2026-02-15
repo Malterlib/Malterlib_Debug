@@ -46,23 +46,15 @@ namespace NMib
 #		endif
 
 #		if DMibEnableDTrace > 0
-#			define DMibDTrace(_Format, _Args)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
-#			define DMibDTraceRaw(_Args) NMib::NSys::fg_DebugOutput(_Args)
-#			define DMibDTraceSafe(_Format, _Args) NMib::NSys::fg_DebugOutput((NMib::NStr::CFStr512::CFormat(_Format) << _Args).f_GetStr().f_GetStr())
-#			define DMibDTraceTimed(_Format, _Args)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat("{}: " _Format) << NMib::NTime::CTime::fs_NowLocal() << _Args)
-
-#			define DMibDTrace2(...)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
-#			define DMibDTraceSafe2(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
-#			define DMibDTraceTimed2(d_Format, ...)  NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}" d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
+#			define DMibDTraceRaw(...) NMib::NSys::fg_DebugOutput(__VA_ARGS__)
+#			define DMibDTrace(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
+#			define DMibDTraceSafe(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
+#			define DMibDTraceTimed(d_Format, ...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
 #		else
-#			define DMibDTraceRaw(_Args) (void)0
-#			define DMibDTrace(_Format, _Args) (void)0
-#			define DMibDTraceSafe(_Format, _Args) (void)0
-#			define DMibDTraceTimed(_Format, _Args) (void)0
-
-#			define DMibDTrace2(...) (void)0
-#			define DMibDTraceSafe2(...) (void)0
-#			define DMibDTraceTimed2(...) (void)0
+#			define DMibDTraceRaw(...) (void)0
+#			define DMibDTrace(...) (void)0
+#			define DMibDTraceSafe(...) (void)0
+#			define DMibDTraceTimed(...) (void)0
 #		endif
 
 #		ifndef DMibPNoShortCuts
@@ -70,10 +62,6 @@ namespace NMib
 #			define DDTraceRaw DMibDTraceRaw
 #			define DDTraceSafe DMibDTraceSafe
 #			define DDTraceTimed DMibDTraceTimed
-
-#			define DDTrace2 DMibDTrace2
-#			define DDTraceSafe2 DMibDTraceSafe2
-#			define DDTraceTimed2 DMibDTraceTimed2
 #		endif
 
 		// If trace enable has not been specifically set, enable it
@@ -86,23 +74,15 @@ namespace NMib
 #		endif
 
 #		if DMibEnableTrace > 0
-#			define DMibTrace(_Format, _Args) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat(_Format) << _Args)
-#			define DMibTraceRaw(_Args) NMib::NSys::fg_DebugOutput(_Args)
-#			define DMibTraceSafe(_Format, _Args) NMib::NSys::fg_DebugOutput((NMib::NStr::CFStr512::CFormat(_Format) << _Args).f_GetStr().f_GetStr())
-#			define DMibTraceTimed(_Format, _Args) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_GetStringFormat("{}: " _Format) << NMib::NTime::CTime::fs_NowLocal() << _Args)
-
-#			define DMibTrace2(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
-#			define DMibTraceSafe2(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
-#			define DMibTraceTimed2(d_Format, ...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
+#			define DMibTraceRaw(...) NMib::NSys::fg_DebugOutput(__VA_ARGS__)
+#			define DMibTrace(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
+#			define DMibTraceSafe(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
+#			define DMibTraceTimed(d_Format, ...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
 #		else
-#			define DMibTrace(_Format, _Args) (void)0
-#			define DMibTraceRaw(_Args) (void)0
-#			define DMibTraceSafe(_Format, _Args) (void)0
-#			define DMibTraceTimed(_Format, _Args) (void)0
-
-#			define DMibTrace2(...) (void)0
-#			define DMibTraceSafe2(...) (void)0
-#			define DMibTraceTimed2(...) (void)0
+#			define DMibTraceRaw(...) (void)0
+#			define DMibTrace(...) (void)0
+#			define DMibTraceSafe(...) (void)0
+#			define DMibTraceTimed(...) (void)0
 #		endif
 
 #		ifndef DMibPNoShortCuts
@@ -110,10 +90,6 @@ namespace NMib
 #			define DTraceRaw DMibTraceRaw
 #			define DTraceSafe DMibTraceSafe
 #			define DTraceTimed DMibTraceTimed
-
-#			define DTrace2 DMibTrace2
-#			define DTraceSafe2 DMibTraceSafe2
-#			define DTraceTimed2 DMibTraceTimed2
 #		endif
 
 	}

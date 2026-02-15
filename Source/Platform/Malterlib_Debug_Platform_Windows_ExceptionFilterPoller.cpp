@@ -80,13 +80,13 @@ namespace NMib
 				if (m_pSystem->m_bPollCheckExceptionFilter || m_pSystem->m_bPollCheckExceptionFilterTimes)
 				{
 					[[maybe_unused]] int64 Timer = NMib::NTime::NPlatform::fg_TimerRaw_PreciseGet();
-					//DMibDTrace("Checking Exception Filter {} {}\r\n", m_pSystem->m_bPollCheckExceptionFilterTimes << Timer);
+					//DMibDTrace("Checking Exception Filter {} {}\r\n", m_pSystem->m_bPollCheckExceptionFilterTimes, Timer);
 					if (m_pSystem->m_bPollCheckExceptionFilterTimes)
 						--m_pSystem->m_bPollCheckExceptionFilterTimes;
 					LPTOP_LEVEL_EXCEPTION_FILTER pTop = SetUnhandledExceptionFilter(&CSubSystem_Debug_Platform_Windows::fsp_UnhandledException);
 					if (pTop != &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException)
 					{
-						DMibDTrace("ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: Unhandled exception filter was lost({} != {}): {}\n", pTop << &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException << Timer);
+						DMibDTrace("ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: Unhandled exception filter was lost({} != {}): {}\n", pTop, &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException, Timer);
 						//m_pSystem->m_pPrevExceptionFilter = pTop;
 					}
 				}
