@@ -298,7 +298,7 @@ public:
 			CMStrDeprecated MixedStr32(CStr(str_utf8("CUStr 実際にあっ 24bit:𠀀")));
 
 			CAnsiStr AnsiStr;
-			NMib::NSys::NStr::fg_SystemEncodeAnsiStr(CStr(str_utf8("CStr ÄäÅåÖ")), AnsiStr, '?');
+			NMib::NStr::NPlatform::fg_SystemEncodeAnsiStr(CStr(str_utf8("CStr ÄäÅåÖ")), AnsiStr, '?');
 
 			CStr UnicodeStr = CMStrDeprecated(CStr(str_utf8("CStr ÄäÅåÖ")));
 

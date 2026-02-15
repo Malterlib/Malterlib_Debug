@@ -145,7 +145,7 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 						}
 						Temp.f_SetType((EStrType)StrData.m_Type);
 
-						CStr Return = fg_ForceStrUTF8(Temp);
+						CStr Return = Temp;
 						ch8 Bom[] = {(int8)uint8(0xEF), (int8)uint8(0xBB), (int8)uint8(0xBF), 0};
 						ch8 *pDest = pResult;
 						//pDest = fg_StrCopy(pDest, Bom);
@@ -256,7 +256,7 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 								pPrepend = "ch32 ";
 						}
 						Temp.f_SetType((EStrType)StrData.m_Type);
-						CStr Return = fg_ForceStrUTF8(Temp);
+						CStr Return = Temp;
 						ch8 Bom[] = {(int8)uint8(0xEF), (int8)uint8(0xBB), (int8)uint8(0xBF), 0};
 						ch8 *pDest = pResult;
 						//pDest = fg_StrCopy(pDest, Bom);
@@ -405,7 +405,7 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 						}
 
 						Temp.f_SetType((EStrType)StrData.m_Type);
-						CStr Return = fg_ForceStrUTF8(Temp);
+						CStr Return = Temp;
 						ch8 Bom[] = {(int8)uint8(0xEF), (int8)uint8(0xBB), (int8)uint8(0xBF), 0};
 						ch8 *pDest = pResult;
 						//pDest = fg_StrCopy(pDest, Bom);
@@ -494,7 +494,7 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 						}
 
 						Temp.f_SetType((EStrType)StrData.m_Type);
-						CStr Return = fg_ForceStrUTF8(Temp);
+						CStr Return = Temp;
 						ch8 Bom[] = {(int8)uint8(0xEF), (int8)uint8(0xBB), (int8)uint8(0xBF), 0};
 						ch8 *pDest = pResult;
 						//pDest = fg_StrCopy(pDest, Bom);
