@@ -57,8 +57,6 @@ def fg_MibLLDBInit_Atomic(_Debugger):
 	# TCAtomic
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCAtomic, "(^|^const )NMib::NAtomic::TCAtomic<.*>$", True)
-	fg_AddSynth(_Debugger, CSynthProvider_TCAtomic, "(^|^const )NMib::NAtomic::TCAtomicAggregate<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NAtomic::TCAtomic<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NAtomic::TCAtomicAggregate<.*>$", True)
 
 	return
