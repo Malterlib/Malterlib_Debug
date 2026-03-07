@@ -234,8 +234,8 @@ namespace NMib::NDebug::NRemoteDebugger
 			CNetAddress Address = CSocket::fs_ResolveAddress(AddressStr);
 			Address.f_SetPort(mp_Port);
 
-			NTime::CStopWatch Timer(true);
-			while (Timer.f_Mark().f_GetSecondsFraction() < 60.0f)
+			NTime::CStopwatch Stopwatch(true);
+			while (Stopwatch.f_GetTime().f_GetSecondsFraction() < 60.0f)
 			{
 				try
 				{

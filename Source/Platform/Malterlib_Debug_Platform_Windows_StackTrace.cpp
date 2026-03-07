@@ -34,7 +34,7 @@ namespace NMib
 				m_bFailedInitialize = false;
 				m_bFailedInitializeDll = false;
 				m_hProcess = INVALID_HANDLE_VALUE;
-				m_Timer.f_Start();
+				m_Stopwatch.f_Start();
 			}
 
 			CStackTraceContext::~CStackTraceContext()
@@ -443,10 +443,10 @@ namespace NMib
 				if ((--(_pInfo)->m_RefCount) == 0)
 					m_Usused.f_Insert(_pInfo);
 
-				if (m_Timer.f_GetTime() > fp64(10.0))
+				if (m_Stopwatch.f_GetTime() > fp64(10.0))
 				{
 					f_RemoveUnused();
-					m_Timer.f_Start();
+					m_Stopwatch.f_Start();
 				}
 			}
 		}

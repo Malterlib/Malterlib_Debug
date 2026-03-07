@@ -62,7 +62,7 @@ namespace NMib
 				using FMiniDumpWriteDump = BOOL __stdcall (HANDLE hProcess,DWORD ProcessId,HANDLE hFile,MINIDUMP_TYPE DumpType,PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
 				using FUnDecorateSymbolName = DWORD __stdcall (PCSTR DecoratedName, PSTR UnDecoratedName, DWORD UndecoratedLength, DWORD Flags);
 
-				NTime::CClock m_Timer;
+				NTime::CStopwatch m_Stopwatch;
 
 				NIntrusive::TCAVLTree<&CLocalStackTraceInfo::m_AvlLink, CAVLCompare_CLocalStackTraceInfo> m_TraceInfoTree;
 				DMibListLinkD_List(CLocalStackTraceInfo, m_UnusedList) m_Usused;
