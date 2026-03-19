@@ -30,14 +30,14 @@ namespace NMib
 
 					NIntrusive::TCAVLLink<> m_AvlLink;
 					DMibListLinkD_Link(CLocalStackTraceInfo, m_UnusedList);
-					mint m_Address;
-					mint m_RefCount;
+					umint m_Address;
+					umint m_RefCount;
 				};
 
 				class CAVLCompare_CLocalStackTraceInfo
 				{
 				public:
-					inline_small const mint &operator () (CLocalStackTraceInfo const &_Node) const
+					inline_small const umint &operator () (CLocalStackTraceInfo const &_Node) const
 					{
 						return _Node.m_Address;
 					}
@@ -48,8 +48,8 @@ namespace NMib
 
 				void f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination);
 				void f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination);
-				void f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, mint _MaxLen);
-				CLocalStackTraceInfo *f_AquireStackTraceInfo(mint _Address);
+				void f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen);
+				CLocalStackTraceInfo *f_AquireStackTraceInfo(umint _Address);
 				void f_RemoveUnused();
 				void f_ReleaseStackTraceInfo(CLocalStackTraceInfo *_pInfo);
 

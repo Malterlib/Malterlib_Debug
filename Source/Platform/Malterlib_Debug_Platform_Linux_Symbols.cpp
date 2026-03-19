@@ -46,7 +46,7 @@ namespace NMib
 			// CSymbolsIndex Imp
 			//
 
-			CSymbolsIndex::CSymbolsIndex(char const* _pFilename, mint _BaseAddress)
+			CSymbolsIndex::CSymbolsIndex(char const* _pFilename, umint _BaseAddress)
 				: mp_bOK(false)
 				, mp_Dwarf(nullptr)
 				, mp_ModuleFilename(_pFilename)
@@ -104,7 +104,7 @@ namespace NMib
 				return mp_bOK;
 			}
 
-			CLinuxStackTraceInfo* CSymbolsIndex::f_Lookup(mint _Address)
+			CLinuxStackTraceInfo* CSymbolsIndex::f_Lookup(umint _Address)
 			{
 				// Dumb interval search for now.
 				for (auto UnitIter = mp_lUnits.f_GetIterator()
@@ -198,12 +198,12 @@ namespace NMib
 			//
 
 
-			Dwarf_Signed CSymbolsIndex::fp_LookupLineInUnit(mint _Address, CUnit const& _Unit) const
+			Dwarf_Signed CSymbolsIndex::fp_LookupLineInUnit(umint _Address, CUnit const& _Unit) const
 			{
 
 				aint iLowerBound = _Unit.m_lSortedLines.f_BinarySearchLowerBound
 					(
-							[&](CLineEntry const& _Entry, mint _ToFind)
+							[&](CLineEntry const& _Entry, umint _ToFind)
 							{
 								return _Entry.m_PC <=> _ToFind;
 							}
@@ -233,7 +233,7 @@ namespace NMib
 				}
 			}
 
-			CFunction const* CSymbolsIndex::fp_LookupFunctionInUnit(mint _Address, CUnit const& _Unit) const
+			CFunction const* CSymbolsIndex::fp_LookupFunctionInUnit(umint _Address, CUnit const& _Unit) const
 			{
 				if ( ! (_Unit.m_Flags & CUnit::EFlag_ReadFunctions) )
 				{
@@ -244,7 +244,7 @@ namespace NMib
 
 				aint iFunc = _Unit.m_lSortedFunctions.f_BinarySearchLowerBound
 					(
-							[&](CFunction const& _Func, mint _Address)
+							[&](CFunction const& _Func, umint _Address)
 							{
 								return _Func.m_LowPC <=> _Address;
 							}
@@ -332,7 +332,7 @@ namespace NMib
 					}
 					else
 					{
-						CurUnit.m_HighPC = ~(mint)0;
+						CurUnit.m_HighPC = ~(umint)0;
 					}
 
 	/* TODO: Currently do not handle ranges as clang is not generating them.
@@ -354,13 +354,13 @@ namespace NMib
 						CurUnit.m_lSortedLines.f_SetLen(CurUnit.m_nLines);
 
 						Dwarf_Addr LineAddr;
-						mint nValidLines = 0;
+						umint nValidLines = 0;
 
 						for (Dwarf_Signed iL = 0; iL < CurUnit.m_nLines; ++iL)
 						{
 							if (dwarf_lineaddr(CurUnit.m_lLines[iL], &LineAddr, &Error) == DW_DLV_OK)
 							{
-								CurUnit.m_lSortedLines[nValidLines] = { (mint)LineAddr, (mint)iL };
+								CurUnit.m_lSortedLines[nValidLines] = { (umint)LineAddr, (umint)iL };
 								++nValidLines;
 							}
 						}
@@ -591,7 +591,7 @@ namespace NMib
 			}
 
 
-			CStackTraceInfo* CSymbols::f_AcquireStackTraceInfo(mint _Address)
+			CStackTraceInfo* CSymbols::f_AcquireStackTraceInfo(umint _Address)
 			{
 	#if 1
 				Dl_info Info;
@@ -630,7 +630,7 @@ namespace NMib
 				DMibLock(mp_Lock);
 
 				CSymStr ModuleFilename;
-				mint ModuleBase = 0;
+				umint ModuleBase = 0;
 
 				// Find out which module the address is in (exe or shared lib)
 				Dl_info Info;
@@ -638,13 +638,13 @@ namespace NMib
 				if (dladdr((void*)_Address, &Info))
 				{
 					ModuleFilename = Info.dli_fname;
-					ModuleBase = reinterpret_cast<mint>(Info.dli_fbase);
+					ModuleBase = reinterpret_cast<umint>(Info.dli_fbase);
 	//				DMibTrace("dladdr name: {}\n", (Info.dli_sname ? Info.dli_sname : ""));
 				}
 				else if (dladdr((void*)&fg_FindModuleInfo, &Info))
 				{
 					ModuleFilename = Info.dli_fname;
-					ModuleBase = reinterpret_cast<mint>(Info.dli_fbase);
+					ModuleBase = reinterpret_cast<umint>(Info.dli_fbase);
 					NMemory::fg_MemClear(Info);
 				}
 

@@ -28,16 +28,16 @@ namespace NMib
 			}
 
 			template <typename tf_CCompare, typename t_CFind>
-			aint fg_BinarySearchLowerBound(mint _nItems, tf_CCompare &&_fCompare, const t_CFind &_ToFind)
+			aint fg_BinarySearchLowerBound(umint _nItems, tf_CCompare &&_fCompare, const t_CFind &_ToFind)
 			{
-				mint Len = _nItems;
+				umint Len = _nItems;
 
-				mint Low = 0;
-				mint High = Len;
+				umint Low = 0;
+				umint High = Len;
 
 				while(Low < High)
 				{
-					mint Mid = (Low + High) >> 1;
+					umint Mid = (Low + High) >> 1;
 					if (fg_CheckOrdering(_fCompare(Mid, _ToFind)) < 0)
 						Low = Mid + 1;
 					else
@@ -185,7 +185,7 @@ namespace NMib
 			}
 
 
-			bool CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
+			bool CSymbols::f_Lookup(umint _Address, CAddressInfo& _oInfo)
 			{
 				DMibLock(mp_Lock);
 
@@ -203,7 +203,7 @@ namespace NMib
 
 					aint iFoundFunc = fg_BinarySearchLowerBound(
 							mp_Header.m_nFunctions
-						,	[&](mint _FuncIndex, mint _Address) -> COrdering_Partial
+						,	[&](umint _FuncIndex, umint _Address) -> COrdering_Partial
 							{
 								CFunction const* pFunc = fp_ReadFunction(_FuncIndex, &TmpFunc);
 
@@ -236,7 +236,7 @@ namespace NMib
 
 						aint iFoundLine = fg_BinarySearchLowerBound(
 								LinesHeader.m_nLines
-							,	[&](mint _LineIndex, mint _Address) -> COrdering_Partial
+							,	[&](umint _LineIndex, umint _Address) -> COrdering_Partial
 								{
 									CLine Line;
 
@@ -287,16 +287,16 @@ namespace NMib
 			template <typename t_CVector, typename tf_CCompare, typename t_CFind>
 			aint fg_BinarySearchLowerBound(t_CVector const& _lVector, tf_CCompare &&_fCompare, const t_CFind &_ToFind, aint _nMax = -1)
 			{
-				mint Len = _lVector.f_GetLen();
+				umint Len = _lVector.f_GetLen();
 				if (_nMax >= 0)
-					Len = fg_Min(mint(_nMax), Len);
-				mint Low = 0;
-				mint High = Len;
+					Len = fg_Min(umint(_nMax), Len);
+				umint Low = 0;
+				umint High = Len;
 				typename t_CVector::CData const*pArray = _lVector.f_GetArray();
 
 				while(Low < High)
 				{
-					mint Mid = (Low + High) >> 1;
+					umint Mid = (Low + High) >> 1;
 					if (_fCompare(pArray[Mid], _ToFind))
 						Low = Mid + 1;
 					else
@@ -319,7 +319,7 @@ namespace NMib
 				NFile::CFile mp_File;
 				CMibFilePos mp_nFileBytes;
 
-				mint mp_nBufferBytes;
+				umint mp_nBufferBytes;
 				TCVector<char> mp_Buffer;
 
 				bool mp_bEOF;
@@ -334,7 +334,7 @@ namespace NMib
 					if (nToRead > (CMibFilePos)mp_Buffer.f_GetLen())
 						mp_Buffer.f_SetLen(nToRead);
 
-					mp_File.f_Read( mp_Buffer.f_GetArray(), (mint)nToRead );
+					mp_File.f_Read( mp_Buffer.f_GetArray(), (umint)nToRead );
 					mp_nBufferBytes = nToRead;
 
 					if (nToRead < CMibFilePos(EReadBufferBytes))
@@ -372,7 +372,7 @@ namespace NMib
 							fp_FillBuffer();
 						}
 
-						mint iB = 0;
+						umint iB = 0;
 						for (iB = 0
 							;iB < mp_nBufferBytes
 							;++iB)
@@ -412,11 +412,11 @@ namespace NMib
 				{
 					return _A.m_Index <=> _B.m_Index;
 				}
-				COrdering_Partial operator()(CFile const& _A, mint _B) const
+				COrdering_Partial operator()(CFile const& _A, umint _B) const
 				{
 					return _A.m_Index <=> _B;
 				}
-				COrdering_Partial operator()(mint _A, CFile const& _B) const
+				COrdering_Partial operator()(umint _A, CFile const& _B) const
 				{
 					return _A <=> _B.m_Index;
 				}
@@ -429,12 +429,12 @@ namespace NMib
 					return _A.m_Address <=> _B.m_Address;
 				}
 
-				COrdering_Partial operator()(CFunction const& _A, mint _B) const
+				COrdering_Partial operator()(CFunction const& _A, umint _B) const
 				{
 					return _A.m_Address <=> _B;
 				}
 
-				COrdering_Partial operator()(mint _A, CFunction const& _B) const
+				COrdering_Partial operator()(umint _A, CFunction const& _B) const
 				{
 					return _A <=> _B.m_Address;
 				}
@@ -446,11 +446,11 @@ namespace NMib
 				{
 					return _A.m_Address <=> _B.m_Address;
 				}
-				COrdering_Partial operator()(CLine const& _A, mint _B) const
+				COrdering_Partial operator()(CLine const& _A, umint _B) const
 				{
 					return _A.m_Address <=> _B;
 				}
-				COrdering_Partial operator()(mint _A, CLine const& _B) const
+				COrdering_Partial operator()(umint _A, CLine const& _B) const
 				{
 					return _A <=> _B.m_Address;
 				}
@@ -475,7 +475,7 @@ namespace NMib
 					CSymStr WholeLine;
 					CSymStr FirstToken;
 					TCVector<CSymStr> lErrors;
-					mint iLine = 0;
+					umint iLine = 0;
 					aint iCurFunc = -1;
 
 					while (Reader.f_ReadLine(WholeLine))
@@ -594,7 +594,7 @@ namespace NMib
 			}
 
 
-			bool CSymbols::f_Lookup(mint _Address, CAddressInfo& _oInfo)
+			bool CSymbols::f_Lookup(umint _Address, CAddressInfo& _oInfo)
 			{
 				{
 					mach_header_64 const* pHeader = (mach_header_64 const*)_dyld_get_image_header(0);

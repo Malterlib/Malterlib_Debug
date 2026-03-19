@@ -4,12 +4,12 @@
 class CTestClass
 {
 public:
-	CTestClass(mint _Value)
+	CTestClass(umint _Value)
 		: m_Value(_Value)
 	{
 	}
 
-	mint m_Value;
+	umint m_Value;
 
 	DMibListLinkDS_Link(CTestClass, m_Link);
 };
@@ -17,12 +17,12 @@ public:
 class CTestClassManyValue
 {
 public:
-	CTestClassManyValue(mint _Value)
+	CTestClassManyValue(umint _Value)
 		: m_Value(_Value)
 	{
 	}
 
-	mint m_Value;
+	umint m_Value;
 	fp32 m_Value0 = 55.55f;
 	fp32 m_Value1 = 6;
 	fp32 m_Value2 = 8;
@@ -49,14 +49,14 @@ public:
 	class CCompare
 	{
 	public:
-		inline_small const mint &operator () (CTest2 const &_Node) const
+		inline_small const umint &operator () (CTest2 const &_Node) const
 		{
 			return _Node.m_Value;
 		}
 	};
 
 	NMib::NStorage::CIntrusiveRefCount m_RefCount;
-	mint m_Value;
+	umint m_Value;
 	NMib::NIntrusive::TCAVLLink<> m_AVLLink;
 	DMibListLinkS_Link(CTest2, m_Link);
 	DMibAutoClearPtrDeclare;

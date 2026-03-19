@@ -28,11 +28,11 @@ inline_never void* fg_LookupThisFunc()
 	return pRet;
 }
 
-inline_never mint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, mint _MaxDepth)
+inline_never umint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, umint _MaxDepth)
 {
 	volatile static int Test = DMibPLine;
 	NSys::fg_Compiler_MakeActive(0, &Test);
-	volatile mint Value = NMib::NSys::fg_System_GetStackTrace(_pStack, _MaxDepth);
+	volatile umint Value = NMib::NSys::fg_System_GetStackTrace(_pStack, _MaxDepth);
 	return Value;
 }
 
@@ -72,11 +72,11 @@ public:
 			//DMibTrace("&fg_AcquireStackTraceFromHere: {}\n", (void*)&fg_AcquireStackTraceFromHere );
 
 			CMibCodeAddress Stack[64];
-			mint nStack = fg_AcquireStackTraceFromHere(Stack, 64);
+			umint nStack = fg_AcquireStackTraceFromHere(Stack, 64);
 
 			bool bFound = false;
 
-			for (mint i = 0; i < nStack; ++i)
+			for (umint i = 0; i < nStack; ++i)
 			{
 				CStackTraceInfo *pInfo = NSys::fg_Debug_AquireStackTraceInfo(Stack[i]);
 				if (pInfo)
@@ -200,7 +200,7 @@ public:
 //			Symbols.f_SetSymbolsFile("/CompiledFiles/Build/Products/Debug Inlined 10.7/Exe_Certifier.symbols");
 
 			NMib::NDebug::NPlatform::CAddressInfo Info;
-			bool bLookup = Symbols.f_Lookup((mint)&fg_LookupThisFunc, Info);
+			bool bLookup = Symbols.f_Lookup((umint)&fg_LookupThisFunc, Info);
 
 			DMibTest(DMibExpr(bLookup) == DMibExpr(true));
 
@@ -577,7 +577,7 @@ public:
 			*((void**)(&(VectorLooped[3].m_Link))) = (void*)(&(VectorLooped[1].m_Link));
 
 			IntrusiveListLooped.f_Construct();
-			for (mint i = 0; i < 4; ++i)
+			for (umint i = 0; i < 4; ++i)
 				*((void**)(&(VectorLooped[i].m_Link))) = nullptr;
 
 			CTest2 Test2(665);

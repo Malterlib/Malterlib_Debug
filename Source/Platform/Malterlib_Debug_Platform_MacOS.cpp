@@ -81,7 +81,7 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, co
 void NMib::NSys::fg_Debug_GenerateMemoryDump
 	(
 		NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
-		, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
+		, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 	)
 {
 
@@ -146,7 +146,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 {
 	auto &Symbols = NMib::NDebug::NPlatform::fg_GetSymbols();
 
-	auto &Cache = Symbols.f_GetCache((mint)_Address);
+	auto &Cache = Symbols.f_GetCache((umint)_Address);
 
 	if (Cache.m_bValidCache)
 	{
@@ -172,7 +172,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 
 	NMib::NDebug::NPlatform::CAddressInfo AddrInfo;
 
-	if (Symbols.f_Lookup((mint)_Address, AddrInfo))
+	if (Symbols.f_Lookup((umint)_Address, AddrInfo))
 	{
 		if (DLResult)
 		{
@@ -238,7 +238,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 
 void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 {
-	if ((mint)_pInfo->m_pContext == 2)
+	if ((umint)_pInfo->m_pContext == 2)
 	{
 #ifdef _LIBCPP_BUILD_STATIC
 		nontracked_free((void *)_pInfo->m_pFunctionName);

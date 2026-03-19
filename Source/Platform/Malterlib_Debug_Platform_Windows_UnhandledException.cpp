@@ -92,7 +92,7 @@ namespace NMib
 						DWORD nEnum;
 						if (pEnumProcesses(ProcessIDs.f_GetArray(), 65536, &nEnum))
 						{
-							for (mint i = 0; i < nEnum; ++i)
+							for (umint i = 0; i < nEnum; ++i)
 							{
 								HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ProcessIDs[i]);
 								if (hProcess)
@@ -144,8 +144,8 @@ namespace NMib
 				Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Module" << "Start" << "End" << "Size";
 				if (EnumProcessModules(hProcess, Modules.f_GetArray(), Modules.f_GetLen() * sizeof(HMODULE), &NeededBytes))
 				{
-					mint nModules = NeededBytes / sizeof(HMODULE);
-					for (mint i = 0; i < nModules; ++i)
+					umint nModules = NeededBytes / sizeof(HMODULE);
+					for (umint i = 0; i < nModules; ++i)
 					{
 						HMODULE hModule = Modules[i];
 						NStr::CWStrNonTracked ModuleName;
@@ -164,7 +164,7 @@ namespace NMib
 								+= NStr::CStrNonTracked::CFormat(pFormatStr)
 								<< ModuleName
 								<< NStr::CFStr64(NStr::CFStr64::CFormat("0x{}") << ModuleInfo.lpBaseOfDll)
-								<< NStr::CFStr64(NStr::CFStr64::CFormat("0x{}") << (void *)((mint)ModuleInfo.lpBaseOfDll + ModuleInfo.SizeOfImage))
+								<< NStr::CFStr64(NStr::CFStr64::CFormat("0x{}") << (void *)((umint)ModuleInfo.lpBaseOfDll + ModuleInfo.SizeOfImage))
 								<< NStr::CFStr64(NStr::CFStr64::CFormat("{}") << ModuleInfo.SizeOfImage)
 							;
 						}
@@ -193,7 +193,7 @@ namespace NMib
 				auto fl_GenerateException
 					= [&_Message, &_ExtraLog, _pExceptionInfo, _pGeneratedLogs, _bDisplayGUI] (NThread::CThreadObjectNonTracked *_pThread) -> aint
 					{
-						mint nCache = EWindowCache;
+						umint nCache = EWindowCache;
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
 
 						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>(NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("MalterlibCrashDumpDir")));
@@ -348,11 +348,11 @@ namespace NMib
 							{
 								if (_pExceptionInfo->ExceptionRecord->ExceptionInformation[0])
 									Code = NStr::CStrNonTracked::CFormat("Access violation trying to write to address: 0x{nfh,sf0,sj*}") <<
-									((mint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(mint) * 2)
+									((umint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(umint) * 2)
 									;
 								else
 									Code = NStr::CStrNonTracked::CFormat("Access violation trying to read to address: 0x{nfh,sf0,sj*}") <<
-									((mint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(mint) * 2)
+									((umint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(umint) * 2)
 									;
 
 							}
@@ -417,13 +417,13 @@ namespace NMib
 
 						if (pAddressInfo)
 						{
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*} ({}!{})\r\n\r\n") << ((mint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(mint) * 2)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*} ({}!{})\r\n\r\n") << ((umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(umint) * 2)
 									<< (pAddressInfo->m_pModuleName) << (pAddressInfo->m_pFunctionName);
 							SubSystem.f_ReleaseStackTraceInfo(pAddressInfo);
 						}
 						else
 						{
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*1}\r\n\r\n") << ((mint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(mint) * 2);
+							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*1}\r\n\r\n") << ((umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(umint) * 2);
 						}
 
 						//
@@ -592,12 +592,12 @@ namespace NMib
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Debug registers:\r\n"
 								"Dr0=0x{} Dr1=0x{} Dr2=0x{}\r\n"
 								"Dr3=0x{} Dr6=0x{} Dr7=0x{}\r\n\r\n")
-								<< ((mint)_pExceptionInfo->ContextRecord->Dr0)
-								<< ((mint)_pExceptionInfo->ContextRecord->Dr1)
-								<< ((mint)_pExceptionInfo->ContextRecord->Dr2)
-								<< ((mint)_pExceptionInfo->ContextRecord->Dr3)
-								<< ((mint)_pExceptionInfo->ContextRecord->Dr6)
-								<< ((mint)_pExceptionInfo->ContextRecord->Dr7)
+								<< ((umint)_pExceptionInfo->ContextRecord->Dr0)
+								<< ((umint)_pExceptionInfo->ContextRecord->Dr1)
+								<< ((umint)_pExceptionInfo->ContextRecord->Dr2)
+								<< ((umint)_pExceptionInfo->ContextRecord->Dr3)
+								<< ((umint)_pExceptionInfo->ContextRecord->Dr6)
+								<< ((umint)_pExceptionInfo->ContextRecord->Dr7)
 							;
 				#endif
 						}
@@ -608,10 +608,10 @@ namespace NMib
 							ExceptionInfo += NStr::CStrNonTracked::CFormat("Segment registers:\r\n"
 								"SegGs=0x{} SegFs=0x{}\r\n"
 								"SegEs=0x{} SegDs=0x{}\r\n\r\n")
-								<< ((mint)_pExceptionInfo->ContextRecord->SegGs)
-								<< ((mint)_pExceptionInfo->ContextRecord->SegFs)
-								<< ((mint)_pExceptionInfo->ContextRecord->SegEs)
-								<< ((mint)_pExceptionInfo->ContextRecord->SegDs)
+								<< ((umint)_pExceptionInfo->ContextRecord->SegGs)
+								<< ((umint)_pExceptionInfo->ContextRecord->SegFs)
+								<< ((umint)_pExceptionInfo->ContextRecord->SegEs)
+								<< ((umint)_pExceptionInfo->ContextRecord->SegDs)
 								;
 						}
 
@@ -626,10 +626,10 @@ namespace NMib
 								<< ((uint16)FloatSaveArea.ControlWord&0xffff)
 								<< ((uint16)FloatSaveArea.StatusWord&0xffff)
 								<< ((uint64)FloatSaveArea.TagWord&0xffff)
-								<< ((mint)FloatSaveArea.ErrorOffset)
-								<< ((mint)FloatSaveArea.ErrorSelector)
-								<< ((mint)FloatSaveArea.DataOffset)
-								<< ((mint)FloatSaveArea.DataSelector)
+								<< ((umint)FloatSaveArea.ErrorOffset)
+								<< ((umint)FloatSaveArea.ErrorSelector)
+								<< ((umint)FloatSaveArea.DataOffset)
+								<< ((umint)FloatSaveArea.DataSelector)
 								;
 
 							ExceptionInfo += NStr::CStrNonTracked::CFormat(
@@ -698,7 +698,7 @@ namespace NMib
 							;
 							ExceptionInfo += "Vector registers:\r\n";
 
-							mint iRegister = 0;
+							umint iRegister = 0;
 							for (auto &Register : _pExceptionInfo->ContextRecord->V)
 							{
 								ExceptionInfo += NStr::CStrNonTracked::CFormat
@@ -753,7 +753,7 @@ namespace NMib
 									"Vec24=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Vec25=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
 									"\r\n"
 								)
-								<< (void *)(mint)_pExceptionInfo->ContextRecord->FltSave.MxCsr
+								<< (void *)(umint)_pExceptionInfo->ContextRecord->FltSave.MxCsr
 								<< _pExceptionInfo->ContextRecord->FltSave.XmmRegisters[0].High
 								<< _pExceptionInfo->ContextRecord->FltSave.XmmRegisters[0].Low
 								<< _pExceptionInfo->ContextRecord->FltSave.XmmRegisters[1].High
@@ -849,8 +849,8 @@ namespace NMib
 						//
 						{
 							CUndocumentedTEB *pTEB = fg_GetTEB();
-							mint StackStart = (mint)pTEB->Tib.StackBase;
-							mint StackEnd = (mint)pTEB->Tib.StackLimit;
+							umint StackStart = (umint)pTEB->Tib.StackBase;
+							umint StackEnd = (umint)pTEB->Tib.StackLimit;
 
 
 #ifndef DArchitecture_arm64
@@ -859,22 +859,22 @@ namespace NMib
 							try
 							{
 				#ifdef DArchitecture_x64
-								mint StackFrame = _pExceptionInfo->ContextRecord->Rbp;
+								umint StackFrame = _pExceptionInfo->ContextRecord->Rbp;
 				#else
-								mint StackFrame = _pExceptionInfo->ContextRecord->Ebp;
+								umint StackFrame = _pExceptionInfo->ContextRecord->Ebp;
 				#endif
-								mint LastCode = (mint)_pExceptionInfo->ExceptionRecord->ExceptionAddress;
+								umint LastCode = (umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress;
 								while (iMaxDepth)
 								{
-									if (!NMib::NPlatform::fg_IsGoodStackPtr((void *)StackFrame, sizeof(mint) * 2, StackStart, StackEnd))
+									if (!NMib::NPlatform::fg_IsGoodStackPtr((void *)StackFrame, sizeof(umint) * 2, StackStart, StackEnd))
 										break;
-									mint CodePtr = *((mint *)(StackFrame + sizeof(mint)));
+									umint CodePtr = *((umint *)(StackFrame + sizeof(umint)));
 
 									CStackTraceInfo *pAddressInfo = _pThread ? SubSystem.f_AquireStackTraceInfo((CMibCodeAddress)LastCode) : nullptr;
 
 									if (pAddressInfo)
 									{
-										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*} {}!{}\r\n{}:{}\r\n") << (mint)LastCode << sizeof(mint) * 2
+										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*} {}!{}\r\n{}:{}\r\n") << (umint)LastCode << sizeof(umint) * 2
 											<< pAddressInfo->m_pModuleName << pAddressInfo->m_pFunctionName
 											<< pAddressInfo->m_pSourceFileName << pAddressInfo->m_SourceLine
 											;
@@ -882,14 +882,14 @@ namespace NMib
 									}
 									else
 									{
-										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}\r\n") << (LastCode) << (sizeof(mint) * 2);
+										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}\r\n") << (LastCode) << (sizeof(umint) * 2);
 									}
-									ExceptionInfo += NStr::CStrNonTracked::CFormat("StackFrame: 0x{nfh,sf0,sj*1}\r\n") << (StackFrame) << (sizeof(mint) * 2);
+									ExceptionInfo += NStr::CStrNonTracked::CFormat("StackFrame: 0x{nfh,sf0,sj*1}\r\n") << (StackFrame) << (sizeof(umint) * 2);
 									ExceptionInfo += "\r\n";
 
 									LastCode = CodePtr;
 
-									StackFrame = *((mint *)(StackFrame));
+									StackFrame = *((umint *)(StackFrame));
 									--iMaxDepth;
 								}
 							}
@@ -908,7 +908,7 @@ namespace NMib
 								NStr::CStrNonTracked Stack;
 								int iRowSize = 32;
 								int iRow = iRowSize;
-								Stack += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}: ") << (StackEnd) << (sizeof(mint) * 2);
+								Stack += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}: ") << (StackEnd) << (sizeof(umint) * 2);
 								while (StackEnd < StackStart)
 								{
 									int iMax = fg_Min((int)StackStart - (int)StackEnd, iRow);
@@ -941,7 +941,7 @@ namespace NMib
 									{
 										iRow = iRowSize;
 										Stack += "\r\n";
-										Stack += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}: ") << (StackEnd) << (sizeof(mint) * 2);
+										Stack += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}: ") << (StackEnd) << (sizeof(umint) * 2);
 									}
 								}
 
@@ -979,14 +979,14 @@ namespace NMib
 							ProgramName = "The program";
 
 						NStr::CStrNonTracked ProgramNameCopy = ProgramName;
-						ProgramName = NStr::CStrNonTracked::CFormat("{} ({})") << ProgramNameCopy << (mint)GetCurrentProcessId();
+						ProgramName = NStr::CStrNonTracked::CFormat("{} ({})") << ProgramNameCopy << (umint)GetCurrentProcessId();
 						NStr::CStrNonTracked SupportEmail = fg_GetSys()->f_GetSupportEmailNonTracked();
 						bool bDaemon = fg_GetSys()->f_GetRunningAsDaemon();
 
 						[[maybe_unused]] bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
 						if (!bDaemon)
 						{
-							for (mint i = 0; i < nCache; ++i)
+							for (umint i = 0; i < nCache; ++i)
 							{
 								if (SubSystem.m_CacheWindows[i])
 								{

@@ -8,7 +8,7 @@
 namespace NMib::NDebug::NRemoteDebugger
 {
 	/*
-	template <typename t_CType, mint t_GrowSize = 512>
+	template <typename t_CType, umint t_GrowSize = 512>
 	class TCRemoteDebuggerPool : public NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>
 	{
 		using CSuper = NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>;
@@ -42,14 +42,14 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	};
 
-	template <typename t_CType, mint t_GrowSize = 512>
+	template <typename t_CType, umint t_GrowSize = 512>
 	class TCRemoteDebuggerAllocator : public NMemory::TCStaticPoolAllocator<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>
 	{
 	public:
 	};
 	*/
 
-	template <typename t_CType, mint t_GrowSize = 512>
+	template <typename t_CType, umint t_GrowSize = 512>
 	class TCRemoteDebuggerPool
 	{
 		using CSuper = NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>;
@@ -166,7 +166,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			DMibListLinkDS_Link(CConnection::CDataBlock, m_Link);
 
 			template<typename t_CPacket>
-			void f_Fill(EChannel _Channel, EPacket _PacketID, t_CPacket const& _Packet, TCStackTrace<mint> const* _pTrace)
+			void f_Fill(EChannel _Channel, EPacket _PacketID, t_CPacket const& _Packet, TCStackTrace<umint> const* _pTrace)
 			{
 				m_Channel = _Channel;
 
@@ -178,7 +178,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 				Header.f_Write(Stream);
 
-				mint nHeaderBytes = Stream.f_GetPosition();
+				umint nHeaderBytes = Stream.f_GetPosition();
 
 				_Packet.f_Write(Stream);
 				if (_pTrace)
@@ -253,7 +253,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		void f_SendDataBlock(CDataBlock* _pBlock);
 
 		template<typename t_CPacket>
-		void f_SendPacket(EChannel _Channel, EPacket _PacketID, t_CPacket const& _Packet, TCStackTrace<mint> const* _pTrace = nullptr)
+		void f_SendPacket(EChannel _Channel, EPacket _PacketID, t_CPacket const& _Packet, TCStackTrace<umint> const* _pTrace = nullptr)
 		{
 			CDataBlock* pBlock = f_GetDataBlock();
 			pBlock->f_Fill(_Channel, _PacketID, _Packet, _pTrace);
@@ -349,55 +349,55 @@ namespace NMib::NDebug::NRemoteDebugger
 		CReportMemoryToRemote(CClient* _pClient, bool _bStackTrace);
 		virtual ~CReportMemoryToRemote();
 
-		void f_AllocatorName(mint _MemoryAllocator, ch8 const* _pAllocatorName) override;
-		void f_AllocatorDelete(mint _MemoryAllocator) override;
+		void f_AllocatorName(umint _MemoryAllocator, ch8 const* _pAllocatorName) override;
+		void f_AllocatorDelete(umint _MemoryAllocator) override;
 
-		void f_ScopeEnter(mint _MemoryAllocator) override;
-		void f_ScopeExit(mint _MemoryAllocator) override;
+		void f_ScopeEnter(umint _MemoryAllocator) override;
+		void f_ScopeExit(umint _MemoryAllocator) override;
 
 		void f_Alloc
 			(
-				mint _MemoryAllocator
-				, mint _Address
-				, mint _RequestedAlignment
-				, mint _RequestedSize
-				, mint _ReturnedSize
+				umint _MemoryAllocator
+				, umint _Address
+				, umint _RequestedAlignment
+				, umint _RequestedSize
+				, umint _ReturnedSize
 				, fp32 _nBytesOverhead
 				, void *_pAllocationInfo
 			) override
 		;
 		void f_Resize
 			(
-				mint _MemoryAllocator
-				, mint _OldAddress
-				, mint _OldSize
+				umint _MemoryAllocator
+				, umint _OldAddress
+				, umint _OldSize
 				, void const *_pOldAllocationInfo
-				, mint _Address
-				, mint _RequestedAlignment
-				, mint _RequestedSize
-				, mint _ReturnedSize
+				, umint _Address
+				, umint _RequestedAlignment
+				, umint _RequestedSize
+				, umint _ReturnedSize
 				, fp32 _nBytesOverhead
 				, void *_pAllocationInfo
 			) override
 		;
 		void f_Realloc
 			(
-				mint _MemoryAllocator
-				, mint _OldAddress
-				, mint _OldSize
+				umint _MemoryAllocator
+				, umint _OldAddress
+				, umint _OldSize
 				, void const *_pOldAllocationInfo
-				, mint _Address
-				, mint _RequestedAlignment
-				, mint _RequestedSize
-				, mint _ReturnedSize
+				, umint _Address
+				, umint _RequestedAlignment
+				, umint _RequestedSize
+				, umint _ReturnedSize
 				, fp32 _nBytesOverhead
 				, void *_pAllocationInfo
 			) override
 		;
-		void f_Free(mint _MemoryAllocator, mint _Address, mint _Size, void const *_pAllocationInfo) override;
-		void f_GetSize(mint _MemoryAllocator, mint _Address, mint _Size, void const *_pAllocationInfo) override;
-		void f_Protect(mint _MemoryAllocator, mint _Address, mint _Size, uaint _Protect) override;
-		void f_Commit(mint _MemoryAllocator, mint _Address, mint _Size) override;
-		void f_Decommit(mint _MemoryAllocator, mint _Address, mint _Size) override;
+		void f_Free(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo) override;
+		void f_GetSize(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo) override;
+		void f_Protect(umint _MemoryAllocator, umint _Address, umint _Size, uaint _Protect) override;
+		void f_Commit(umint _MemoryAllocator, umint _Address, umint _Size) override;
+		void f_Decommit(umint _MemoryAllocator, umint _Address, umint _Size) override;
 	};
 }

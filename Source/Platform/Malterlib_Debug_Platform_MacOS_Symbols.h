@@ -45,9 +45,9 @@ namespace NMib
 
 			struct CAddressInfo
 			{
-				mint m_Address;
+				umint m_Address;
 				CSymStr m_File;
-				mint m_Line;
+				umint m_Line;
 				CSymStr m_Function;
 			};
 
@@ -130,7 +130,7 @@ namespace NMib
 				};
 
 			private:
-				mint mp_AddressOffset;
+				umint mp_AddressOffset;
 
 				NMib::NThread::CLowLevelLock mp_Lock;
 				CSymStr mp_SymbolsFilename;
@@ -138,7 +138,7 @@ namespace NMib
 				void *mp_pSymbols;
 
 				NThread::CLowLevelLock mp_CacheLock;
-				NContainer::TCMap<mint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
+				NContainer::TCMap<umint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
 
 			private:
 
@@ -160,9 +160,9 @@ namespace NMib
 
 				void f_SetSymbolsFile(char const* _pFilename);
 
-				bool f_Lookup(mint _Address, CAddressInfo& _oInfo);
+				bool f_Lookup(umint _Address, CAddressInfo& _oInfo);
 
-				CAddressInfoCache &f_GetCache(mint _Address)
+				CAddressInfoCache &f_GetCache(umint _Address)
 				{
 					DMibLock(mp_CacheLock);
 					return mp_Cache[_Address];
@@ -180,7 +180,7 @@ namespace NMib
 
 			struct CFile
 			{
-				mint m_Index;
+				umint m_Index;
 				CSymStr m_Name;
 
 				CFile()
@@ -203,17 +203,17 @@ namespace NMib
 
 			struct CLine
 			{
-				mint m_Address;
-				mint m_Size;
-				mint m_Line;
-				mint m_File;
+				umint m_Address;
+				umint m_Size;
+				umint m_Line;
+				umint m_File;
 			};
 
 			struct CFunction
 			{
-				mint m_Address;
-				mint m_Size;
-				mint m_StackParamSize;
+				umint m_Address;
+				umint m_Size;
+				umint m_StackParamSize;
 				CSymStr m_Name;
 
 				TCVector<CLine> m_lLines;	// Sorted by CLine::m_Address
@@ -246,9 +246,9 @@ namespace NMib
 
 			struct CAddressInfo
 			{
-				mint m_Address;
+				umint m_Address;
 				CSymStr m_File;
-				mint m_Line;
+				umint m_Line;
 				CSymStr m_Function;
 			};
 
@@ -267,7 +267,7 @@ namespace NMib
 					bool f_Load(char const* _pFilename);
 					void f_Clear();
 
-					bool f_Lookup(mint _Address, CAddressInfo& _oInfo);
+					bool f_Lookup(umint _Address, CAddressInfo& _oInfo);
 			};
 			*/
 		}

@@ -36,7 +36,7 @@ namespace NMib
 				void f_GenerateMemoryDump
 					(
 						NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
-						, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
+						, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 					)
 				;
 
@@ -60,7 +60,7 @@ namespace NMib
 				void f_UninstallExceptionFilterCallback();
 				void f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination);
 				void f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination);
-				void f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, mint _MaxLen);
+				void f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen);
 				CStackTraceInfo *f_AquireStackTraceInfo(CMibCodeAddress _Address);
 				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 

@@ -40,7 +40,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			m_StackTraceLevels = nLevels;
 
 			uint64 CurValue;
-			for (mint iL = 0; iL < nLevels; ++iL)
+			for (umint iL = 0; iL < nLevels; ++iL)
 			{
 				_Stream >> CurValue;
 				m_lStack[iL] = CurValue;
@@ -52,7 +52,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		{
 			_Stream << (uint8)m_StackTraceLevels.f_Get();
 
-			for (mint iL = 0; iL < m_StackTraceLevels; ++iL)
+			for (umint iL = 0; iL < m_StackTraceLevels; ++iL)
 			{
 				_Stream << (uint64)m_lStack[iL];
 			}

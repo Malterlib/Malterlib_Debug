@@ -28,10 +28,10 @@ namespace NMib::NDebug::NRemoteDebugger
 				{
 					StackTrace.f_Read(Stream);
 					// We could (should?) do this reversal elsewhere.
-					mint nLevels = StackTrace.m_StackTraceLevels;
-					mint nLevelsSubOne = nLevels - 1;
-					mint Half = nLevels >> 1;
-					for (mint iL = 0; iL < Half; ++iL)
+					umint nLevels = StackTrace.m_StackTraceLevels;
+					umint nLevelsSubOne = nLevels - 1;
+					umint Half = nLevels >> 1;
+					for (umint iL = 0; iL < Half; ++iL)
 					{
 						fg_Swap(StackTrace.m_lStack[iL], StackTrace.m_lStack[nLevelsSubOne - iL] );
 					}
@@ -327,7 +327,7 @@ namespace NMib::NDebug::NRemoteDebugger
 	}
 
 
-	void CReportMemoryToRemote::f_AllocatorName(mint _MemoryAllocator, ch8 const* _pAllocatorName)
+	void CReportMemoryToRemote::f_AllocatorName(umint _MemoryAllocator, ch8 const* _pAllocatorName)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -340,7 +340,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _pAllocatorName
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -350,7 +350,7 @@ namespace NMib::NDebug::NRemoteDebugger
 								);
 	}
 
-	void CReportMemoryToRemote::f_AllocatorDelete(mint _MemoryAllocator)
+	void CReportMemoryToRemote::f_AllocatorDelete(umint _MemoryAllocator)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -362,7 +362,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _MemoryAllocator
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -373,7 +373,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	}
 
-	void CReportMemoryToRemote::f_ScopeEnter(mint _MemoryAllocator)
+	void CReportMemoryToRemote::f_ScopeEnter(umint _MemoryAllocator)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -385,7 +385,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _MemoryAllocator
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -395,7 +395,7 @@ namespace NMib::NDebug::NRemoteDebugger
 								);
 	}
 
-	void CReportMemoryToRemote::f_ScopeExit(mint _MemoryAllocator)
+	void CReportMemoryToRemote::f_ScopeExit(umint _MemoryAllocator)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -407,7 +407,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _MemoryAllocator
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -420,11 +420,11 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CReportMemoryToRemote::f_Alloc
 		(
-			mint _MemoryAllocator
-			, mint _Address
-			, mint _RequestedAlignment
-			, mint _RequestedSize
-			, mint _ReturnedSize
+			umint _MemoryAllocator
+			, umint _Address
+			, umint _RequestedAlignment
+			, umint _RequestedSize
+			, umint _ReturnedSize
 			, fp32 _nBytesOverhead
 			, void *_pAllocationInfo
 		)
@@ -444,7 +444,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _nBytesOverhead
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -456,14 +456,14 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CReportMemoryToRemote::f_Resize
 		(
-			  mint _MemoryAllocator
-			, mint _OldAddress
-			, mint _OldSize
+			  umint _MemoryAllocator
+			, umint _OldAddress
+			, umint _OldSize
 			, void const *_pOldAllocationInfo
-			, mint _Address
-			, mint _RequestedAlignment
-			, mint _RequestedSize
-			, mint _ReturnedSize
+			, umint _Address
+			, umint _RequestedAlignment
+			, umint _RequestedSize
+			, umint _ReturnedSize
 			, fp32 _nBytesOverhead
 			, void *_pAllocationInfo
 		)
@@ -484,7 +484,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _nBytesOverhead
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -495,14 +495,14 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	void CReportMemoryToRemote::f_Realloc
 		(
-			mint _MemoryAllocator
-			, mint _OldAddress
-			, mint _OldSize
+			umint _MemoryAllocator
+			, umint _OldAddress
+			, umint _OldSize
 			, void const *_pOldAllocationInfo
-			, mint _Address
-			, mint _RequestedAlignment
-			, mint _RequestedSize
-			, mint _ReturnedSize
+			, umint _Address
+			, umint _RequestedAlignment
+			, umint _RequestedSize
+			, umint _ReturnedSize
 			, fp32 _nBytesOverhead
 			, void *_pAllocationInfo
 		)
@@ -523,7 +523,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _nBytesOverhead
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -533,7 +533,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	}
 
-	void CReportMemoryToRemote::f_Free(mint _MemoryAllocator, mint _Address, mint _Size, void const *_pAllocationInfo)
+	void CReportMemoryToRemote::f_Free(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -546,7 +546,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _Address
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -556,7 +556,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	}
 
-	void CReportMemoryToRemote::f_GetSize(mint _MemoryAllocator, mint _Address, mint _Size, void const *_pAllocationInfo)
+	void CReportMemoryToRemote::f_GetSize(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -570,7 +570,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _Size
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -580,7 +580,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	}
 
-	void CReportMemoryToRemote::f_Protect(mint _MemoryAllocator, mint _Address, mint _Size, uaint _Protect)
+	void CReportMemoryToRemote::f_Protect(umint _MemoryAllocator, umint _Address, umint _Size, uaint _Protect)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -595,7 +595,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _Protect
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -605,7 +605,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	}
 
-	void CReportMemoryToRemote::f_Commit(mint _MemoryAllocator, mint _Address, mint _Size)
+	void CReportMemoryToRemote::f_Commit(umint _MemoryAllocator, umint _Address, umint _Size)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -619,7 +619,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _Size
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
@@ -629,7 +629,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	}
 
-	void CReportMemoryToRemote::f_Decommit(mint _MemoryAllocator, mint _Address, mint _Size)
+	void CReportMemoryToRemote::f_Decommit(umint _MemoryAllocator, umint _Address, umint _Size)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
@@ -643,7 +643,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			, _Size
 		};
 
-		TCStackTrace<mint> Trace;
+		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 

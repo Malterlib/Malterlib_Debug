@@ -57,7 +57,7 @@ namespace NMib
 				CSymbols();
 				~CSymbols();
 
-				CStackTraceInfo* f_AcquireStackTraceInfo(mint _Address);
+				CStackTraceInfo* f_AcquireStackTraceInfo(umint _Address);
 				void f_ReleaseStackTraceInfo(CStackTraceInfo* _pInfo);
 			};
 

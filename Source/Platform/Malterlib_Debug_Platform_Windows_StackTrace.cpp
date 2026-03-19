@@ -19,7 +19,7 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-			static constexpr mint gc_SymbolSize = sizeof(IMAGEHLP_SYMBOL64) + 4096;
+			static constexpr umint gc_SymbolSize = sizeof(IMAGEHLP_SYMBOL64) + 4096;
 
 			CStackTraceContext::CStackTraceContext()
 			{
@@ -287,7 +287,7 @@ namespace NMib
 				_Destination = Dest;
 			}
 
-			void CStackTraceContext::f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, mint _MaxLen)
+			void CStackTraceContext::f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen)
 			{
 				if (!m_bInitializedDll)
 				{
@@ -307,7 +307,7 @@ namespace NMib
 		#ifndef DArchitecture_x64
 				Flags |= UNDNAME_32_BIT_DECODE;
 		#endif
-				mint nChars = UnDecorateSymbolName(_pName, _pDestination, _MaxLen, Flags);
+				umint nChars = UnDecorateSymbolName(_pName, _pDestination, _MaxLen, Flags);
 				if (!nChars)
 				{
 					[[maybe_unused]] HRESULT LastError = GetLastError();
@@ -315,7 +315,7 @@ namespace NMib
 				}
 			}
 
-			CStackTraceContext::CLocalStackTraceInfo *CStackTraceContext::f_AquireStackTraceInfo(mint _Address)
+			CStackTraceContext::CLocalStackTraceInfo *CStackTraceContext::f_AquireStackTraceInfo(umint _Address)
 			{
 				DMibLockTyped(NThread::CMutual, m_Lock);
 

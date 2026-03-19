@@ -266,7 +266,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			mp_ConnectionState.f_Store(EState_Connected);
 		}
 
-		mint iHeaderPos = 0;
+		umint iHeaderPos = 0;
 		CPacketHeader Header;
 		CPacket *pInPacket = fp_GetPacket();
 		auto Cleanup
@@ -278,9 +278,9 @@ namespace NMib::NDebug::NRemoteDebugger
 				}
 			)
 		;
-		mint iDataPos;
+		umint iDataPos;
 
-		mint iCurSendingPos = 0;
+		umint iCurSendingPos = 0;
 		CDataBlock* pCurSending = nullptr;
 
 		bool bSendStuffed = false;
@@ -319,12 +319,12 @@ namespace NMib::NDebug::NRemoteDebugger
 				if (SocketState & ENetTCPState_Read)
 				{
 					bool bReadStuffed = false;
-					mint nUnreported = 0;
+					umint nUnreported = 0;
 					do
 					{
 						if (iHeaderPos < sizeof(CPacketHeader))
 						{ // Reading header
-							mint nToRead = sizeof(CPacketHeader) - iHeaderPos;
+							umint nToRead = sizeof(CPacketHeader) - iHeaderPos;
 							iHeaderPos += mp_Socket.f_Receive( ((uint8*)&Header) + iHeaderPos, nToRead);
 
 							if (iHeaderPos == sizeof(CPacketHeader))
@@ -357,9 +357,9 @@ namespace NMib::NDebug::NRemoteDebugger
 
 						if (iHeaderPos == sizeof(CPacketHeader))
 						{ // Reading data
-							mint nToRead = pInPacket->m_Data.f_GetLen() - iDataPos;
+							umint nToRead = pInPacket->m_Data.f_GetLen() - iDataPos;
 
-							mint nRead = mp_Socket.f_Receive(&pInPacket->m_Data[iDataPos], nToRead);
+							umint nRead = mp_Socket.f_Receive(&pInPacket->m_Data[iDataPos], nToRead);
 							iDataPos += nRead;
 
 							if (iDataPos == pInPacket->m_Data.f_GetLen())
@@ -417,8 +417,8 @@ namespace NMib::NDebug::NRemoteDebugger
 								break;
 						}
 
-						mint nToSend = pCurSending->m_Data.f_GetLen() - iCurSendingPos;
-						mint nSent = mp_Socket.f_Send(&pCurSending->m_Data[iCurSendingPos], nToSend);
+						umint nToSend = pCurSending->m_Data.f_GetLen() - iCurSendingPos;
+						umint nSent = mp_Socket.f_Send(&pCurSending->m_Data[iCurSendingPos], nToSend);
 
 						iCurSendingPos += nSent;
 

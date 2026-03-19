@@ -45,7 +45,7 @@ namespace NMib
 			{
 				if (!g_bIsDll)
 				{
-					for (mint i = 0; i < EWindowCache; ++i)
+					for (umint i = 0; i < EWindowCache; ++i)
 					{
 						if (!m_CacheWindows[i])
 							m_CacheWindows[i] = CreateWindowA("MalterlibCrashDumpWindowCache", "MalterlibCrashDumpWindowCache", 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);
@@ -67,13 +67,13 @@ namespace NMib
 			{
 			public:
 				NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& m_Locations;
-				NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& m_Sizes;
-				mint m_iCurrentLocation;
+				NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const& m_Sizes;
+				umint m_iCurrentLocation;
 
 				CExceptionMemoryData
 					(
 						NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
-						, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
+						, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 					)
 					: m_Locations(_Locations)
 					, m_Sizes(_Sizes)
@@ -93,7 +93,7 @@ namespace NMib
 			void CSubSystem_Debug_Platform_Windows::f_GenerateMemoryDump
 				(
 					NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
-					, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
+					, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
 				)
 			{
 				CExceptionMemoryData Data(_Locations, _Sizes);

@@ -52,7 +52,7 @@ namespace NMib
 				WndClass.hInstance = g_hDllInstance;
 				RegisterClassA(&WndClass);
 
-				for (mint i = 0; i < EWindowCache; ++i)
+				for (umint i = 0; i < EWindowCache; ++i)
 					m_CacheWindows[i] = nullptr;
 
 				auto BuildMetadata = NSys::fg_GetBuildMetadata();
@@ -74,7 +74,7 @@ namespace NMib
 
 				auto &OutTags = Metadata["Tags"].f_Array();
 
-				for (mint iTag = 0; iTag < BuildMetadata.m_nTags; ++iTag)
+				for (umint iTag = 0; iTag < BuildMetadata.m_nTags; ++iTag)
 					OutTags.f_Insert(BuildMetadata.m_pTags[iTag]);
 
 				m_DumpMetadataTemplate = Metadata.f_ToString();
@@ -83,7 +83,7 @@ namespace NMib
 			CSubSystem_Debug_Platform_Windows::~CSubSystem_Debug_Platform_Windows()
 			{
 				f_UninstallExceptionFilterCallback();
-				for (mint i = 0; i < EWindowCache; ++i)
+				for (umint i = 0; i < EWindowCache; ++i)
 				{
 					if (m_CacheWindows[i])
 					{
@@ -174,14 +174,14 @@ namespace NMib
 				return m_StackTrace.f_UndecorateName(_pName, _Destination);
 			}
 
-			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, mint _MaxLen)
+			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen)
 			{
 				return m_StackTrace.f_UndecorateName(_pName, _pDestination, _MaxLen);
 			}
 
 			CStackTraceInfo *CSubSystem_Debug_Platform_Windows::f_AquireStackTraceInfo(CMibCodeAddress _Address)
 			{
-				return m_StackTrace.f_AquireStackTraceInfo((mint)_Address);
+				return m_StackTrace.f_AquireStackTraceInfo((umint)_Address);
 			}
 
 			void CSubSystem_Debug_Platform_Windows::f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
@@ -346,7 +346,7 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, co
 void NMib::NSys::fg_Debug_GenerateMemoryDump
 	(
 		NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
-		, NMib::NContainer::TCVector<mint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
+		, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 	)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
@@ -497,7 +497,7 @@ void NMib::NSys::fg_Debug_UndecorateName(const ch8 *_pName, NMib::NStr::CStrNonT
 	return SubSystem.f_UndecorateName(_pName, _Destination);
 }
 
-void NMib::NSys::fg_Debug_UndecorateName(const ch8 *_pName, ch8 *_pDestination, mint _MaxLen)
+void NMib::NSys::fg_Debug_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_UndecorateName(_pName, _pDestination, _MaxLen);

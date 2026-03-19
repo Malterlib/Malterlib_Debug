@@ -20,8 +20,8 @@ namespace NMib
 
 			struct CRange
 			{
-				mint m_LowPC;
-				mint m_HighPC;
+				umint m_LowPC;
+				umint m_HighPC;
 
 				CRange() {}
 				CRange(CRange const& _ToCopy)
@@ -32,25 +32,25 @@ namespace NMib
 					: m_LowPC(_ToMove.m_LowPC)
 					, m_HighPC(_ToMove.m_HighPC)
 				{}
-				CRange(mint _Low, mint _High)
+				CRange(umint _Low, umint _High)
 					: m_LowPC(_Low)
 					, m_HighPC(_High)
 				{}
 
-				bool Contains(mint _Value) const
+				bool Contains(umint _Value) const
 				{ return (_Value >= m_LowPC) && (_Value < m_HighPC); }
 			};
 
 			struct CLineEntry
 			{
-				mint m_PC;
-				mint m_iLine;		// Index in unit list.
+				umint m_PC;
+				umint m_iLine;		// Index in unit list.
 			};
 
 			struct CFunction
 			{
-				mint m_LowPC;
-				mint m_HighPC;
+				umint m_LowPC;
+				umint m_HighPC;
 				char const* m_pName; // Memory owned by libdwarf
 			};
 
@@ -107,10 +107,10 @@ namespace NMib
 				NContainer::TCVector<CUnit, NMemory::CAllocator_NonTrackedHeap> mp_lUnits;
 
 				CSymStr mp_ModuleFilename;
-				mint mp_BaseAddress;
+				umint mp_BaseAddress;
 
-				Dwarf_Signed fp_LookupLineInUnit(mint _Address, CUnit const& _Unit) const;
-				CFunction const* fp_LookupFunctionInUnit(mint _Address, CUnit const& _Unit) const;
+				Dwarf_Signed fp_LookupLineInUnit(umint _Address, CUnit const& _Unit) const;
+				CFunction const* fp_LookupFunctionInUnit(umint _Address, CUnit const& _Unit) const;
 				bool fp_CollectUnits();
 				bool fp_IndexUnitFunctions(CUnit& _Unit) const;
 				bool fp_CollectFunction(Dwarf_Die _pDie, CUnit& _Unit) const;
@@ -118,12 +118,12 @@ namespace NMib
 
 			public:
 
-				CSymbolsIndex(char const* _pFilename, mint _BaseAddress);
+				CSymbolsIndex(char const* _pFilename, umint _BaseAddress);
 				~CSymbolsIndex();
 
 				bool f_OK() const;
 
-				CLinuxStackTraceInfo* f_Lookup(mint _Address);
+				CLinuxStackTraceInfo* f_Lookup(umint _Address);
 				void f_Return(CStackTraceInfo* _pInfo);
 			};
 		}

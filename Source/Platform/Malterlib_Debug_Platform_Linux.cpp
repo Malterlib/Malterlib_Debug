@@ -53,7 +53,7 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo & _oInfo, CMibCod
 
 NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _pAddress)
 {
-	return NMib::NDebug::NPlatform::fg_GetSymbols().f_AcquireStackTraceInfo((mint)_pAddress);
+	return NMib::NDebug::NPlatform::fg_GetSymbols().f_AcquireStackTraceInfo((umint)_pAddress);
 }
 
 extern "C"
@@ -63,7 +63,7 @@ extern "C"
 
 void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 {
-	if ((mint)_pInfo->m_pContext == 2)
+	if ((umint)_pInfo->m_pContext == 2)
 	{
 //		CDisableHeapOverrideScope Scope;
 #ifdef _LIBCPP_BUILD_STATIC
@@ -72,7 +72,7 @@ void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 		free((void *)_pInfo->m_pFunctionName);
 #endif
 	}
-	else if ((mint)_pInfo->m_pContext == 1)
+	else if ((umint)_pInfo->m_pContext == 1)
 	{
 		// Nothing to deallocate
 	}
