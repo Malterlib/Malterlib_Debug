@@ -1,7 +1,17 @@
-// Copyright © 2015 Hansoft AB
-// Distributed under the MIT license, see license text in LICENSE.Malterlib
+// Copyright © Unbroken AB
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 Import "../Core/Lib_Malterlib.MTarget"
+
+Repository
+{
+	!!MalterlibRepoName "Malterlib_Debug.git"
+
+	MalterlibRepoReusePaths =+ [
+		"Source/Malterlib_Debug_VSE.dll"
+		, "Tools/VisualStudioExpansionPlugin/MalterlibVSE.def"
+	]
+}
 
 %Repository "elftoolchain"
 {
