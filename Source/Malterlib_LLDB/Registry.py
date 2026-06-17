@@ -41,8 +41,8 @@ class CSynthProvider_TCRegistry(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_ChildrenSynth.fp_ContainerNumChildren()
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -100,8 +100,8 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_TCRegistry) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_TCRegistry) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Registry(_Debugger):

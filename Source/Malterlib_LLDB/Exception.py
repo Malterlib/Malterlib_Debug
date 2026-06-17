@@ -6,6 +6,10 @@ from .Common import *
 from .StringHelpers import *
 
 
+def fg_ExceptionInlineMessage(_Value):
+	return fg_MakeStringFromData_ch8_Raw(_Value.GetData(), _Value.GetNumChildren(), 2)
+
+
 class CSynthProvider_NException_CCallstack(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
 		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary)
@@ -19,8 +23,8 @@ class CSynthProvider_NException_CCallstack(CSynthProvider_Common):
 				return
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -53,8 +57,8 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 				return
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -64,6 +68,7 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 		self.m_pErrorAllocNonTracked = fg_ChildPath(self.m_ValueObject, 'm_pErrorAllocNonTracked.m_Data.m_pPointTo')
 		self.m_pCallstack = fg_ChildPath(self.m_ValueObject, 'm_pCallstack.m_Data.m_pPointTo')
 		self.m_pCallstackNonTracked = fg_ChildPath(self.m_ValueObject, 'm_pCallstackNonTracked.m_Data.m_pPointTo')
+		self.m_bHasCallstack = fg_GetValueAsUnsigned(self.m_pCallstackNonTracked) != 0 or fg_GetValueAsUnsigned(self.m_pCallstack) != 0
 		return True
 
 	def fp_GetChildIndex(self, _Name):
@@ -71,7 +76,7 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 			return 0
 		if _Name == '[Type]':
 			return 1
-		if _Name == '[Callstack]':
+		if self.m_bHasCallstack and _Name == '[Callstack]':
 			return 2
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
@@ -83,21 +88,22 @@ class CSynthProvider_NException_CExceptionBase(CSynthProvider_Common):
 			if self.m_pErrorAlloc.GetValueAsUnsigned():
 				Value = self.m_pErrorAlloc.Dereference()
 				return self.m_ValueObject.CreateValueFromAddress('[Message]', self.m_pErrorAlloc.GetValueAsUnsigned(), Value.GetType());
-			return self.m_ValueObject.CreateValueFromAddress('[Message]', fg_GetAddressOf(self.m_ErrorNoAlloc), self.m_ErrorNoAlloc.GetType());
+			return fg_GetStringValue(self.m_ValueObject, '[Message]', fg_ExceptionInlineMessage(self.m_ErrorNoAlloc))
 		elif _iChild == 1:
 			return self.m_ValueObject.CreateValueFromAddress('[Type]', fg_GetAddressOf(self.m_pClass), self.m_pClass.GetType());
-		elif _iChild == 2:
+		elif self.m_bHasCallstack and _iChild == 2:
 			if self.m_pCallstackNonTracked.GetValueAsUnsigned():
 				Value = self.m_pCallstackNonTracked.Dereference()
 				return self.m_ValueObject.CreateValueFromAddress('[Callstack]', self.m_pCallstackNonTracked.GetValueAsUnsigned(), Value.GetType());
 			if self.m_pCallstack.GetValueAsUnsigned():
 				Value = self.m_pCallstack.Dereference()
 				return self.m_ValueObject.CreateValueFromAddress('[Callstack]', self.m_pCallstack.GetValueAsUnsigned(), Value.GetType());
-			return None
 		return None
 
 	def fp_NumChildren(self):
-		return 3
+		if self.m_bHasCallstack:
+			return 3
+		return 2
 
 
 def fg_SummaryProvider_CExceptionBase(_Value, dict):
@@ -118,8 +124,8 @@ def fg_SummaryProvider_CExceptionBase(_Value, dict):
 			return Summary;
 		return None
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CExceptionBase) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_CExceptionBase) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_Exception(_Debugger):

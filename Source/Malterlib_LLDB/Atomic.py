@@ -17,7 +17,23 @@ class CSynthProvider_TCAtomic(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_NumExtraChildren = 0
+			self.m_bProxyValue = False
+			if self.m_ValueObjectType.IsPointerType():
+				AtomicValue = self.m_ValueObject.Dereference()
+				AtomicValue.SetPreferSyntheticValue(True)
+				self.m_Value = AtomicValue.GetChildMemberWithName('[Value]')
+				if not fg_IsValidSBValue(self.m_Value):
+					return
+				self.m_DataType = self.m_Value.GetType()
+				self.m_bProxyValue = True
+				self.m_bValid = True
+				return
+
 			self.m_Value = fg_ChildPath(self.m_ValueObjectDeref, '__a_.__a_value')
+			if not fg_IsValidSBValue(self.m_Value):
+				self.m_Value = fg_ChildPath(self.m_ValueObjectDeref, 'm_Value')
+			if not fg_IsValidSBValue(self.m_Value) and self.m_ValueObjectDeref.GetNumChildren() > 0:
+				self.m_Value = self.m_ValueObjectDeref.GetChildAtIndex(0).GetChildMemberWithName('m_Value')
 			if not self.fp_ExtractType():
 				return
 			if self.m_DataType.IsPointerType():
@@ -27,8 +43,8 @@ class CSynthProvider_TCAtomic(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -43,7 +59,9 @@ class CSynthProvider_TCAtomic(CSynthProvider_Common):
 
 	def fp_GetChildAtIndex(self, _iChild):
 		if _iChild == self.m_NumExtraChildren:
-			return self.m_ValueObject.CreateValueFromAddress('[Value]', fg_GetAddressOf(self.m_Value), self.m_DataType)
+			if self.m_bProxyValue:
+				return self.m_Value
+			return self.m_ValueObject.CreateValueFromData('[Value]', self.m_Value.GetData(), self.m_DataType)
 		elif _iChild < self.m_NumExtraChildren:
 			return self.m_Value.GetChildAtIndex(_iChild)
 		return None

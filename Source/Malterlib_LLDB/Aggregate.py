@@ -23,8 +23,8 @@ class CSynthProvider_TCAggregate(CSynthProvider_Common):
 				return
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):

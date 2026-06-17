@@ -26,8 +26,8 @@ class CSynthProvider_TCTaggedInteger(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
@@ -54,7 +54,7 @@ class CSynthProvider_TCTaggedInteger(CSynthProvider_Common):
 def fg_MibLLDBInit_Numeric(_Debugger):
 
 	# TCTaggedInteger
-	fg_AddSynth(_Debugger, CSynthProvider_TCTaggedInteger, "(^|^const )TCTaggedInteger<.*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )TCTaggedInteger<.*>$", True)
+	fg_AddSynth(_Debugger, CSynthProvider_TCTaggedInteger, "(^|^const )(NMib::NNumeric::)?TCTaggedInteger<.*>$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )(NMib::NNumeric::)?TCTaggedInteger<.*>$", True)
 
 	return

@@ -1,12 +1,24 @@
 # Copyright © Unbroken AB
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-import lldb, traceback, sys
+import lldb, traceback, sys, os
 import threading
 import json
 
 g_MaxSynthChildren = 1024
 g_bRawSummary = threading.local()
+
+def fg_WriteError(_String):
+	try:
+		os.write(2, _String.encode('utf-8', 'replace'))
+	except Exception:
+		pass
+
+def fg_PrintException():
+	fg_WriteError(traceback.format_exc())
+
+def fg_PrintError(*p_Args):
+	fg_WriteError(" ".join(str(Arg) for Arg in p_Args) + "\n")
 
 def fg_AddSummary(_Debugger, _Function, _Type, _Regex = False, _Priority = 0):
 	try:
@@ -21,8 +33,8 @@ def fg_AddSummary(_Debugger, _Function, _Type, _Regex = False, _Priority = 0):
 			else:
 				_Debugger.HandleCommand('type summary add -F ' + _Function.__module__ + '.' + _Function.__name__ + ' "' + _Type + '" -w MibLLDB_' + str(_Priority))
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_AddSummary) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_AddSummary) error: ', error)
 		return
 
 def fg_AddSynth(_Debugger, _Class, _Type, _Regex = False, _Priority = 0):
@@ -38,8 +50,8 @@ def fg_AddSynth(_Debugger, _Class, _Type, _Regex = False, _Priority = 0):
 			else:
 				_Debugger.HandleCommand('type synthetic add -l ' + _Class.__module__ + '.' + _Class.__name__ + ' "' + _Type + '" -w MibLLDB_' + str(_Priority))
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_AddSynth) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_AddSynth) error: ', error)
 		return
 
 def fg_RawSummary():
@@ -82,13 +94,19 @@ def fg_QuotedCString(_String):
 def fg_GetStringValue(_ValueObject, _Name, _Value):
 	Process = _ValueObject.GetProcess()
 	String = str(_Value)
-	Value = _ValueObject.GetProcess().GetSelectedThread().GetSelectedFrame().EvaluateExpression(fg_QuotedCString(String))
-	StringLen = len(String) + 1
-	Data = Value.GetPointeeData(0, StringLen)
-	return _ValueObject.CreateValueFromData(_Name, Data, _ValueObject.GetType().GetBasicType(lldb.eBasicTypeChar).GetArrayType(StringLen))
+	StringLen = len(String)
+	Data = lldb.SBData.CreateDataFromCString(Process.GetByteOrder(), Process.GetAddressByteSize(), String)
+	Value = _ValueObject.CreateValueFromData(_Name, Data, _ValueObject.GetType().GetBasicType(lldb.eBasicTypeChar).GetArrayType(StringLen))
+	Value.SetFormat(lldb.eFormatCharArray)
+	return Value
 
 def fg_GetEmptyValue(_ValueObject, _Value = "Empty"):
 	return fg_GetStringValue(_ValueObject, "[Empty]", _Value)
+
+def fg_GetUnsignedValue(_ValueObject, _Name, _Value):
+	Process = _ValueObject.GetProcess()
+	Data = lldb.SBData.CreateDataFromUInt64Array(Process.GetByteOrder(), Process.GetAddressByteSize(), [int(_Value)])
+	return _ValueObject.CreateValueFromData(_Name, Data, _ValueObject.GetType().GetBasicType(lldb.eBasicTypeUnsignedLongLong))
 
 def fg_GetDynamicType(_Value, _Type):
 	Process = _Value.GetProcess()
@@ -125,7 +143,7 @@ def fg_IsArm64(_Value):
 
 def fg_GetAddressOf(_Value):
 	Address = _Value.GetAddress()
-	Target = lldb.target
+	Target = _Value.GetTarget()
 	if Address is not None and Address.IsValid() and Target is not None:
 		LoadAddress = Address.GetLoadAddress(Target)
 		if type(LoadAddress) is int and LoadAddress != 0xffffffffffffffff:
@@ -157,6 +175,19 @@ def fg_PrecacheType(_Type):
 	# This seems to workaround bugs in llvm that prevents the type from working properly
 	# str(_Type)
 	return
+
+def fg_GetCurrentTarget():
+	Target = getattr(lldb, 'target', None)
+	if Target is not None and Target.IsValid():
+		return Target
+
+	Debugger = getattr(lldb, 'debugger', None)
+	if Debugger is not None:
+		Target = Debugger.GetSelectedTarget()
+		if Target is not None and Target.IsValid():
+			return Target
+
+	return None
 
 def fg_TraceType(_Type):
 	print('Fields')
@@ -190,10 +221,35 @@ def fg_GetInheritedType(_Type, _TypeName):
 		Type = Type.GetDirectBaseClassAtIndex(0).GetType().GetUnqualifiedType()
 	return Type
 
+def fg_TypeNameMatchesRoot(_TypeName, _TypeRoot):
+	if _TypeName is None:
+		return False
+	if _TypeName == _TypeRoot:
+		return True
+	if not _TypeName.startswith(_TypeRoot + '<'):
+		return False
+
+	TemplateDepth = 0
+	for iChar in range(len(_TypeRoot), len(_TypeName)):
+		Char = _TypeName[iChar]
+		if Char == '<':
+			TemplateDepth += 1
+		elif Char == '>':
+			TemplateDepth -= 1
+			if TemplateDepth == 0:
+				return iChar == len(_TypeName) - 1
+
+	return False
+
 def fg_GetBaseValue(_Value, _TypeName):
 	Value = _Value.GetNonSyntheticValue()
-	while Value is not None and Value.IsValid() and not Value.GetType().GetCanonicalType().GetName().startswith(_TypeName):
+	while fg_IsValidSBValue(Value):
+		TypeName = fg_GetValueType(Value).GetCanonicalType().GetName()
+		if fg_TypeNameMatchesRoot(TypeName, _TypeName):
+			break
 		Value = Value.GetChildAtIndex(0)
+	if not fg_IsValidSBValue(Value):
+		return _Value.GetNonSyntheticValue()
 	return Value.GetNonSyntheticValue()
 
 def fg_GetValueType(_Value):
@@ -223,14 +279,20 @@ def fg_SummaryProvider_ContainerShared(_Value, dict, _Options, _Name):
 
 		Len = _Value.GetChildMemberWithName('[Length]')
 		if not fg_IsValidSBValue(Len):
+			if _Value.GetType().IsReferenceType():
+				Deref = _Value.Dereference()
+				if fg_IsValidSBValue(Deref):
+					Summary = Deref.GetSummary()
+					if Summary is not None:
+						return Summary
 			return None
 		Value = str(Len.GetValueAsUnsigned()) + ' ' + _Name
 		if Type.IsPointerType():
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Container) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Container) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Options, _Name):
@@ -242,6 +304,12 @@ def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Options, _Name):
 		global g_MaxSynthChildren
 		Len = _Value.GetChildMemberWithName('[Length]')
 		if not fg_IsValidSBValue(Len):
+			if _Value.GetType().IsReferenceType():
+				Deref = _Value.Dereference()
+				if fg_IsValidSBValue(Deref):
+					Summary = Deref.GetSummary()
+					if Summary is not None:
+						return Summary
 			return None
 		LenValue = Len.GetValueAsUnsigned()
 		if LenValue >= g_MaxSynthChildren:
@@ -254,7 +322,7 @@ def fg_SummaryProvider_ContainerLimitedShared(_Value, dict, _Options, _Name):
 		return Value
 
 	except Exception as error:
-		print('(fg_SummaryProvider_ContainerLimited) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintError('(fg_SummaryProvider_ContainerLimited) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Container(_Value, dict):
@@ -275,13 +343,37 @@ def fg_ChildPath(_Value, _Path):
 	else:
 		return _Value.GetValueForExpressionPath("." + _Path)
 
+def fg_FindRawChild(_Value, _Name, _Depth = 8):
+	if not fg_IsValidSBValue(_Value) or _Depth <= 0:
+		return None
+
+	Value = _Value.GetNonSyntheticValue()
+	Child = Value.GetChildMemberWithName(_Name)
+	if fg_IsValidSBValue(Child):
+		return Child
+
+	for iChild in range(Value.GetNumChildren()):
+		Child = Value.GetChildAtIndex(iChild).GetNonSyntheticValue()
+		if not fg_IsValidSBValue(Child):
+			continue
+		if Child.GetName() == _Name:
+			return Child
+		if Child.GetType().IsPointerType():
+			continue
+
+		Found = fg_FindRawChild(Child, _Name, _Depth - 1)
+		if fg_IsValidSBValue(Found):
+			return Found
+
+	return None
+
 def fg_GetValidCanonicalType(_Type):
 	CanonicalType = _Type.GetCanonicalType()
 
 	if CanonicalType.GetName() != "void":
 		return CanonicalType
 
-	Target = lldb.target
+	Target = fg_GetCurrentTarget()
 	if Target is not None:
 		for Type in Target.FindTypes(_Type.GetName()):
 			CanonicalType = Type.GetCanonicalType()
@@ -289,6 +381,89 @@ def fg_GetValidCanonicalType(_Type):
 				break
 
 	return CanonicalType
+
+def fg_GetContainingType(_Type):
+	if _Type is None or not _Type.IsValid() or not hasattr(_Type, 'GetContainingType'):
+		return None
+
+	Type = _Type.GetContainingType()
+	if Type is None or not Type.IsValid():
+		return None
+
+	return fg_GetValidCanonicalType(Type)
+
+def fg_GetValidTemplateArgumentType(_Type, _Index):
+	if _Type is None or not _Type.IsValid() or _Type.GetNumberOfTemplateArguments() <= _Index:
+		return None
+
+	Type = fg_GetValidCanonicalType(_Type.GetTemplateArgumentType(_Index))
+	if Type is None or not Type.IsValid():
+		return None
+
+	return Type
+
+def fg_VariantMemberTypeInfo(_MemberType, _Target = None):
+	if _MemberType is None or not _MemberType.IsValid():
+		return None
+
+	MemberType = _MemberType.GetUnqualifiedType()
+	MemberTypeName = MemberType.GetName()
+	if MemberTypeName is None or not MemberTypeName.startswith('NMib::NStorage::TCVariantMember<'):
+		return None
+
+	if MemberType.GetNumberOfTemplateArguments() < 3:
+		return None
+
+	ValueType = MemberType.GetTemplateArgumentType(1)
+	if ValueType is None or not ValueType.IsValid():
+		return None
+
+	Target = _Target
+	if Target is None or not Target.IsValid():
+		Target = fg_GetCurrentTarget()
+	if Target is None:
+		return None
+	MemberIndexValue = MemberType.GetTemplateArgumentValue(Target, 2)
+	if not fg_IsValidSBValue(MemberIndexValue):
+		return None
+
+	return (fg_GetValueAsUnsigned(MemberIndexValue), fg_GetValidCanonicalType(ValueType))
+
+def fg_VariantMemberTypesFromType(_Type, _Target = None):
+	MemberTypes = {}
+	Visited = set()
+
+	def Visit(_CurrentType):
+		if _CurrentType is None or not _CurrentType.IsValid():
+			return
+
+		RawType = _CurrentType.GetUnqualifiedType()
+		RawTypeName = RawType.GetName() if RawType is not None and RawType.IsValid() else None
+		CurrentType = fg_GetValidCanonicalType(_CurrentType).GetUnqualifiedType()
+		TypeName = CurrentType.GetName()
+		if TypeName is None or TypeName in Visited:
+			return
+		Visited.add(TypeName)
+
+		if TypeName.startswith('NMib::NStorage::TCVariant<'):
+			for iType in range(CurrentType.GetNumberOfTemplateArguments()):
+				ValueType = fg_GetValidCanonicalType(CurrentType.GetTemplateArgumentType(iType))
+				if ValueType.IsValid():
+					MemberTypes.setdefault(iType, ValueType)
+
+		if TypeName.startswith('NMib::NStorage::TCVariantCommon<'):
+			if CurrentType.GetNumberOfTemplateArguments() > 1:
+				for iType in range(1, CurrentType.GetNumberOfTemplateArguments()):
+					MemberType = CurrentType.GetTemplateArgumentType(iType)
+					MemberInfo = fg_VariantMemberTypeInfo(MemberType, _Target)
+					if MemberInfo is not None:
+						MemberTypes.setdefault(MemberInfo[0], MemberInfo[1])
+
+		for iBase in range(CurrentType.GetNumberOfDirectBaseClasses()):
+			Visit(CurrentType.GetDirectBaseClassAtIndex(iBase).GetType())
+
+	Visit(_Type)
+	return MemberTypes
 
 def fg_GetLeafValue(_Value):
 	Current = _Value
@@ -375,8 +550,8 @@ def fg_SummaryProvider_IteratorCommon(_Value, dict):
 
 		return ReturnString;
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('common summary error: ', error)
+		fg_PrintException()
+		fg_PrintError('common summary error: ', error)
 		return None
 
 
@@ -397,6 +572,7 @@ class CSynthProvider_Common:
 		self.m_bEmpty = False
 		self.m_bUpdated = False
 		self.m_OriginalNameMap = None
+		self.m_bShowOriginalChildren = True
 
 	def update(self):
 		self.m_Count = None
@@ -413,8 +589,8 @@ class CSynthProvider_Common:
 					continue
 				self.m_OriginalNameMap[Child.GetName()] = iOriginalChild
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def has_children(self):
@@ -431,19 +607,20 @@ class CSynthProvider_Common:
 					try:
 						self.m_Count = self.fp_NumChildren()
 					except Exception as error:
-						traceback.print_exc(file=sys.stdout)
-						print('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+						fg_PrintException()
+						fg_PrintError('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 						self.m_Count = 0
 
-			return int(self.m_Count + self.m_nOriginalChildren)
+			nOriginalChildren = self.m_nOriginalChildren if self.m_bShowOriginalChildren else 0
+			return int(self.m_Count + nOriginalChildren)
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') num_children error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return 0
 
 	def get_child_index(self, _Name):
 		try:
-			if self.m_OriginalNameMap is None:
+			if self.m_OriginalNameMap is None or not self.m_bShowOriginalChildren:
 				return -1
 			OriginalIndex = self.m_OriginalNameMap.get(_Name)
 			if OriginalIndex is not None:
@@ -456,8 +633,8 @@ class CSynthProvider_Common:
 					return int(Return)
 			return -1
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') get_child_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') get_child_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return -1
 
 	def fp_GetChildIndex(self, _Name):
@@ -474,18 +651,20 @@ class CSynthProvider_Common:
 			if _iChild >= nChildren:
 				return None
 			if _iChild >= self.m_Count:
+				if not self.m_bShowOriginalChildren:
+					return None
 				return self.m_ValueObject.GetChildAtIndex(_iChild - self.m_Count)
 			if self.m_bValid:
 				try:
 					return self.fp_GetChildAtIndex(_iChild)
 				except Exception as error:
-					traceback.print_exc(file=sys.stdout)
-					print('(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+					fg_PrintException()
+					fg_PrintError('(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 					return None
 			return None
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') get_child_at_index error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return None
 
 	def fp_GetChildAtIndex(self, _iChild):
@@ -507,7 +686,7 @@ class CSynthProvider_Container(CSynthProvider_Common):
 		if _iChild == 0:
 			if self.m_nElements is None:
 				return None;
-			return self.m_ValueObject.CreateValueFromExpression("[Length]", str(self.m_nElements))
+			return fg_GetUnsignedValue(self.m_ValueObject, "[Length]", self.m_nElements)
 		if self.m_Error is not None:
 			if _iChild == 1:
 				return fg_GetStringValue(self.m_ValueObject, "[Error]", self.m_Error)

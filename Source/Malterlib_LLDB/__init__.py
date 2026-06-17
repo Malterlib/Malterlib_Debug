@@ -30,6 +30,7 @@ def __lldb_init_module(_Debugger,dict):
 	fg_ImportModule(_Debugger, 'AutoClear')
 	fg_ImportModule(_Debugger, 'Exception')
 	fg_ImportModule(_Debugger, 'Float')
+	fg_ImportModule(_Debugger, 'Numeric')
 	fg_ImportModule(_Debugger, 'LinkedList')
 	fg_ImportModule(_Debugger, 'Pointer')
 	fg_ImportModule(_Debugger, 'Registry')
@@ -39,7 +40,6 @@ def __lldb_init_module(_Debugger,dict):
 	fg_ImportModule(_Debugger, 'Variant')
 	fg_ImportModule(_Debugger, 'Json')
 	fg_ImportModule(_Debugger, 'Vector')
-	fg_ImportModule(_Debugger, 'Iterator')
 	fg_ImportModule(_Debugger, 'Function')
 	fg_ImportModule(_Debugger, 'Concurrency')
 

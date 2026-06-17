@@ -5,6 +5,134 @@ import lldb, traceback, sys
 from .Common import *
 from .StringHelpers import *
 
+def fg_AVLTypeName(_Type):
+	if _Type is None or not _Type.IsValid():
+		return None
+
+	Type = fg_GetValidCanonicalType(_Type).GetUnqualifiedType()
+	if Type is None or not Type.IsValid():
+		return None
+
+	return Type.GetName()
+
+def fg_NormalizeTypeName(_TypeName):
+	if _TypeName is None:
+		return None
+
+	return ''.join(_TypeName.split())
+
+def fg_AVLTypesEqual(_Type0, _Type1):
+	TypeName0 = fg_NormalizeTypeName(fg_AVLTypeName(_Type0))
+	TypeName1 = fg_NormalizeTypeName(fg_AVLTypeName(_Type1))
+	return TypeName0 is not None and TypeName0 == TypeName1
+
+def fg_GetAVLIntegralTemplateArgument(_Type):
+	Target = lldb.target
+	if Target is None or not hasattr(_Type, 'GetTemplateArgumentValue') or _Type.GetNumberOfTemplateArguments() == 0:
+		return None
+
+	Value = _Type.GetTemplateArgumentValue(Target, 0)
+	if fg_IsValidSBValue(Value) and Value.GetValue() is not None:
+		return Value.GetValueAsUnsigned()
+
+	return None
+
+def fg_GetAVLLinkContainerType(_TreeType):
+	if _TreeType.GetNumberOfTemplateArguments() == 0:
+		return None
+
+	MemberPointerType = _TreeType.GetTemplateArgumentType(0)
+	if not MemberPointerType.IsValid():
+		return None
+
+	LinkContainerType = MemberPointerType.GetPointeeType()
+	if not LinkContainerType.IsValid():
+		return None
+
+	return fg_GetValidCanonicalType(LinkContainerType)
+
+def fg_GetAVLFieldOffsets(_Type, _WantedType, _BaseOffset = 0, _Depth = 0):
+	if _Depth >= 8:
+		return []
+
+	Type = fg_GetValidCanonicalType(_Type).GetUnqualifiedType()
+	if not Type.IsValid():
+		return []
+
+	Offsets = []
+	for iField in range(0, Type.GetNumberOfFields()):
+		Field = Type.GetFieldAtIndex(iField)
+		if fg_AVLTypesEqual(Field.GetType(), _WantedType):
+			Offsets.append((_BaseOffset + Field.GetOffsetInBytes(), Field.GetName()))
+
+	for iBase in range(0, Type.GetNumberOfDirectBaseClasses()):
+		Base = Type.GetDirectBaseClassAtIndex(iBase)
+		Offsets += fg_GetAVLFieldOffsets(Base.GetType(), _WantedType, _BaseOffset + Base.GetOffsetInBytes(), _Depth + 1)
+
+	return Offsets
+
+def fg_GetAVLInnerLinkOffsets(_LinkContainerType, _NodeType, _BaseOffset = 0, _Depth = 0):
+	if _Depth >= 8:
+		return []
+
+	Type = fg_GetValidCanonicalType(_LinkContainerType).GetUnqualifiedType()
+	if not Type.IsValid():
+		return []
+
+	if fg_AVLTypesEqual(Type, _NodeType):
+		return [(_BaseOffset, None)]
+
+	Offsets = []
+	for iField in range(0, Type.GetNumberOfFields()):
+		Field = Type.GetFieldAtIndex(iField)
+		if Field.GetName() == 'm_Link' and fg_AVLTypesEqual(Field.GetType(), _NodeType):
+			Offsets.append((_BaseOffset + Field.GetOffsetInBytes(), Field.GetName()))
+
+	for iBase in range(0, Type.GetNumberOfDirectBaseClasses()):
+		Base = Type.GetDirectBaseClassAtIndex(iBase)
+		Offsets += fg_GetAVLInnerLinkOffsets(Base.GetType(), _NodeType, _BaseOffset + Base.GetOffsetInBytes(), _Depth + 1)
+
+	return Offsets
+
+def fg_GetAVLLinkOffsets(_DataType, _NodeType, _BaseOffset = 0, _Depth = 0):
+	if _Depth >= 8:
+		return []
+
+	Type = fg_GetValidCanonicalType(_DataType).GetUnqualifiedType()
+	if not Type.IsValid():
+		return []
+
+	Offsets = []
+	for iField in range(0, Type.GetNumberOfFields()):
+		Field = Type.GetFieldAtIndex(iField)
+		InnerOffsets = fg_GetAVLInnerLinkOffsets(Field.GetType(), _NodeType)
+		for InnerOffset, FieldName in InnerOffsets:
+			Offsets.append((_BaseOffset + Field.GetOffsetInBytes() + InnerOffset, Field.GetName(), FieldName))
+
+	for iBase in range(0, Type.GetNumberOfDirectBaseClasses()):
+		Base = Type.GetDirectBaseClassAtIndex(iBase)
+		Offsets += fg_GetAVLLinkOffsets(Base.GetType(), _NodeType, _BaseOffset + Base.GetOffsetInBytes(), _Depth + 1)
+
+	return Offsets
+
+def fg_GetAVLTreeOffset(_TreeType, _DataType, _NodeType):
+	Offset = fg_GetAVLIntegralTemplateArgument(_TreeType)
+	if Offset is not None:
+		return Offset
+
+	LinkContainerType = fg_GetAVLLinkContainerType(_TreeType)
+	if LinkContainerType is not None:
+		MemberOffsets = fg_GetAVLFieldOffsets(_DataType, LinkContainerType)
+		InnerOffsets = fg_GetAVLInnerLinkOffsets(LinkContainerType, _NodeType)
+		if len(MemberOffsets) == 1 and len(InnerOffsets) == 1:
+			return MemberOffsets[0][0] + InnerOffsets[0][0]
+
+	Offsets = fg_GetAVLLinkOffsets(_DataType, _NodeType)
+	if len(Offsets) == 1:
+		return Offsets[0][0]
+
+	return None
+
 class CSynthProvider_TCAVLTreeAggregate_Node:
 	def fp_Left(self):
 		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(0).GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
@@ -107,8 +235,8 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
@@ -136,7 +264,9 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 
 		self.m_DataType = DataType
 		self.m_NodeType = NodeType
-		self.m_Offset = int(self.m_ValueObjectType.GetName().split('<')[1].split(',')[0])
+		self.m_Offset = fg_GetAVLTreeOffset(self.m_ValueObjectType, DataType, NodeType)
+		if self.m_Offset is None:
+			return False
 
 		return True
 
@@ -188,23 +318,23 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
 
 		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
-		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetTree');
-		if not MemberFunctionHelper:
+		AVLTreeType = fg_GetContainingType(ValueType)
+		if AVLTreeType is None or not AVLTreeType.IsValid():
 			return False
-
-		AVLTreeType = MemberFunctionHelper.GetReturnType().GetPointeeType()
 
 		DataType = AVLTreeType.GetTemplateArgumentType(3)
 		DataType = fg_GetValidCanonicalType(DataType)
 
 		NodeType = self.m_pStack.GetChildAtIndex(0).GetType().GetUnqualifiedType()
+		if NodeType.IsPointerType():
+			NodeType = NodeType.GetPointeeType().GetUnqualifiedType()
 		NodeType = fg_GetValidCanonicalType(NodeType)
 
 		self.m_DataType = DataType
@@ -213,7 +343,10 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 		fg_PrecacheType(DataType)
 		fg_PrecacheType(NodeType)
 
-		self.m_Offset = int(AVLTreeType.GetName().split('<')[1].split(',')[0])
+		self.m_Offset = fg_GetAVLTreeOffset(AVLTreeType, DataType, NodeType)
+		if self.m_Offset is None:
+			return False
+
 		return True
 
 	def fp_GetChildIndex(self, _Name):
@@ -235,15 +368,19 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 
 class CSynthProvider_TCMap(CSynthProvider_Container):
 	def __init__(self, _ValueObject, _Dictionary):
-		CSynthProvider_Container.__init__(self, _ValueObject, _Dictionary)
+		CSynthProvider_Container.__init__(self, _ValueObject, _Dictionary, 'NMib::NContainer::TCMap')
 
 	def update(self):
 		CSynthProvider_Container.update(self)
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_Tree = fg_ChildPath(self.m_ValueObject, 'mp_Tree')
+			self.m_Tree = fg_FindRawChild(self.m_ValueObject, 'mp_Tree')
+			if not fg_IsValidSBValue(self.m_Tree):
+				self.m_Tree = fg_ChildPath(self.m_ValueObject, 'mp_Tree')
 			self.m_Root = self.m_Tree.GetValueForExpressionPath('.m_Root')
+			if not fg_IsValidSBValue(self.m_Root):
+				self.m_Root = fg_FindRawChild(self.m_Tree, 'm_Root')
 			if not self.fp_ExtractType():
 				return
 
@@ -256,8 +393,8 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
@@ -271,12 +408,10 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 	def fp_ExtractType(self):
 
 		ValueType = fg_GetInheritedType(fg_GetValueType(self.m_Tree), 'NMib::NIntrusive::TCAVLTreeAggregate')
-
-		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetNode')
-		if not MemberFunctionHelper:
+		if ValueType is None or not ValueType.IsValid() or ValueType.GetNumberOfTemplateArguments() < 4:
 			return False
 
-		DataType = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType().GetPointeeType())
+		DataType = fg_GetValidCanonicalType(ValueType.GetTemplateArgumentType(3))
 
 		NodeType = self.m_Root.GetType().GetPointeeType().GetUnqualifiedType()
 		NodeType = fg_GetValidCanonicalType(NodeType)
@@ -287,7 +422,9 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 		self.m_DataType = DataType
 		self.m_NodeType = NodeType
 
-		self.m_Offset = int(ValueType.GetName().split('<')[1].split(',')[0])
+		self.m_Offset = fg_GetAVLTreeOffset(ValueType, DataType, NodeType)
+		if self.m_Offset is None:
+			return False
 
 		return True
 
@@ -341,23 +478,31 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ExtractType(self):
 		ValueType = fg_GetValueType(self.m_Iter)
 
-		MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_GetTree');
-		if not MemberFunctionHelper:
-			return False
-
-		AVLTreeType = MemberFunctionHelper.GetReturnType().GetPointeeType()
+		AVLTreeType = fg_GetContainingType(ValueType)
+		if AVLTreeType is None or not AVLTreeType.IsValid():
+			MapPointer = fg_FindRawChild(self.m_ValueObject, 'mp_pMap')
+			if not fg_IsValidSBValue(MapPointer) or MapPointer.GetValueAsUnsigned() == 0:
+				return False
+			Tree = fg_FindRawChild(MapPointer.Dereference(), 'mp_Tree')
+			if not fg_IsValidSBValue(Tree):
+				return False
+			AVLTreeType = fg_GetInheritedType(fg_GetValueType(Tree), 'NMib::NIntrusive::TCAVLTreeAggregate')
+			if AVLTreeType is None or not AVLTreeType.IsValid():
+				return False
 
 		DataType = AVLTreeType.GetTemplateArgumentType(3)
 		DataType = fg_GetValidCanonicalType(DataType)
 
 		NodeType = self.m_pStack.GetChildAtIndex(0).GetType().GetUnqualifiedType()
+		if NodeType.IsPointerType():
+			NodeType = NodeType.GetPointeeType().GetUnqualifiedType()
 		NodeType = fg_GetValidCanonicalType(NodeType)
 
 		fg_PrecacheType(DataType)
@@ -366,7 +511,9 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 		self.m_DataType = DataType
 		self.m_NodeType = NodeType
 
-		self.m_Offset = int(AVLTreeType.GetName().split('<')[1].split(',')[0])
+		self.m_Offset = fg_GetAVLTreeOffset(AVLTreeType, DataType, NodeType)
+		if self.m_Offset is None:
+			return False
 
 		return True
 
@@ -394,37 +541,57 @@ def fg_SummaryProvider_TCMapNode(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned())
 
 		KeyMember = _Value.GetChildMemberWithName('m_Key')
-		KeySummary = KeyMember.GetSummary()
-		if KeySummary is None:
-			KeySummary = KeyMember.GetValue()
+		if not fg_IsValidSBValue(KeyMember):
+			KeyMember = _Value.GetChildMemberWithName('mp_Key')
+		if not fg_IsValidSBValue(KeyMember) and _Value.GetNumChildren() == 1:
+			KeyMember = _Value.GetChildAtIndex(0).GetChildMemberWithName('m_Key')
+			if not fg_IsValidSBValue(KeyMember):
+				KeyMember = _Value.GetChildAtIndex(0).GetChildMemberWithName('mp_Key')
+
+		KeySummary = None
+		if fg_IsValidSBValue(KeyMember):
+			KeySummary = KeyMember.GetSummary()
+			if KeySummary is None:
+				KeySummary = KeyMember.GetValue()
 
 		ValueMember = _Value.GetChildMemberWithName('m_Value')
+		if not fg_IsValidSBValue(ValueMember):
+			ValueMember = _Value.GetChildMemberWithName('mp_Value')
+		if not fg_IsValidSBValue(ValueMember) and _Value.GetNumChildren() == 1:
+			ValueMember = _Value.GetChildAtIndex(0).GetChildMemberWithName('m_Value')
+			if not fg_IsValidSBValue(ValueMember):
+				ValueMember = _Value.GetChildAtIndex(0).GetChildMemberWithName('mp_Value')
 
-		if ValueMember is None or not ValueMember.IsValid():
-			Value = KeySummary;
-		else:
+		ValueSummary = None
+		if fg_IsValidSBValue(ValueMember):
 			ValueSummary = ValueMember.GetSummary()
 			if ValueSummary is None:
-				ValueSummary = str(ValueMember.GetValue())
+				ValueSummary = ValueMember.GetValue()
 
 			if ValueSummary == "None":
 				ValueSummary = "..."
 
-			if KeySummary is None:
-				if ValueSummary is None:
-					return None
-				else:
-					Value = '? > ' + ValueSummary
+		if KeySummary is None:
+			if ValueSummary is None:
+				Value = None
 			else:
-				Value = KeySummary + ' > ' + ValueSummary
+				Value = '? > ' + str(ValueSummary)
+		else:
+			if ValueSummary is None:
+				Value = str(KeySummary)
+			else:
+				Value = str(KeySummary) + ' > ' + str(ValueSummary)
 
 		if ValueType.IsPointerType():
-			return hex(_Value.GetValueAsUnsigned()) + '   ' + Value
+			PointerSummary = hex(_Value.GetValueAsUnsigned())
+			if Value is None:
+				return PointerSummary
+			return PointerSummary + '   ' + Value
 		return Value
 
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_TCMapNode) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_TCMapNode) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_AVLTree(_Debugger):
@@ -436,6 +603,10 @@ def fg_MibLLDBInit_AVLTree(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerMapLimited, '(^|^const )NMib::NIntrusive::TCAVLTree<.*>$', True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCAVLTreeAggregate_CIterator, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::TCIterator<.*>$', True, 1)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::TCIterator<.*>$', True, 1)
+	fg_AddSynth(_Debugger, CSynthProvider_TCAVLTreeAggregate_CIterator, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::CIterator$', True, 1)
+	fg_AddSynth(_Debugger, CSynthProvider_TCAVLTreeAggregate_CIterator, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::CIteratorConst$', True, 1)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::CIterator$', True, 1)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NIntrusive::TCAVLTreeAggregate<.*>::CIteratorConst$', True, 1)
 
 	# Map
 	fg_AddSynth(_Debugger, CSynthProvider_TCMap, '(^|^const )NMib::NContainer::TCMap<.*>$', True)
@@ -447,7 +618,14 @@ def fg_MibLLDBInit_AVLTree(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerMapLimited, '(^|^const )NMib::NContainer::TCMapWithPool<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_ContainerLimited, '(^|^const )NMib::NContainer::TCSetWithPool<.*>$', True)
 	fg_AddSynth(_Debugger, CSynthProvider_TCMap_CIterator, '(^|^const )NMib::NContainer::TCMap<.*>::TCIterator<.*>$', True, 1)
+	fg_AddSynth(_Debugger, CSynthProvider_TCMap_CIterator, '(^|^const )NMib::NContainer::NPrivate::TCMapIterator<.*>$', True, 1)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_TCMapNode, '(^|^const )(NMib::NContainer::)TCMapNode<.*>$', True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_TCMapNode, '(^|^const )(NMib::NContainer::)TCDestructiveMapNode<.*>$', True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NContainer::TCMap<.*>::TCIterator<.*>$', True, 1)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NContainer::NPrivate::TCMapIterator<.*>$', True, 1)
+	fg_AddSynth(_Debugger, CSynthProvider_TCMap_CIterator, '(^|^const )NMib::NContainer::TCMap<.*>::CIterator$', True, 1)
+	fg_AddSynth(_Debugger, CSynthProvider_TCMap_CIterator, '(^|^const )NMib::NContainer::TCMap<.*>::CIteratorConst$', True, 1)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NContainer::TCMap<.*>::CIterator$', True, 1)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, '(^|^const )NMib::NContainer::TCMap<.*>::CIteratorConst$', True, 1)
 
 	return

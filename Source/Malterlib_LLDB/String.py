@@ -10,6 +10,31 @@ def fg_BoundStrLen(_StrLen):
 		return 4096
 	return _StrLen
 
+def fg_FindStringTraitsType(_Type, _Depth = 0):
+	if _Type is None or not _Type.IsValid() or _Depth >= 8:
+		return None
+
+	Type = fg_GetValidCanonicalType(_Type).GetUnqualifiedType()
+	TypeName = Type.GetName()
+	if TypeName is None:
+		return None
+
+	if TypeName.startswith("NMib::NStr::TCStrTraits<") and Type.GetNumberOfTemplateArguments() >= 2:
+		return Type
+
+	if TypeName.startswith("NMib::NStr::TCTCStrTraits<"):
+		StrTraits = fg_GetValidTemplateArgumentType(Type, 0)
+		StrTraits = fg_FindStringTraitsType(StrTraits, _Depth + 1)
+		if StrTraits is not None:
+			return StrTraits
+
+	for iBase in range(Type.GetNumberOfDirectBaseClasses()):
+		BaseTraits = fg_FindStringTraitsType(Type.GetDirectBaseClassAtIndex(iBase).GetType(), _Depth + 1)
+		if BaseTraits is not None:
+			return BaseTraits
+
+	return None
+
 def fg_GetStringType(_Value, _Default = 2):
 	Type = _Value.GetType()
 	if Type.IsPointerType():
@@ -17,13 +42,79 @@ def fg_GetStringType(_Value, _Default = 2):
 	StrType = fg_GetInheritedType(fg_GetValidCanonicalType(Type), "NMib::NStr::TCStr")
 	if StrType is None:
 		return _Default
-	MemberFunctionHelper = fg_GetMemberFunction(StrType, 'fs_TypeDebugHelper')
-	if not MemberFunctionHelper:
+
+	CTStrTraits = fg_GetValidTemplateArgumentType(StrType, 0)
+	if CTStrTraits is None:
 		return _Default
-	DataType = MemberFunctionHelper.GetReturnType()
-	if DataType is None:
+
+	StrTraits = fg_FindStringTraitsType(CTStrTraits)
+	if StrTraits is None or StrTraits.GetNumberOfTemplateArguments() < 2:
 		return _Default
-	return int(fg_GetValidCanonicalType(DataType).GetName().split('<')[1].split('>')[0])
+
+	Target = _Value.GetTarget()
+	if Target is None:
+		return _Default
+
+	TypeValue = StrTraits.GetTemplateArgumentValue(Target, 1)
+	if fg_IsValidSBValue(TypeValue) and TypeValue.GetValue() is not None:
+		return int(TypeValue.GetValueAsUnsigned())
+
+	return _Default
+
+def fg_GetAddressMask(_Value):
+	Process = _Value.GetProcess()
+	return (1 << (Process.GetAddressByteSize() * 8)) - 1
+
+def fg_IsInvalidStringAddress(_Value, _Address):
+	if type(_Address) is not int:
+		return True
+	Mask = fg_GetAddressMask(_Value)
+	return _Address < 0 or _Address > Mask or _Address == Mask
+
+def fg_AddStringAddress(_Value, _Address, _Offset):
+	if fg_IsInvalidStringAddress(_Value, _Address):
+		return None
+	Address = _Address + _Offset
+	if fg_IsInvalidStringAddress(_Value, Address):
+		return None
+	return Address
+
+def fg_InvalidStringSummary(_Value, _ValueType, _Address = None):
+	if fg_RawSummary():
+		return ""
+
+	Value = '<invalid string data>'
+	if type(_Address) is int:
+		Value += ' ' + hex(_Address)
+	if _ValueType.IsPointerType():
+		return hex(_Value.GetValueAsUnsigned()) + "   " + Value
+	return Value
+
+def fg_CreateStringDataPointer(_Value, _Address, _Type):
+	if fg_IsInvalidStringAddress(_Value, _Address):
+		return None
+
+	try:
+		Value = _Value.CreateValueFromAddress("[TempData]", _Address, _Type.GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		if fg_IsValidSBValue(Value):
+			return Value
+	except Exception:
+		pass
+
+	return None
+
+def fg_GetDynamicStringDisplayLen(_Value, _Data):
+	Len = fg_GetValueAsUnsigned(_Data.GetChildMemberWithName('m_Len'))
+	StrLen = fg_GetValueAsUnsigned(_Data.GetChildMemberWithName('m_StrLen'))
+	if type(Len) is not int or type(StrLen) is not int or Len == 0:
+		return None
+
+	InvalidStrLen = (1 << (_Value.GetProcess().GetAddressByteSize() * 8 - 2)) - 1
+	if StrLen == InvalidStrLen:
+		return fg_BoundStrLen(Len - 1)
+	if StrLen >= Len:
+		return None
+	return fg_BoundStrLen(StrLen)
 
 def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 	try:
@@ -40,15 +131,22 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + '   "" nullptr 8'
 			return '"" nullptr 8'
+		if fg_IsInvalidStringAddress(_Value, DataAddress):
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		Data = pData.Dereference()
+		if not fg_IsValidSBValue(Data):
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
-		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
 		Type = fg_GetStringType(_Value)
-		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
+		StrLen = fg_GetDynamicStringDisplayLen(_Value, Data)
+		if StrLen is None:
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		DataType = Data.GetType()
-		pStrData = pData.CreateValueFromAddress("[TempData]", DataAddress + DataType.GetByteSize(), DataType.GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		pStrData = fg_CreateStringDataPointer(pData, fg_AddStringAddress(_Value, DataAddress, DataType.GetByteSize()), DataType)
+		if pStrData is None:
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(0, StrLen + 1), StrLen, Type)
@@ -59,8 +157,8 @@ def fg_SummaryProvider_Str_Dynamic_ch8(_Value, dict):
 				return fg_MakeStringFromData_ch8(pStrData.GetPointeeData(0, StrLen + 1), StrLen, Type)
 
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Dynamic_ch8) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Dynamic_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
@@ -78,15 +176,22 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + '   "" nullptr 16'
 			return '"" nullptr 16'
+		if fg_IsInvalidStringAddress(_Value, DataAddress):
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		Data = pData.Dereference()
+		if not fg_IsValidSBValue(Data):
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
-		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
 		Type = fg_GetStringType(_Value)
-		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
+		StrLen = fg_GetDynamicStringDisplayLen(_Value, Data)
+		if StrLen is None:
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		DataType = Data.GetType()
-		pStrData = pData.CreateValueFromAddress("[TempData]", DataAddress + DataType.GetByteSize(), DataType.GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		pStrData = fg_CreateStringDataPointer(pData, fg_AddStringAddress(_Value, DataAddress, DataType.GetByteSize()), DataType)
+		if pStrData is None:
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(0, (StrLen + 1)*2), StrLen, Type)
@@ -94,8 +199,8 @@ def fg_SummaryProvider_Str_Dynamic_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch16(pStrData.GetPointeeData(0, (StrLen + 1)*2), StrLen, Type)
 		return fg_MakeStringFromData_ch16(pStrData.GetPointeeData(0, (StrLen + 1)*2), StrLen, Type)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Dynamic_ch16) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Dynamic_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
@@ -113,15 +218,22 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 			if ValueType.IsPointerType():
 				return hex(_Value.GetValueAsUnsigned()) + '   "" nullptr 32'
 			return '"" nullptr 32'
+		if fg_IsInvalidStringAddress(_Value, DataAddress):
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		Data = pData.Dereference()
+		if not fg_IsValidSBValue(Data):
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
-		Len = Data.GetChildMemberWithName('m_Len').GetValueAsUnsigned()
 		Type = fg_GetStringType(_Value)
-		StrLen = fg_BoundStrLen(Data.GetChildMemberWithName('m_StrLen').GetValueAsUnsigned())
+		StrLen = fg_GetDynamicStringDisplayLen(_Value, Data)
+		if StrLen is None:
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		DataType = Data.GetType()
-		pStrData = pData.CreateValueFromAddress("[TempData]", DataAddress + DataType.GetByteSize(), DataType.GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		pStrData = fg_CreateStringDataPointer(pData, fg_AddStringAddress(_Value, DataAddress, DataType.GetByteSize()), DataType)
+		if pStrData is None:
+			return fg_InvalidStringSummary(_Value, ValueType, DataAddress)
 
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(0, (StrLen + 1) * 4), StrLen, Type)
@@ -129,8 +241,8 @@ def fg_SummaryProvider_Str_Dynamic_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch32(pStrData.GetPointeeData(0, (StrLen + 1) * 4), StrLen, Type)
 		return fg_MakeStringFromData_ch32(pStrData.GetPointeeData(0, (StrLen + 1) * 4), StrLen, Type)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Dynamic_ch32) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Dynamic_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 
@@ -149,8 +261,8 @@ def fg_SummaryProvider_Str_Fixed_ch8(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch8(lData.GetData(), Len, Type)
 		return fg_MakeStringFromData_ch8(lData.GetData(), Len, Type)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Fixed_ch8) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Fixed_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
@@ -167,8 +279,8 @@ def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch16(lData.GetData(), Len, Type)
 		return fg_MakeStringFromData_ch16(lData.GetData(), Len, Type)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Fixed_ch16) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Fixed_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
@@ -185,8 +297,8 @@ def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + fg_MakeStringFromData_ch32(lData.GetData(), Len, Type)
 		return fg_MakeStringFromData_ch32(lData.GetData(), Len, Type)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Fixed_ch32) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Fixed_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Ptr_ch8(_Value, dict):
@@ -211,8 +323,8 @@ def fg_SummaryProvider_Str_Ptr_ch8(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Ptr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Ptr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Ptr_ch16(_Value, dict):
@@ -236,8 +348,8 @@ def fg_SummaryProvider_Str_Ptr_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Ptr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Ptr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Ptr_ch32(_Value, dict):
@@ -260,8 +372,8 @@ def fg_SummaryProvider_Str_Ptr_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned()) + "   " + Value
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Ptr_ch32) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Ptr_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Array_ch8(_Value, dict):
@@ -269,6 +381,13 @@ def fg_SummaryProvider_Str_Array_ch8(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
+		Address = None
+		if ValueType.IsPointerType():
+			Address = fg_GetValueAsUnsigned(_Value)
+			if Address == 0:
+				if fg_RawSummary():
+					return ""
+				return "nullptr"
 
 		Len = _Value.GetNumChildren()
 
@@ -276,13 +395,10 @@ def fg_SummaryProvider_Str_Array_ch8(_Value, dict):
 			return fg_MakeStringFromData_ch8_Raw(fg_GetData(_Value), Len, 2)
 		Value = '"' + fg_MakeStringFromData_ch8_Raw(fg_GetData(_Value), Len, 2) + '"'
 
-		if ValueType.IsPointerType():
-			Value = Value + "   " + hex(_Value.GetValueAsUnsigned());
-
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Array_ch8) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Array_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Array_ch16(_Value, dict):
@@ -290,19 +406,23 @@ def fg_SummaryProvider_Str_Array_ch16(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
+		Address = None
+		if ValueType.IsPointerType():
+			Address = fg_GetValueAsUnsigned(_Value)
+			if Address == 0:
+				if fg_RawSummary():
+					return ""
+				return "nullptr"
 		Len = _Value.GetNumChildren()
 
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch16_Raw(fg_GetData(_Value), Len, 2)
 		Value = '"' + fg_MakeStringFromData_ch16_Raw(fg_GetData(_Value), Len, 2) + '"'
 
-		if ValueType.IsPointerType():
-			Value = Value + "   " + hex(_Value.GetValueAsUnsigned());
-
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Array_ch16) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Array_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_Array_ch32(_Value, dict):
@@ -310,6 +430,13 @@ def fg_SummaryProvider_Str_Array_ch32(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
+		Address = None
+		if ValueType.IsPointerType():
+			Address = fg_GetValueAsUnsigned(_Value)
+			if Address == 0:
+				if fg_RawSummary():
+					return ""
+				return "nullptr"
 		Len = _Value.GetNumChildren()
 
 		if fg_RawSummary():
@@ -317,13 +444,10 @@ def fg_SummaryProvider_Str_Array_ch32(_Value, dict):
 
 		Value = '"' + fg_MakeStringFromData_ch32_Raw(fg_GetData(_Value), Len, 2) + '"'
 
-		if ValueType.IsPointerType():
-			Value = Value + "   " + hex(_Value.GetValueAsUnsigned());
-
 		return Value
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_Array_ch32) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_Array_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Options, _Len = None, _Offset = 0):
@@ -340,13 +464,17 @@ def fg_SummaryProvider_Str_ArrayPtr_ch8(_Value, dict, _Options, _Len = None, _Of
 			if fg_RawSummary():
 				return ""
 			return 'nullptr'
-		pStrData = _Value.CreateValueFromAddress("[TempData]", Address, _Value.GetType().GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		if fg_IsInvalidStringAddress(_Value, Address):
+			return fg_InvalidStringSummary(_Value, Type, Address)
+		pStrData = fg_CreateStringDataPointer(_Value, Address, _Value.GetType())
+		if pStrData is None:
+			return fg_InvalidStringSummary(_Value, Type, Address)
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(0, (Len + 1)*1), Len, 2)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch8_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*1), Len, 2) + '"'
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_ArrayPtr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_ArrayPtr_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Options, _Len = None, _Offset = 0):
@@ -363,13 +491,17 @@ def fg_SummaryProvider_Str_ArrayPtr_ch16(_Value, dict, _Options, _Len = None, _O
 			if fg_RawSummary():
 				return ""
 			return 'nullptr'
-		pStrData = _Value.CreateValueFromAddress("[TempData]", Address, _Value.GetType().GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		if fg_IsInvalidStringAddress(_Value, Address):
+			return fg_InvalidStringSummary(_Value, Type, Address)
+		pStrData = fg_CreateStringDataPointer(_Value, Address, _Value.GetType())
+		if pStrData is None:
+			return fg_InvalidStringSummary(_Value, Type, Address)
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(0, (Len + 1)*2), Len, 2)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch16_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*2), Len, 2) + '"'
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_ArrayPtr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_ArrayPtr_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Options, _Len = None, _Offset = 0):
@@ -386,13 +518,17 @@ def fg_SummaryProvider_Str_ArrayPtr_ch32(_Value, dict, _Options, _Len = None, _O
 			if fg_RawSummary():
 				return ""
 			return 'nullptr'
-		pStrData = _Value.CreateValueFromAddress("[TempData]", Address, _Value.GetType().GetBasicType(lldb.eBasicTypeChar).GetPointerType()).AddressOf()
+		if fg_IsInvalidStringAddress(_Value, Address):
+			return fg_InvalidStringSummary(_Value, Type, Address)
+		pStrData = fg_CreateStringDataPointer(_Value, Address, _Value.GetType())
+		if pStrData is None:
+			return fg_InvalidStringSummary(_Value, Type, Address)
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(0, (Len + 1)*4), Len, 2)
 		return hex(Address) + '   "' + fg_MakeStringFromData_ch32_Raw(pStrData.GetPointeeData(_Offset, (Len + 1)*4), Len, 2) + '"'
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Str_ArrayPtr_ch32) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Str_ArrayPtr_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Char_ch8(_Value, dict):
@@ -409,8 +545,8 @@ def fg_SummaryProvider_Char_ch8(_Value, dict):
 			Ret += unichr(Value);
 		return "'" + Ret + "'   " + str(Value)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Char_ch8) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Char_ch8) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Char_ch16(_Value, dict):
@@ -422,8 +558,8 @@ def fg_SummaryProvider_Char_ch16(_Value, dict):
 		Ret += unichr(Value);
 		return "'" + Ret + "' = " + str(Value)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Char_ch16) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Char_ch16) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_Char_ch32(_Value, dict):
@@ -435,9 +571,15 @@ def fg_SummaryProvider_Char_ch32(_Value, dict):
 		Ret += unichr(Value);
 		return "'" + Ret + "' = " + str(Value)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_Char_ch32) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_Char_ch32) error: ', error, ' path: ', _Value.get_expr_path())
 		return
+
+def fg_AddRawStringArrayReferenceSummary(_Debugger, _Provider, _Type):
+	fg_AddSummary(_Debugger, _Provider, "(^|^const |^volatile |^const volatile )" + _Type + "( const| volatile| const volatile)? \\(&\\)\\[[0-9]+\\]$", True)
+
+def fg_AddRawStringArrayPointerSummary(_Debugger, _Provider, _Type):
+	fg_AddSummary(_Debugger, _Provider, "(^|^const |^volatile |^const volatile )" + _Type + "( const| volatile| const volatile)? \\(\\*( const| volatile| const volatile)?\\)\\[[0-9]+\\]$", True)
 
 def fg_MibLLDBInit_String(_Debugger):
 
@@ -458,6 +600,8 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const ch8 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8 const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "ch8")
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "char *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "char *const")
@@ -465,6 +609,8 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch8, "const char *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch8, "char")
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "ch16 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "ch16 *const")
@@ -472,6 +618,8 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const ch16 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16 const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "ch16")
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "char16_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "char16_t *const")
@@ -479,6 +627,17 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const char16_t *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "char16_t")
+
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "wchar_t *")
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "wchar_t *const")
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const wchar_t *")
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch16, "const wchar_t *const")
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "wchar_t \\[[0-9]+]", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "wchar_t const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "wchar_t")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch16, "wchar_t")
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "ch32 *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "ch32 *const")
@@ -486,6 +645,8 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const ch32 *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32 \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32 const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "ch32")
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "char32_t *")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "char32_t *const")
@@ -493,36 +654,38 @@ def fg_MibLLDBInit_String(_Debugger):
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_ArrayPtr_ch32, "const char32_t *const")
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t \\[[0-9]+]", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t const\\[[0-9]+]", True)
+	fg_AddRawStringArrayReferenceSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t")
+	fg_AddRawStringArrayPointerSummary(_Debugger, fg_SummaryProvider_Str_Array_ch32, "char32_t")
 
 	# Ptr
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CStr>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams> > > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CWStr>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams> > > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CUStr>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams> > > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
 
 
 	# Dynamic
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CStr[a-zA-Z]*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*> > > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CWStr[a-zA-Z]*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*> > > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CUStr[a-zA-Z]*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*> > > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )NMib::NStr::CMStrDeprecated$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )NMib::NStr::CMStrPreserve$", True)
 
 	# Fixed
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*> > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$", True)
 
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char16_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*> > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$", True)
 
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*> > >$", True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$", True)
 
 	return

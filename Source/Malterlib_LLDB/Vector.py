@@ -15,10 +15,15 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
+			self.m_VectorObject = self.m_ValueObjectDeref
+			if self.m_ValueObject.GetType().IsReferenceType():
+				self.m_VectorObject = self.m_ValueObject.Dereference()
+				if not fg_IsValidSBValue(self.m_VectorObject):
+					return
 			if not self.fp_ExtractType():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_pData = fg_ChildPath(self.m_ValueObject, 'mp_StaticData.m_pData')
+			self.m_pData = fg_ChildPath(self.m_VectorObject, 'mp_StaticData.m_pData')
 
 			if self.m_pData.GetValueAsUnsigned() == 0:
 				self.m_pDataAddress = 0
@@ -26,8 +31,8 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 				self.m_pDataAddress = self.m_pData.GetValueAsUnsigned() + self.m_pData.GetType().GetPointeeType().GetByteSize()
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_ContainerGetChildAtIndex(self, _iChild):
@@ -38,7 +43,7 @@ class CSynthProvider_TCVector(CSynthProvider_Container):
 
 	def fp_ExtractType(self):
 
-		ContainerType = fg_GetValueType(self.m_ValueObjectDeref)
+		ContainerType = fg_GetValueType(self.m_VectorObject)
 		if ContainerType.GetNumberOfTemplateArguments() > 0:
 			DataType = ContainerType.GetTemplateArgumentType(0)
 			DataType = fg_GetValidCanonicalType(DataType)
@@ -76,8 +81,8 @@ class CSynthProvider_TCVector_CIterator(CSynthProvider_Common):
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
 
 	def fp_GetChildIndex(self, _Name):
@@ -99,17 +104,26 @@ class CSynthProvider_TCVector_CIterator(CSynthProvider_Common):
 		return 1 + self.m_NumExtraChildren
 
 
+def fg_AddVectorReference(_Debugger, _Type):
+	Type = "(^|^const |^volatile |^const volatile )" + _Type + "( const| volatile| const volatile)? &$"
+	fg_AddSynth(_Debugger, CSynthProvider_TCVector, Type, True)
+	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, Type, True)
+
+
 def fg_MibLLDBInit_Vector(_Debugger):
 
 	# Vector
 	fg_AddSynth(_Debugger, CSynthProvider_TCVector, "(^|^const )NMib::NContainer::TCVector<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, "(^|^const )NMib::NContainer::TCVector<.*>$", True)
+	fg_AddVectorReference(_Debugger, "NMib::NContainer::TCVector<.*>")
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCVector, "(^|^const )NMib::NContainer::CByteVector$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, "(^|^const )NMib::NContainer::CByteVector$", True)
+	fg_AddVectorReference(_Debugger, "NMib::NContainer::CByteVector")
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCVector, "(^|^const )NMib::NContainer::CSecureByteVector$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Container, "(^|^const )NMib::NContainer::CSecureByteVector$", True)
+	fg_AddVectorReference(_Debugger, "NMib::NContainer::CSecureByteVector")
 
 	fg_AddSynth(_Debugger, CSynthProvider_TCVector_CIterator, "(^|^const )NMib::NContainer::TCVectorIterator<.*>$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_IteratorCommon, "(^|^const )NMib::NContainer::TCVectorIterator<.*>$", True)

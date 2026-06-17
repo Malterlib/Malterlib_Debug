@@ -1,17 +1,109 @@
 # Copyright © Unbroken AB
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-import lldb, traceback, sys, os
+import lldb, traceback, sys
 from .Common import *
 from .StringHelpers import *
 
-g_CodeAddress_File = None
-g_CodeAddress_Line = None
-g_CodeAddress_Function = None
+def fg_GetCodeAddressDetailsForAddress(_Value, _AddressValue):
+	Details = {
+		'Address': 0,
+		'Function': None,
+		'File': None,
+		'Line': None,
+		'Module': None,
+	}
+
+	Details['Address'] = _AddressValue
+
+	if _AddressValue == 0:
+		Details['Function'] = 'nullptr'
+		return Details
+
+	Target = _Value.GetTarget()
+	if Target is None or not Target.IsValid():
+		return Details
+
+	Address = Target.ResolveLoadAddress(_AddressValue)
+	if not Address.IsValid():
+		return Details
+
+	Module = Address.GetModule()
+	if Module and Module.IsValid():
+		FileSpec = Module.GetPlatformFileSpec()
+		if FileSpec and FileSpec.IsValid():
+			Details['Module'] = FileSpec.GetFilename()
+			Details['Function'] = 'Unknown in ' + Details['Module']
+
+	Function = Address.GetFunction()
+	if Function.IsValid():
+		FullName = Function.GetDisplayName()
+		if FullName:
+			Details['Function'] = fg_ExtractFunctionName(FullName)
+		if not Details['Function']:
+			Details['Function'] = Function.GetName()
+
+	if not Details['Function']:
+		Symbol = Address.GetSymbol()
+		if Symbol.IsValid():
+			FullName = Symbol.GetDisplayName()
+			if FullName:
+				Details['Function'] = fg_ExtractFunctionName(FullName)
+			if not Details['Function']:
+				Details['Function'] = Symbol.GetName()
+
+	LineEntry = Address.GetLineEntry()
+	if LineEntry.IsValid():
+		FileSpec = LineEntry.GetFileSpec()
+		if FileSpec.IsValid():
+			Details['File'] = FileSpec.fullpath
+		Line = LineEntry.GetLine()
+		if Line != 0:
+			Details['Line'] = str(Line)
+
+	return Details
+
+def fg_GetCodeAddressDetails(_Value, _AddressValue = None):
+	if _AddressValue is None:
+		_AddressValue = fg_GetValueAsUnsigned(_Value)
+
+	Details = fg_GetCodeAddressDetailsForAddress(_Value, _AddressValue)
+
+	if _AddressValue != 0 and (Details['File'] is None or Details['Line'] is None):
+		AdjustedDetails = fg_GetCodeAddressDetailsForAddress(_Value, _AddressValue - 1)
+		if AdjustedDetails['File'] is not None and AdjustedDetails['Line'] is not None:
+			if Details['Function'] is None or Details['Function'].startswith('Unknown'):
+				Details['Function'] = AdjustedDetails['Function']
+			if Details['Module'] is None:
+				Details['Module'] = AdjustedDetails['Module']
+			Details['File'] = AdjustedDetails['File']
+			Details['Line'] = AdjustedDetails['Line']
+			Details['Address'] = _AddressValue
+
+	return Details
+
+def fg_FormatCodeAddressSummary(_Value, _AddressValue = None, _bIncludeAddress = False):
+	Details = fg_GetCodeAddressDetails(_Value, _AddressValue)
+	Summary = None
+
+	if Details['Function'] is not None:
+		Summary = Details['Function']
+	elif Details['Address'] != 0:
+		Summary = 'Unknown'
+	else:
+		Summary = 'nullptr'
+
+	if Details['File'] is not None and Details['Line'] is not None:
+		Summary += ' - ' + Details['File'] + ':' + Details['Line']
+
+	if _bIncludeAddress:
+		return hex(Details['Address']) + '   ' + Summary
+	return Summary
 
 class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 	def __init__(self, _ValueObject, _Dictionary):
 		CSynthProvider_Common.__init__(self, _ValueObject, _Dictionary)
+		self.m_Details = None
 
 	def update(self):
 		CSynthProvider_Common.update(self)
@@ -22,42 +114,12 @@ class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 				return
 			if not fg_IsValidSBValue(self.m_ValueObject):
 				return;
-			#print('self.m_ValueObjectType: ', self.m_ValueObjectType.GetName())
-			if not self.fp_ExtractType():
-				return
+			self.m_Details = fg_GetCodeAddressDetails(self.m_ValueObject)
 			self.m_bValid = True
 		except Exception as error:
-			traceback.print_exc(file=sys.stdout)
-			print('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
+			fg_PrintException()
+			fg_PrintError('(' + self.__class__.__name__ + ') update error: ', error, ' path: ', self.m_ValueObject.get_expr_path())
 			return
-
-	def fp_ExtractType(self):
-		global g_CodeAddress_File
-		global g_CodeAddress_Line
-		global g_CodeAddress_Function
-
-		ValueObject = self.m_ValueObjectDeref
-		ValueType = ValueObject.GetType()
-		if not g_CodeAddress_File:
-			MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_File')
-			if MemberFunctionHelper:
-				g_CodeAddress_File = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
-				if not g_CodeAddress_File:
-					return False
-		if not g_CodeAddress_Line:
-			MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_Line')
-			if MemberFunctionHelper:
-				g_CodeAddress_Line = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
-				if not g_CodeAddress_Line:
-					return False
-		if not g_CodeAddress_Function:
-			MemberFunctionHelper = fg_GetMemberFunction(ValueType, 'fs_Debug_Function')
-			if MemberFunctionHelper:
-				g_CodeAddress_Function = fg_GetValidCanonicalType(MemberFunctionHelper.GetReturnType())
-				if not g_CodeAddress_Function:
-					return False
-
-		return True
 
 	def fp_GetChildIndex(self, _Name):
 		if _Name == '[Function]':
@@ -71,26 +133,16 @@ class CSynthProvider_CMibCodeAddress(CSynthProvider_Common):
 		return CSynthProvider_Common.fp_GetChildIndex(self, _Name)
 
 	def fp_GetChildAtIndex(self, _iChild):
+		if self.m_Details is None:
+			self.m_Details = fg_GetCodeAddressDetails(self.m_ValueObject)
 		if _iChild == 0:
-			Address = self.m_ValueObject.Dereference().GetAddress()
-			if Address.IsValid() and Address.GetModule():
-				return self.m_ValueObject.CreateValueFromAddress('[Function]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_Function)
-			else:
-				return self.m_ValueObject.CreateValueFromAddress('[Function]', 0, g_CodeAddress_Function)
+			return fg_GetStringValue(self.m_ValueObject, '[Function]', self.m_Details['Function'] if self.m_Details['Function'] is not None else 'Unknown')
 		elif _iChild == 1:
-			Address = self.m_ValueObject.Dereference().GetAddress()
-			if Address.IsValid() and Address.GetModule():
-				return self.m_ValueObject.CreateValueFromAddress('[File]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_File)
-			else:
-				return self.m_ValueObject.CreateValueFromAddress('[File]', 0, g_CodeAddress_File)
+			return fg_GetStringValue(self.m_ValueObject, '[File]', self.m_Details['File'] if self.m_Details['File'] is not None else 'Unknown')
 		elif _iChild == 2:
-			Address = self.m_ValueObject.Dereference().GetAddress()
-			if Address.IsValid() and Address.GetModule():
-				return self.m_ValueObject.CreateValueFromAddress('[Line]', self.m_ValueObject.GetValueAsUnsigned(), g_CodeAddress_Line)
-			else:
-				return self.m_ValueObject.CreateValueFromAddress('[Line]', 0, g_CodeAddress_Line)
+			return fg_GetStringValue(self.m_ValueObject, '[Line]', self.m_Details['Line'] if self.m_Details['Line'] is not None else 'Unknown')
 		elif _iChild == 3:
-			return self.m_ValueObject.CreateValueFromAddress('[Address]', fg_GetAddressOf(self.m_ValueObject), g_CodeAddress_Line.GetBasicType(lldb.eBasicTypeVoid).GetPointerType())
+			return fg_GetStringValue(self.m_ValueObject, '[Address]', hex(self.m_Details['Address']))
 		return None
 
 	def fp_NumChildren(self):
@@ -101,18 +153,11 @@ def fg_SummaryProvider_CCodeAddressFunction(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
-		Address = _Value.GetAddress()
-		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
-			Function = Address.GetFunction()
-			if Function.IsValid():
-				return Function.GetName() + " +" + str(Address.GetOffset() - Function.GetStartAddress().GetOffset())
-		if Address.IsValid() and Address.GetModule():
-			return "Unknown in " + Address.GetModule().GetPlatformFileSpec().GetFilename()
-		else:
-			return "Unknown"
+		Details = fg_GetCodeAddressDetails(_Value)
+		return Details['Function'] if Details['Function'] is not None else 'Unknown'
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CCodeAddressFunction) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_CCodeAddressFunction) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CCodeAddressFile(_Value, dict):
@@ -120,17 +165,11 @@ def fg_SummaryProvider_CCodeAddressFile(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
-		Address = _Value.GetAddress()
-		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
-			LineEntry = Address.GetLineEntry()
-			if LineEntry.IsValid():
-				FileSpec = LineEntry.GetFileSpec()
-				if FileSpec.IsValid():
-					return FileSpec.fullpath
-		return "Unknown"
+		Details = fg_GetCodeAddressDetails(_Value)
+		return Details['File'] if Details['File'] is not None else 'Unknown'
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CCodeAddressFile) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_CCodeAddressFile) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_SummaryProvider_CCodeAddressLine(_Value, dict):
@@ -138,15 +177,11 @@ def fg_SummaryProvider_CCodeAddressLine(_Value, dict):
 		ValueType = fg_GetValueType(_Value)
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
-		Address = _Value.GetAddress()
-		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
-			LineEntry = Address.GetLineEntry()
-			if LineEntry.IsValid():
-				return str(LineEntry.GetLine())
-		return "Unknown"
+		Details = fg_GetCodeAddressDetails(_Value)
+		return Details['Line'] if Details['Line'] is not None else 'Unknown'
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CCodeAddressLine) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_CCodeAddressLine) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_ExtractFunctionName(full_name):
@@ -154,63 +189,72 @@ def fg_ExtractFunctionName(full_name):
 	if not full_name:
 		return None
 
-	# Special handling for operator() - we need to keep the first () as part of the name
+	def fp_FindParameterStart(_String, _Start = 0):
+		TemplateCount = 0
+		for i in range(_Start, len(_String)):
+			c = _String[i]
+			if c == '<':
+				TemplateCount += 1
+			elif c == '>' and TemplateCount > 0:
+				TemplateCount -= 1
+			elif c == '(' and TemplateCount == 0:
+				return i
+		return -1
+
+	def fp_FindLastScopeSeparator(_String):
+		TemplateCount = 0
+		LastScope = -1
+		i = 0
+		while i + 1 < len(_String):
+			c = _String[i]
+			if c == '<':
+				TemplateCount += 1
+			elif c == '>' and TemplateCount > 0:
+				TemplateCount -= 1
+			elif c == ':' and _String[i + 1] == ':' and TemplateCount == 0:
+				LastScope = i
+				i += 1
+			i += 1
+		return LastScope
+
+	def fp_RemoveTopLevelTemplates(_String):
+		if _String.startswith('operator'):
+			for i in range(len('operator'), len(_String)):
+				if _String[i] == '<':
+					if i > len('operator'):
+						return _String[:i]
+					return _String
+			return _String
+
+		TemplateCount = 0
+		Return = ''
+		for c in _String:
+			if c == '<':
+				TemplateCount += 1
+				continue
+			if c == '>' and TemplateCount > 0:
+				TemplateCount -= 1
+				continue
+			if TemplateCount == 0:
+				Return += c
+		return Return
+
 	if '::operator()' in full_name or full_name.startswith('operator()'):
-		# Find operator() and skip past it before looking for parameters
 		op_idx = full_name.find('operator()')
 		if op_idx != -1:
-			# Start looking for parameters after 'operator()'
-			search_start = op_idx + len('operator()')
-			if '(' in full_name[search_start:]:
-				param_idx = full_name.index('(', search_start)
+			param_idx = fp_FindParameterStart(full_name, op_idx + len('operator()'))
+			if param_idx != -1:
 				full_name = full_name[:param_idx]
 	else:
-		# Normal function - remove parameter list by finding matching parentheses
-		paren_count = 0
-		template_count = 0
-		param_start = -1
+		param_idx = fp_FindParameterStart(full_name)
+		if param_idx != -1:
+			full_name = full_name[:param_idx]
 
-		for i, c in enumerate(full_name):
-			if c == '<':
-				template_count += 1
-			elif c == '>':
-				template_count -= 1
-			elif c == '(' and template_count == 0:
-				if param_start == -1:
-					param_start = i
-				paren_count += 1
-			elif c == ')' and template_count == 0:
-				paren_count -= 1
-				if paren_count == 0 and param_start != -1:
-					# Found the end of parameters, truncate here
-					full_name = full_name[:param_start]
-					break
+	LastScope = fp_FindLastScopeSeparator(full_name)
+	if LastScope != -1:
+		full_name = full_name[LastScope + 2:]
 
-	# Now remove template parameters
-	template_count = 0
-	template_start = -1
-
-	for i, c in enumerate(full_name):
-		if c == '<':
-			if template_count == 0:
-				template_start = i
-			template_count += 1
-		elif c == '>':
-			template_count -= 1
-			if template_count == 0 and template_start != -1:
-				# Found a complete template, remove it
-				full_name = full_name[:template_start] + full_name[i+1:]
-				break
-
-	# Extract just the function name after the last '::'
-	if '::' in full_name:
-		parts = full_name.split('::')
-		function_name = parts[-1]
-	else:
-		function_name = full_name
-
-	# Clean up any remaining whitespace
-	return function_name.strip()
+	return fp_RemoveTopLevelTemplates(full_name).strip()
 
 def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 	try:
@@ -218,43 +262,10 @@ def fg_SummaryProvider_CMibCodeAddress(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
 
-		Current = _Value.GetChildMemberWithName('[File]')
-		FileSummary = Current.GetSummary()
-		if FileSummary is None:
-			Value = Current.GetValue()
-			if Value is not None:
-				FileSummary = str(Value)
-
-		Current = _Value.GetChildMemberWithName('[Line]')
-		LineSummary = Current.GetSummary()
-		if LineSummary is None:
-			Value = Current.GetValue()
-			if Value is not None:
-				LineSummary = str(Value)
-
-		Address = Current.GetAddress()
-		FunctionName = "Unknown"
-		if Address.IsValid() and Address.GetModule():
-			FunctionName = "Unknown in " + Address.GetModule().GetPlatformFileSpec().GetFilename()
-		if Address.IsValid() and Address.GetModule() and _Value.GetValueAsUnsigned() != 0:
-			Function = Address.GetFunction()
-			if Function.IsValid():
-				FullName = Function.GetDisplayName()
-				if FullName:
-					FunctionName = fg_ExtractFunctionName(FullName)
-				if not FunctionName:
-					FunctionName = Function.GetName()
-
-		if FunctionName is not None and FileSummary is not None and LineSummary is not None and FileSummary != "Unknown" and LineSummary != "Unknown":
-			return FunctionName + " - " + FileSummary + ":" + LineSummary
-
-		if FunctionName is not None:
-			return FunctionName;
-
-		return None
+		return fg_FormatCodeAddressSummary(_Value)
 	except Exception as error:
-		traceback.print_exc(file=sys.stdout)
-		print('(fg_SummaryProvider_CMibCodeAddress) error: ', error, ' path: ', _Value.get_expr_path())
+		fg_PrintException()
+		fg_PrintError('(fg_SummaryProvider_CMibCodeAddress) error: ', error, ' path: ', _Value.get_expr_path())
 		return
 
 def fg_MibLLDBInit_StackTrace(_Debugger):
