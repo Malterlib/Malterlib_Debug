@@ -596,7 +596,13 @@ public:
 					}
 					, [](int32 *_pData) -> void
 					{
-						(void)_pData;
+						fg_DeleteObjectDefiniteType
+							(
+								NMemory::CAllocator_Heap()
+								, _pData
+								, fg_Max(umint(DMibPMemoryCacheLineSize), alignof(int32))
+							)
+						;
 					}
 				)
 			;
