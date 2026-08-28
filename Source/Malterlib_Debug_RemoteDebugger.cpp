@@ -318,6 +318,8 @@ namespace NMib::NDebug::NRemoteDebugger
 			{
 				if (SocketState & ENetTCPState_Read)
 				{
+					// End of stream is handled through the disconnect state instead
+					bool bEndOfStream = false;
 					bool bReadStuffed = false;
 					umint nUnreported = 0;
 					do
@@ -325,7 +327,7 @@ namespace NMib::NDebug::NRemoteDebugger
 						if (iHeaderPos < sizeof(CPacketHeader))
 						{ // Reading header
 							umint nToRead = sizeof(CPacketHeader) - iHeaderPos;
-							iHeaderPos += mp_Socket.f_Receive( ((uint8*)&Header) + iHeaderPos, nToRead);
+							iHeaderPos += mp_Socket.f_Receive( ((uint8*)&Header) + iHeaderPos, nToRead, bEndOfStream);
 
 							if (iHeaderPos == sizeof(CPacketHeader))
 							{
@@ -359,7 +361,7 @@ namespace NMib::NDebug::NRemoteDebugger
 						{ // Reading data
 							umint nToRead = pInPacket->m_Data.f_GetLen() - iDataPos;
 
-							umint nRead = mp_Socket.f_Receive(&pInPacket->m_Data[iDataPos], nToRead);
+							umint nRead = mp_Socket.f_Receive(&pInPacket->m_Data[iDataPos], nToRead, bEndOfStream);
 							iDataPos += nRead;
 
 							if (iDataPos == pInPacket->m_Data.f_GetLen())
