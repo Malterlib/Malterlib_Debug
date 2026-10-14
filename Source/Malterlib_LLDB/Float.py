@@ -120,7 +120,8 @@ def fg_DecodeTCFloat(_Value, _ValueType, _ImplicitData):
 		Summary += "#denorm"
 	return Summary
 
-#template <aint t_SignBits, aint t_ExponentBits, aint t_MantissaBits, aint t_PaddingBits, typename t_CImplicitFloat = CNoImplicit, bool t_bDummyOptimize = true, typename t_CIntegerStorage = NTraits::TCIntFromSizeLarger<(t_SignBits + t_ExponentBits + t_MantissaBits + 7)/8>>
+#template <aint t_SignBits, aint t_ExponentBits, aint t_MantissaBits, aint t_PaddingBits, typename t_CImplicitFloat = CNoImplicit, bool t_bDummyOptimize = true,
+#	typename t_CIntegerStorage = NTraits::TCIntFromSizeLarger<(t_SignBits + t_ExponentBits + t_MantissaBits + 7)/8>>
 def fg_SummaryProvider_TCFloat(_Value, dict):
 	try:
 		ValueType = fg_GetValueType(_Value)

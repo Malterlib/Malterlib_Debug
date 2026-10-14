@@ -18,7 +18,7 @@
 
 extern "C"
 {
-	module_export void nontracked_free (void *__ptr) __THROW;
+	module_export void nontracked_free(void *__ptr) __THROW;
 }
 
 namespace NMib
@@ -46,7 +46,7 @@ namespace NMib
 			// CSymbolsIndex Imp
 			//
 
-			CSymbolsIndex::CSymbolsIndex(char const* _pFilename, umint _BaseAddress)
+			CSymbolsIndex::CSymbolsIndex(char const *_pFilename, umint _BaseAddress)
 				: mp_bOK(false)
 				, mp_Dwarf(nullptr)
 				, mp_ModuleFilename(_pFilename)
@@ -78,12 +78,9 @@ namespace NMib
 
 			CSymbolsIndex::~CSymbolsIndex()
 			{
-
 				if (mp_Dwarf)
 				{
-					for (auto UnitIter = mp_lUnits.f_GetIterator()
-						;UnitIter
-						;++UnitIter)
+					for (auto UnitIter = mp_lUnits.f_GetIterator(); UnitIter; ++UnitIter)
 					{
 						dwarf_srclines_dealloc(mp_Dwarf, (*UnitIter).m_lLines, (*UnitIter).m_nLines);
 						dwarf_dealloc(mp_Dwarf, (*UnitIter).m_pDie, DW_DLA_DIE);
@@ -94,9 +91,7 @@ namespace NMib
 				}
 
 				if (mp_pElf)
-				{
 					elf_end(mp_pElf);
-				}
 			}
 
 			bool CSymbolsIndex::f_OK() const
@@ -104,14 +99,12 @@ namespace NMib
 				return mp_bOK;
 			}
 
-			CLinuxStackTraceInfo* CSymbolsIndex::f_Lookup(umint _Address)
+			CLinuxStackTraceInfo *CSymbolsIndex::f_Lookup(umint _Address)
 			{
 				// Dumb interval search for now.
-				for (auto UnitIter = mp_lUnits.f_GetIterator()
-					;UnitIter
-					;++UnitIter)
+				for (auto UnitIter = mp_lUnits.f_GetIterator(); UnitIter; ++UnitIter)
 				{
-					if ( (*UnitIter).Contains(_Address) )
+					if ((*UnitIter).Contains(_Address))
 					{
 						// Possible match.
 						Dwarf_Signed iLine = fp_LookupLineInUnit(_Address, *UnitIter);
@@ -127,16 +120,14 @@ namespace NMib
 							Dwarf_Error Error;
 
 							// Get file line number
-							if (dwarf_lineno( (*UnitIter).m_lLines[iLine], &LineNumber, &Error) != DW_DLV_OK)
-							{
+							if (dwarf_lineno((*UnitIter).m_lLines[iLine], &LineNumber, &Error) != DW_DLV_OK)
 								LineNumber = -1; // ?
-							}
 
 							// Search for the filename by examining the containing line entry and
 							// then searching backwards if we don't find a file source entry.
 							{
-								char const* pFileName = "unknown";
-								dwarf_linesrc((*UnitIter).m_lLines[iLine], const_cast<char**>(&pFileName), &Error);
+								char const *pFileName = "unknown";
+								dwarf_linesrc((*UnitIter).m_lLines[iLine], const_cast<char **>(&pFileName), &Error);
 								/*
 								for (Dwarf_Signed iL = iLine; iL >= 0; --iL)
 								Dwarf_Signed iL = iLine;
@@ -151,7 +142,7 @@ namespace NMib
 							}
 
 							// Find function
-							CFunction const* pFunc = fp_LookupFunctionInUnit(_Address, (*UnitIter));
+							CFunction const *pFunc = fp_LookupFunctionInUnit(_Address, (*UnitIter));
 							if (pFunc)
 							{
 								{
@@ -162,21 +153,25 @@ namespace NMib
 									if (Status == 0)
 									{
 										FunctionName = pDemangled;
-	#ifdef _LIBCPP_BUILD_STATIC
+#ifdef _LIBCPP_BUILD_STATIC
 										nontracked_free(pDemangled);
-	#else
+#else
 										free(pDemangled);
-	#endif
+#endif
 									}
 									else
-									{
 										FunctionName = pFunc->m_pName;
-									}
 								}
 							}
 
-							NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
-								= fg_Construct(std::move(FunctionName), std::move(ModuleName), std::move(FileName), LineNumber);
+							NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo = fg_Construct
+								(
+									std::move(FunctionName)
+									, std::move(ModuleName)
+									, std::move(FileName)
+									, LineNumber
+								)
+							;
 
 							return pInfo.f_Detach();
 						}
@@ -186,10 +181,10 @@ namespace NMib
 				return nullptr;
 			}
 
-			void CSymbolsIndex::f_Return(CStackTraceInfo* _pInfo)
+			void CSymbolsIndex::f_Return(CStackTraceInfo *_pInfo)
 			{
 				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
-					= NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap>((CLinuxStackTraceInfo*)_pInfo)
+					= NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap>((CLinuxStackTraceInfo *)_pInfo)
 				;
 			}
 
@@ -197,17 +192,15 @@ namespace NMib
 			// CSymbolsIndex Private Methods
 			//
 
-
-			Dwarf_Signed CSymbolsIndex::fp_LookupLineInUnit(umint _Address, CUnit const& _Unit) const
+			Dwarf_Signed CSymbolsIndex::fp_LookupLineInUnit(umint _Address, CUnit const &_Unit) const
 			{
-
 				aint iLowerBound = _Unit.m_lSortedLines.f_BinarySearchLowerBound
 					(
-							[&](CLineEntry const& _Entry, umint _ToFind)
-							{
-								return _Entry.m_PC <=> _ToFind;
-							}
-						,	_Address
+						[&](CLineEntry const &_Entry, umint _ToFind)
+						{
+							return _Entry.m_PC <=> _ToFind;
+						}
+						, _Address
 					)
 				;
 
@@ -218,9 +211,7 @@ namespace NMib
 					if (_Address < _Unit.m_lSortedLines[iLine].m_PC)
 					{
 						if (iLine == 0)
-						{
 							return -1;
-						}
 
 						--iLine;
 					}
@@ -228,27 +219,25 @@ namespace NMib
 					return _Unit.m_lSortedLines[iLine].m_iLine;
 				}
 				else
-				{
 					return -1;
-				}
 			}
 
-			CFunction const* CSymbolsIndex::fp_LookupFunctionInUnit(umint _Address, CUnit const& _Unit) const
+			CFunction const *CSymbolsIndex::fp_LookupFunctionInUnit(umint _Address, CUnit const &_Unit) const
 			{
-				if ( ! (_Unit.m_Flags & CUnit::EFlag_ReadFunctions) )
+				if (!(_Unit.m_Flags & CUnit::EFlag_ReadFunctions))
 				{
-					CUnit& Unit = const_cast<CUnit&>(_Unit);
+					CUnit &Unit = const_cast<CUnit &>(_Unit);
 					fp_IndexUnitFunctions(Unit);
 					Unit.m_Flags |= CUnit::EFlag_ReadFunctions;
 				}
 
 				aint iFunc = _Unit.m_lSortedFunctions.f_BinarySearchLowerBound
 					(
-							[&](CFunction const& _Func, umint _Address)
-							{
-								return _Func.m_LowPC <=> _Address;
-							}
-						,	_Address
+						[&](CFunction const &_Func, umint _Address)
+						{
+							return _Func.m_LowPC <=> _Address;
+						}
+						, _Address
 					)
 				;
 
@@ -263,9 +252,7 @@ namespace NMib
 					}
 
 					if (_Unit.m_lSortedFunctions[iFunc].m_HighPC > _Address)
-					{
 						return &_Unit.m_lSortedFunctions[iFunc];
-					}
 				}
 
 				return nullptr;
@@ -279,7 +266,7 @@ namespace NMib
 				Dwarf_Die pRetDie;
 				Dwarf_Half Tag;
 
-				while ( (Result = dwarf_next_cu_header_b(mp_Dwarf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &Error)) ==  DW_DLV_OK )
+				while ((Result = dwarf_next_cu_header_b(mp_Dwarf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &Error)) == DW_DLV_OK)
 				{
 					pDie = nullptr;
 
@@ -318,22 +305,14 @@ namespace NMib
 					// unit span the whole space for now.
 					// (This will be corrected if line info is available)
 					if (dwarf_attrval_unsigned(pDie, DW_AT_low_pc, &LowPC, &Error) == DW_DLV_OK)
-					{
 						CurUnit.m_LowPC = LowPC;
-					}
 					else
-					{
 						CurUnit.m_LowPC = 0;
-					}
 
 					if (dwarf_attrval_unsigned(pDie, DW_AT_high_pc, &HighPC, &Error) == DW_DLV_OK)
-					{
 						CurUnit.m_HighPC = HighPC;
-					}
 					else
-					{
 						CurUnit.m_HighPC = ~(umint)0;
-					}
 
 	/* TODO: Currently do not handle ranges as clang is not generating them.
 					Dwarf_Unsigned RangesPtr;
@@ -360,18 +339,21 @@ namespace NMib
 						{
 							if (dwarf_lineaddr(CurUnit.m_lLines[iL], &LineAddr, &Error) == DW_DLV_OK)
 							{
-								CurUnit.m_lSortedLines[nValidLines] = { (umint)LineAddr, (umint)iL };
+								CurUnit.m_lSortedLines[nValidLines] = {(umint)LineAddr, (umint)iL};
 								++nValidLines;
 							}
 						}
 
 						CurUnit.m_lSortedLines.f_SetLen(nValidLines);
 
-						CurUnit.m_lSortedLines.f_Sort(
-								[](CLineEntry const& _A, CLineEntry const& _B)
+						CurUnit.m_lSortedLines.f_Sort
+							(
+								[](CLineEntry const &_A, CLineEntry const &_B)
 								{
 									return _A.m_PC <=> _B.m_PC;
-								});
+								}
+							)
+						;
 
 						if (!CurUnit.m_lSortedLines.f_IsEmpty())
 						{
@@ -380,7 +362,6 @@ namespace NMib
 						}
 
 						CurUnit.m_Flags |= CUnit::EFlag_ReadLines;
-
 					}
 					else
 					{
@@ -405,27 +386,28 @@ namespace NMib
 				return true;
 			}
 
-			bool CSymbolsIndex::fp_IndexUnitFunctions(CUnit& _Unit) const
+			bool CSymbolsIndex::fp_IndexUnitFunctions(CUnit &_Unit) const
 			{
-
 				Dwarf_Error Error;
 				dwarf_set_cu_from_die(mp_Dwarf, _Unit.m_pDie, &Error);
 
 	//			fp_CollectFunctions(_Unit.m_pDie, _Unit);
 				fp_CollectFunction(_Unit.m_pDie, _Unit);
 
-				_Unit.m_lSortedFunctions.f_Sort(
-						[](CFunction const& _A, CFunction const& _B)
+				_Unit.m_lSortedFunctions.f_Sort
+					(
+						[](CFunction const &_A, CFunction const &_B)
 						{
 							return _A.m_LowPC <=> _B.m_HighPC;
 						}
-					);
+					)
+				;
 
 				return true;
 			}
 
 			// Does not deallocate _pDie.
-			bool CSymbolsIndex::fp_CollectFunction(Dwarf_Die _pDie, CUnit& _Unit) const
+			bool CSymbolsIndex::fp_CollectFunction(Dwarf_Die _pDie, CUnit &_Unit) const
 			{
 				Dwarf_Half Tag;
 				Dwarf_Error Error;
@@ -435,15 +417,13 @@ namespace NMib
 				{
 					if (0)
 					{ // DEBUG
-						char const* pTagName = nullptr;
-						if ( dwarf_get_TAG_name(Tag, &pTagName) == DW_DLV_OK)
+						char const *pTagName = nullptr;
+						if (dwarf_get_TAG_name(Tag, &pTagName) == DW_DLV_OK)
 							DMibTrace("Tag: {}\n", pTagName);
 						else
 							DMibTraceRaw("Tag: <unknown>\n");
 					}
-					if (	Tag == DW_TAG_subprogram
-						&&	dwarf_attrval_unsigned(_pDie, DW_AT_low_pc, &LowPC, &Error) == DW_DLV_OK
-						)
+					if (Tag == DW_TAG_subprogram && dwarf_attrval_unsigned(_pDie, DW_AT_low_pc, &LowPC, &Error) == DW_DLV_OK)
 					{
 						CFunction NewFunc;
 
@@ -455,32 +435,25 @@ namespace NMib
 						NewFunc.m_pName = "unknown";
 
 						Dwarf_Attribute NameAttr, SpecAttr;
-						char* pFuncName;
+						char *pFuncName;
 
 						int Ret = dwarf_attr(_pDie, DW_AT_name, &NameAttr, &Error);
-						if (	dwarf_attr(_pDie, DW_AT_name, &NameAttr, &Error) == DW_DLV_OK
-							&&	dwarf_formstring(NameAttr, &pFuncName, &Error) == DW_DLV_OK)
-						{
+						if (dwarf_attr(_pDie, DW_AT_name, &NameAttr, &Error) == DW_DLV_OK && dwarf_formstring(NameAttr, &pFuncName, &Error) == DW_DLV_OK)
 							NewFunc.m_pName = pFuncName;
-						}
 						else if (Ret == DW_DLV_ERROR)
 						{
-
 						}
 						else
 						{ // Try using spec.
 							Dwarf_Off Ref;
 							Dwarf_Die SpecDie;
-							char const* pFuncName2;
-							if (	dwarf_attr(_pDie, DW_AT_specification, &SpecAttr, &Error) == DW_DLV_OK
-								&&	dwarf_global_formref(SpecAttr, &Ref, &Error) == DW_DLV_OK)
+							char const *pFuncName2;
+							if (dwarf_attr(_pDie, DW_AT_specification, &SpecAttr, &Error) == DW_DLV_OK && dwarf_global_formref(SpecAttr, &Ref, &Error) == DW_DLV_OK)
 							{
 								if (dwarf_offdie(mp_Dwarf, Ref, &SpecDie, &Error) == DW_DLV_OK)
 								{
-									if(dwarf_attrval_string(SpecDie, DW_AT_name, &pFuncName2, &Error) == DW_DLV_OK)
-									{
+									if (dwarf_attrval_string(SpecDie, DW_AT_name, &pFuncName2, &Error) == DW_DLV_OK)
 										NewFunc.m_pName = pFuncName2;
-									}
 									dwarf_dealloc(mp_Dwarf, SpecDie, DW_DLA_DIE);
 									SpecDie = nullptr;
 								}
@@ -503,7 +476,6 @@ namespace NMib
 						}
 					}
 					//*/
-
 				}
 
 				int Ret;
@@ -512,16 +484,14 @@ namespace NMib
 				Dwarf_Die pRetDie;
 
 				/* Search children. */
-				Ret  = dwarf_child(_pDie, &pRetDie, &Error);
+				Ret = dwarf_child(_pDie, &pRetDie, &Error);
 				if (Ret == DW_DLV_ERROR)
 				{
 					mp_ErrorMessage = CSymStr::CFormat("fp_CollectFunctions: dwarf_child: {}") << dwarf_errmsg(Error);
 					return false;
 				}
 				else if (Ret == DW_DLV_OK)
-				{
 					bRecurseRet = fp_CollectFunctions(pRetDie, _Unit);
-				}
 
 				if (!bRecurseRet)
 					return false;
@@ -530,7 +500,7 @@ namespace NMib
 			}
 
 			// Always deallocated _pDie
-			bool CSymbolsIndex::fp_CollectFunctions(Dwarf_Die _pDie, CUnit& _Unit) const
+			bool CSymbolsIndex::fp_CollectFunctions(Dwarf_Die _pDie, CUnit &_Unit) const
 			{
 				fp_CollectFunction(_pDie, _Unit);
 
@@ -576,27 +546,25 @@ namespace NMib
 			// CSymbols
 			//
 
-			bool fg_FindModuleInfo(char const* _pFilename)
+			bool fg_FindModuleInfo(char const *_pFilename)
 			{
 				return false;
 			}
 
 			CSymbols::CSymbols()
 			{
-
 			}
 
 			CSymbols::~CSymbols()
 			{
 			}
 
-
-			CStackTraceInfo* CSymbols::f_AcquireStackTraceInfo(umint _Address)
+			CStackTraceInfo *CSymbols::f_AcquireStackTraceInfo(umint _Address)
 			{
-	#if 1
+#if 1
 				Dl_info Info;
 				NMemory::fg_MemClear(Info);
-				if (!dladdr((void*)_Address, &Info))
+				if (!dladdr((void *)_Address, &Info))
 				{
 					NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp = fg_Construct(CSymStr("dladdr failed"), CSymStr(), CSymStr(), 0);
 					return pTemp.f_Detach();
@@ -611,22 +579,27 @@ namespace NMib
 
 					if (pDemangled && Status == 0)
 					{
-						FunctionName = (const char *)pDemangled;
-	#ifdef _LIBCPP_BUILD_STATIC
+						FunctionName = (char const *)pDemangled;
+#	ifdef _LIBCPP_BUILD_STATIC
 						nontracked_free(pDemangled);
-	#else
+#	else
 						free(pDemangled);
-	#endif
+#	endif
 					}
 					else
 						FunctionName = Info.dli_sname;
 				}
 
-				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp
-					= fg_Construct(fg_Move(FunctionName), CSymStr(Info.dli_fname ? Info.dli_fname : ""), CSymStr(), 0)
+				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp = fg_Construct
+					(
+						fg_Move(FunctionName)
+						, CSymStr(Info.dli_fname ? Info.dli_fname : "")
+						, CSymStr()
+						, 0
+					)
 				;
 				return pTemp.f_Detach();
-	#else
+#else
 				DMibLock(mp_Lock);
 
 				CSymStr ModuleFilename;
@@ -635,23 +608,22 @@ namespace NMib
 				// Find out which module the address is in (exe or shared lib)
 				Dl_info Info;
 				NMemory::fg_MemClear(Info);
-				if (dladdr((void*)_Address, &Info))
+				if (dladdr((void *)_Address, &Info))
 				{
 					ModuleFilename = Info.dli_fname;
 					ModuleBase = reinterpret_cast<umint>(Info.dli_fbase);
 	//				DMibTrace("dladdr name: {}\n", (Info.dli_sname ? Info.dli_sname : ""));
 				}
-				else if (dladdr((void*)&fg_FindModuleInfo, &Info))
+				else if (dladdr((void *)&fg_FindModuleInfo, &Info))
 				{
 					ModuleFilename = Info.dli_fname;
 					ModuleBase = reinterpret_cast<umint>(Info.dli_fbase);
 					NMemory::fg_MemClear(Info);
 				}
 
-				CSymbolsIndex* pIndex = nullptr;
+				CSymbolsIndex *pIndex = nullptr;
 
-				NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>* pStoredIndex
-					= mp_IndexLookup.f_FindEqual(ModuleFilename);
+				NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap> *pStoredIndex = mp_IndexLookup.f_FindEqual(ModuleFilename);
 
 				if (pStoredIndex)
 					pIndex = (*pStoredIndex).f_Get();
@@ -670,7 +642,7 @@ namespace NMib
 
 				if (pIndex)
 				{
-					CLinuxStackTraceInfo* pInfo = pIndex->f_Lookup(_Address);
+					CLinuxStackTraceInfo *pInfo = pIndex->f_Lookup(_Address);
 
 					if (pInfo && pInfo->m_FunctionName.f_IsEmpty() && Info.dli_sname != nullptr)
 					{
@@ -680,8 +652,13 @@ namespace NMib
 
 					if (!pInfo)
 					{
-						NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp
-							= fg_Construct(CSymStr(Info.dli_sname ? Info.dli_sname : ""), CSymStr(ModuleFilename), CSymStr(""), 0)
+						NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pTemp = fg_Construct
+							(
+								CSymStr(Info.dli_sname ? Info.dli_sname : "")
+								, CSymStr(ModuleFilename)
+								, CSymStr("")
+								, 0
+							)
 						;
 						pInfo = pTemp.f_Detach();
 					}
@@ -695,19 +672,25 @@ namespace NMib
 					CSymStr FileName = "<unknown>";
 					int LineNumber = -1;
 
-					NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo
-						= fg_Construct(std::move(FunctionName), std::move(ModuleName), std::move(FileName), LineNumber);
+					NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo = fg_Construct
+						(
+							std::move(FunctionName)
+							, std::move(ModuleName)
+							, std::move(FileName)
+							, LineNumber
+						)
+					;
 
 					return pInfo.f_Detach();
 				}
-	#endif
+#endif
 			}
 
-			void CSymbols::f_ReleaseStackTraceInfo(CStackTraceInfo* _pInfo)
+			void CSymbols::f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 			{
 				DMibLock(mp_Lock);
 
-				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo = fg_Explicit((CLinuxStackTraceInfo*)_pInfo);
+				NStorage::TCUniquePointer<CLinuxStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfo = fg_Explicit((CLinuxStackTraceInfo *)_pInfo);
 			}
 		}
 	}

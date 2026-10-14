@@ -31,17 +31,23 @@ namespace NMib
 
 				static LONG fsp_ExceptionGenerateHandler(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_EnableCrashDumpCaches();
-				void f_GenerateCrashDump(const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI);
+				void f_GenerateCrashDump(NStr::CStr const &_Message, NStr::CStr const &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI);
 				static LONG fsp_ExceptionGenerateHandlerMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_GenerateMemoryDump
 					(
-						NMib::NContainer::TCVector<void*, NMemory::CAllocator_NonTrackedHeap> const& _Locations
-						, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const& _Sizes
+						NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &_Locations
+						, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 					)
 				;
 
 				void f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify);
-				void f_SetCrashDumpUserNotifyFormats(const NStr::CStrNonTracked &_CustomMessage, const NStr::CStrNonTracked &_CanContinueMessage, const NStr::CStrNonTracked &_NoContinueMessage);
+				void f_SetCrashDumpUserNotifyFormats
+					(
+						NStr::CStrNonTracked const &_CustomMessage
+						, NStr::CStrNonTracked const &_CanContinueMessage
+						, NStr::CStrNonTracked const &_NoContinueMessage
+					)
+				;
 
 				static LONG WINAPI fsp_UnhandledException(struct _EXCEPTION_POINTERS *_pExceptionInfo);
 				static NStr::CStr fs_FixLineEndings(NStr::CStr const &_In);
@@ -49,18 +55,26 @@ namespace NMib
 				NStr::CStrNonTracked f_DumpModules();
 				uint32 f_GetRandom();
 
-				static NStr::CStrNonTracked fs_FormatTimeFileName(const NTime::CTime &_Time);
+				static NStr::CStrNonTracked fs_FormatTimeFileName(NTime::CTime const &_Time);
 				static bool fs_CheckAccessRights(NStr::CStrNonTracked &_Path);
 
-				static LONG WINAPI fsp_DumpExceptionInformation(struct _EXCEPTION_POINTERS *_pExceptionInfo, const NStr::CStr &_Message, const NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs, bool _bDisplayGUI);
-				static BOOL CALLBACK fp_DumpExceptionMemoryCallback(PVOID _pParam,const PMINIDUMP_CALLBACK_INPUT _pInput,PMINIDUMP_CALLBACK_OUTPUT _pOutput);
-				static LONG WINAPI fsp_DumpExceptionMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, CExceptionMemoryData * _pExceptionMemoryData);
+				static LONG WINAPI fsp_DumpExceptionInformation
+					(
+						struct _EXCEPTION_POINTERS *_pExceptionInfo
+						, NStr::CStr const &_Message
+						, NStr::CStr const &_ExtraLog
+						, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs
+						, bool _bDisplayGUI
+					)
+				;
+				static BOOL CALLBACK fp_DumpExceptionMemoryCallback(PVOID _pParam, PMINIDUMP_CALLBACK_INPUT const _pInput, PMINIDUMP_CALLBACK_OUTPUT _pOutput);
+				static LONG WINAPI fsp_DumpExceptionMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, CExceptionMemoryData *_pExceptionMemoryData);
 
 				void f_InstallExceptionFilterCallback(bool _bDoInstall);
 				void f_UninstallExceptionFilterCallback();
-				void f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination);
-				void f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination);
-				void f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen);
+				void f_UndecorateName(ch8 const *_pName, NStr::CStr &_Destination);
+				void f_UndecorateName(ch8 const *_pName, NStr::CStrNonTracked &_Destination);
+				void f_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen);
 				CStackTraceInfo *f_AquireStackTraceInfo(CMibCodeAddress _Address);
 				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 
@@ -104,7 +118,6 @@ namespace NMib
 				CExceptionFilterPoller m_ExceptionFilterPoller;
 				NAtomic::TCAtomic<smint> m_bExceptionFilterPollerInstalled;
 				CStackTraceContext m_StackTrace;
-
 			};
 
 			CSubSystem_Debug_Platform_Windows &fg_Debug_Platfrom_Windows();

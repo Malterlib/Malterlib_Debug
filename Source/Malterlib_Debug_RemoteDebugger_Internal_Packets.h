@@ -7,31 +7,31 @@ namespace NMib::NDebug::NRemoteDebugger
 {
 	enum EChannel
 	{
-		EChannel_System,
-		EChannel_Memory,
+		EChannel_System
+		, EChannel_Memory
 	};
 
 	enum EPacket
 	{
 		// System Channel
-		EPacket_Sys_Initialize,
-		EPacket_Sys_Disconnected,
+		EPacket_Sys_Initialize
+		, EPacket_Sys_Disconnected
 
-		EPacket_Sys_ClientConnect,		// The client notifies the server of it's PID
+		, EPacket_Sys_ClientConnect // The client notifies the server of it's PID
 
 		// Memory Channel
-		EPacket_Mem_AllocatorName,
-		EPacket_Mem_AllocatorDelete,
-		EPacket_Mem_ScopeEnter,
-		EPacket_Mem_ScopeExit,
-		EPacket_Mem_Alloc,
-		EPacket_Mem_Resize,
-		EPacket_Mem_Realloc,
-		EPacket_Mem_Free,
-		EPacket_Mem_GetSize,
-		EPacket_Mem_Protect,
-		EPacket_Mem_Commit,
-		EPacket_Mem_Decommit,
+		, EPacket_Mem_AllocatorName
+		, EPacket_Mem_AllocatorDelete
+		, EPacket_Mem_ScopeEnter
+		, EPacket_Mem_ScopeExit
+		, EPacket_Mem_Alloc
+		, EPacket_Mem_Resize
+		, EPacket_Mem_Realloc
+		, EPacket_Mem_Free
+		, EPacket_Mem_GetSize
+		, EPacket_Mem_Protect
+		, EPacket_Mem_Commit
+		, EPacket_Mem_Decommit
 	};
 
 	// TODO: Using Var-Ints for alot of these would probably save a load of bandwidth.
@@ -44,22 +44,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint16 m_PacketID;
 		uint32 m_nBytes;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_Channel
-					>> m_Padding
-					>> m_PacketID
-					>> m_nBytes;
+			_Stream >> m_Channel >> m_Padding >> m_PacketID >> m_nBytes;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_Channel
-					<< m_Padding
-					<< m_PacketID
-					<< m_nBytes;
+			_Stream << m_Channel << m_Padding << m_PacketID << m_nBytes;
 		}
 	};
 
@@ -69,16 +63,16 @@ namespace NMib::NDebug::NRemoteDebugger
 	{
 		uint32 m_Features;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_Features;
+			_Stream >> m_Features;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_Features;
+			_Stream << m_Features;
 		}
 	};
 
@@ -86,14 +80,14 @@ namespace NMib::NDebug::NRemoteDebugger
 	{
 		uint64 m_PID;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
 			_Stream >> m_PID;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
 			_Stream << m_PID;
 		}
@@ -107,20 +101,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_MemoryAllocator;
 		NStr::CStrNonTracked m_Name;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Name;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Name;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Name;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Name;
 		}
 	};
 
@@ -129,60 +119,52 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ThreadID;
 		uint64 m_MemoryAllocator;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator;
+			_Stream >> m_ThreadID >> m_MemoryAllocator;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator;
+			_Stream << m_ThreadID << m_MemoryAllocator;
 		}
 	};
-
 
 	struct CMemPacket_ScopeEnter
 	{
 		uint64 m_ThreadID;
 		uint64 m_MemoryAllocator;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator;
+			_Stream >> m_ThreadID >> m_MemoryAllocator;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator;
+			_Stream << m_ThreadID << m_MemoryAllocator;
 		}
 	};
-
 
 	struct CMemPacket_ScopeExit
 	{
 		uint64 m_ThreadID;
 		uint64 m_MemoryAllocator;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator;
+			_Stream >> m_ThreadID >> m_MemoryAllocator;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator;
+			_Stream << m_ThreadID << m_MemoryAllocator;
 		}
 	};
 
@@ -196,28 +178,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ReturnedSize;
 		fp32 m_nBytesOverhead;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Address
-					>> m_RequestedSize
-					>> m_RequestedSize
-					>> m_ReturnedSize
-					>> m_nBytesOverhead;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_RequestedSize >> m_RequestedSize >> m_ReturnedSize >> m_nBytesOverhead;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Address
-					<< m_RequestedSize
-					<< m_RequestedSize
-					<< m_ReturnedSize
-					<< m_nBytesOverhead;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_RequestedSize << m_RequestedSize << m_ReturnedSize << m_nBytesOverhead;
 		}
 	};
 
@@ -232,30 +202,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ReturnedSize;
 		fp32 m_nBytesOverhead;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_OldAddress
-					>> m_Address
-					>> m_RequestedAlignment
-					>> m_RequestedSize
-					>> m_ReturnedSize
-					>> m_nBytesOverhead;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_OldAddress >> m_Address >> m_RequestedAlignment >> m_RequestedSize >> m_ReturnedSize >> m_nBytesOverhead;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_OldAddress
-					<< m_Address
-					<< m_RequestedAlignment
-					<< m_RequestedSize
-					<< m_ReturnedSize
-					<< m_nBytesOverhead;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_OldAddress << m_Address << m_RequestedAlignment << m_RequestedSize << m_ReturnedSize << m_nBytesOverhead;
 		}
 	};
 
@@ -270,30 +226,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ReturnedSize;
 		fp32 m_nBytesOverhead;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_OldAddress
-					>> m_Address
-					>> m_RequestedAlignment
-					>> m_RequestedSize
-					>> m_ReturnedSize
-					>> m_nBytesOverhead;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_OldAddress >> m_Address >> m_RequestedAlignment >> m_RequestedSize >> m_ReturnedSize >> m_nBytesOverhead;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_OldAddress
-					<< m_Address
-					<< m_RequestedAlignment
-					<< m_RequestedSize
-					<< m_ReturnedSize
-					<< m_nBytesOverhead;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_OldAddress << m_Address << m_RequestedAlignment << m_RequestedSize << m_ReturnedSize << m_nBytesOverhead;
 		}
 	};
 
@@ -303,20 +245,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_MemoryAllocator;
 		uint64 m_Address;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Address;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Address;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Address;
 		}
 	};
 
@@ -327,22 +265,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Address;
 		uint64 m_Size;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Address
-					>> m_Size;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Address
-					<< m_Size;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size;
 		}
 	};
 
@@ -354,24 +286,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Size;
 		uint64 m_Protect;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Address
-					>> m_Size
-					>> m_Protect;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size >> m_Protect;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Address
-					<< m_Size
-					<< m_Protect;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size << m_Protect;
 		}
 	};
 
@@ -382,22 +306,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Address;
 		uint64 m_Size;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Address
-					>> m_Size;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Address
-					<< m_Size;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size;
 		}
 	};
 
@@ -408,22 +326,16 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Address;
 		uint64 m_Size;
 
-		template<typename t_CStream>
-		void f_Read(t_CStream& _Stream)
+		template <typename t_CStream>
+		void f_Read(t_CStream &_Stream)
 		{
-			_Stream	>> m_ThreadID
-					>> m_MemoryAllocator
-					>> m_Address
-					>> m_Size;
+			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size;
 		}
 
-		template<typename t_CStream>
-		void f_Write(t_CStream& _Stream) const
+		template <typename t_CStream>
+		void f_Write(t_CStream &_Stream) const
 		{
-			_Stream	<< m_ThreadID
-					<< m_MemoryAllocator
-					<< m_Address
-					<< m_Size;
+			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size;
 		}
 	};
 }

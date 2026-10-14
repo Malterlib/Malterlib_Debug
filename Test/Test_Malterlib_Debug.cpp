@@ -4,9 +4,9 @@
 using namespace NMib;
 
 #ifdef DPlatformFamily_macOS
-	#include <Mib/Debug/PlatformSpecific/MacOSSymbols>
+#	include <Mib/Debug/PlatformSpecific/MacOSSymbols>
 #elif defined(DPlatformFamily_Linux)
-	#include <dlfcn.h>
+#	include <dlfcn.h>
 #endif
 
 inline_never void *fg_GetInstructionPointer()
@@ -16,23 +16,23 @@ inline_never void *fg_GetInstructionPointer()
 #elif defined(DCompiler_MSVC)
 	return _ReturnAddress();
 #else
-#error "Implement this"
+#	error "Implement this"
 #endif
 }
 
-inline_never void* fg_LookupThisFunc()
+inline_never void *fg_LookupThisFunc()
 {
-	volatile static int Test = DMibPLine;
+	static int volatile Test = DMibPLine;
 	NSys::fg_Compiler_MakeActive(0, &Test);
 	void * volatile pRet = fg_GetInstructionPointer();
 	return pRet;
 }
 
-inline_never umint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, umint _MaxDepth)
+inline_never umint fg_AcquireStackTraceFromHere(CMibCodeAddress *_pStack, umint _MaxDepth)
 {
-	volatile static int Test = DMibPLine;
+	static int volatile Test = DMibPLine;
 	NSys::fg_Compiler_MakeActive(0, &Test);
-	volatile umint Value = NMib::NSys::fg_System_GetStackTrace(_pStack, _MaxDepth);
+	umint volatile Value = NMib::NSys::fg_System_GetStackTrace(_pStack, _MaxDepth);
 	return Value;
 }
 
@@ -54,15 +54,14 @@ inline_never umint fg_AcquireStackTraceFromHere(CMibCodeAddress* _pStack, umint 
 class CDebug_Tests : public NMib::NTest::CTest
 {
 public:
-
 	template <typename t_CValue>
 	struct TCFunctionConstTemplateParam
 	{
 	};
 
-	inline_never static void* fs_LookupThisStaticMemberFunc()
+	inline_never static void *fs_LookupThisStaticMemberFunc()
 	{
-		volatile static int Test = DMibPLine;
+		static int volatile Test = DMibPLine;
 		NSys::fg_Compiler_MakeActive(0, &Test);
 		void * volatile pRet = fg_GetInstructionPointer();
 		return pRet;
@@ -112,9 +111,9 @@ public:
 //					if (pInfo->m_pSourceFileName)
 //						DMibTrace("   FileName: \"{}\"\n", pInfo->m_pSourceFileName);
 //					DMibTrace("   FileLine: {}\n", pInfo->m_SourceLine);
-					if ( pInfo->m_pFunctionName && NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fg_AcquireStackTraceFromHere") != -1)
+					if (pInfo->m_pFunctionName && NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fg_AcquireStackTraceFromHere") != -1)
 					{
-						if ( pInfo->m_pSourceFileName && *pInfo->m_pSourceFileName)
+						if (pInfo->m_pSourceFileName && *pInfo->m_pSourceFileName)
 						{
 							if (NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Malterlib_Debug.cpp") != -1)
 								bFound = true;
@@ -141,18 +140,14 @@ public:
 
 				if (pInfo)
 				{
-					DMibTest(DMibExpr((void*)pInfo->m_pFunctionName) != DMibExpr(nullptr));
-					if ( pInfo->m_pFunctionName)
-					{
+					DMibTest(DMibExpr((void *)pInfo->m_pFunctionName) != DMibExpr(nullptr));
+					if (pInfo->m_pFunctionName)
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fg_LookupThisFunc")) != DMibExpr(-1))(ExpectLinuxFail);
-					}
 
 #ifndef DPlatformFamily_macOS
-					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
-					if ( pInfo->m_pSourceFileName)
-					{
+					DMibTest(DMibExpr((void *)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
+					if (pInfo->m_pSourceFileName)
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Malterlib_Debug.cpp")) != DMibExpr(-1))(ExpectLinuxFail);
-					}
 #endif
 
 					NSys::fg_Debug_ReleaseStackTraceInfo(pInfo);
@@ -172,11 +167,11 @@ public:
 
 				if (pInfo)
 				{
-					DMibTest(DMibExpr((void*)pInfo->m_pFunctionName) != DMibExpr(nullptr));
+					DMibTest(DMibExpr((void *)pInfo->m_pFunctionName) != DMibExpr(nullptr));
 					if (pInfo->m_pFunctionName)
 						DMibExpect(NStr::CStr(pInfo->m_pFunctionName), ==, "dlopen");
 
-					DMibTest(DMibExpr((void*)pInfo->m_pModuleName) != DMibExpr(nullptr));
+					DMibTest(DMibExpr((void *)pInfo->m_pModuleName) != DMibExpr(nullptr));
 					if (pInfo->m_pModuleName)
 					{
 						auto ModuleName = NFile::CFile::fs_GetFileNoExt(NFile::CFile::fs_GetFileNoExt(NStr::CStr(pInfo->m_pModuleName)));
@@ -201,16 +196,14 @@ public:
 //					DMibTrace("pInfo->m_pFunctionName: {}\n", pInfo->m_pFunctionName);
 //					DMibTrace("pInfo->m_pSourceFileName: {}\n", (void*)pInfo->m_pSourceFileName);
 
-					DMibTest(DMibExpr((void*)pInfo->m_pFunctionName) != DMibExpr(nullptr));
+					DMibTest(DMibExpr((void *)pInfo->m_pFunctionName) != DMibExpr(nullptr));
 					if (pInfo->m_pFunctionName)
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pFunctionName, "fs_LookupThisStaticMemberFunc")) != DMibExpr(-1))(ExpectLinuxFail);
 
 #ifndef DPlatformFamily_macOS
-					DMibTest(DMibExpr((void*)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
-					if ( pInfo->m_pSourceFileName)
-					{
+					DMibTest(DMibExpr((void *)pInfo->m_pSourceFileName) != DMibExpr(nullptr));
+					if (pInfo->m_pSourceFileName)
 						DMibTest(DMibExpr(NStr::fg_StrFindNoCase(pInfo->m_pSourceFileName, "Test_Malterlib_Debug.cpp")) != DMibExpr(-1))(ExpectLinuxFail);
-					}
 #endif
 
 					NSys::fg_Debug_ReleaseStackTraceInfo(pInfo);
@@ -218,7 +211,7 @@ public:
 			}
 		};
 //*/
-	#if defined(DPlatformFamily_macOS) && 0
+#if defined(DPlatformFamily_macOS) && 0
 		DMibTestSuite("MacOSSymbols")
 		{
 			auto &Symbols = NMib::NDebug::NPlatform::fg_GetSymbols();
@@ -241,7 +234,7 @@ public:
 					<<	Info.m_Function);
 		     */
 		};
-	#endif
+#endif
 
 		DMibTestSuite("VisualizersMini")
 		{
@@ -311,13 +304,19 @@ public:
 			TCStr<TCStrTraits_Eval<ch16, EStrType_UTF, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> Str25_0(str_utf16("CWStr 実際にあっ 24bit:𠀀"));
 			TCStr<TCStrTraits_Eval<ch32, EStrType_Unicode, TCStrImp_Dynamic, CStrImp_Dynamic_ParamsNonTracked>::CType> Str26_0(str_utf32("CUStr 実際にあっ 24bit:𠀀"));
 
-			CStrPtr Str30; Str30.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
-			CWStrPtr Str31; Str31.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
-			CUStrPtr Str32; Str32.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
+			CStrPtr Str30;
+			Str30.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
+			CWStrPtr Str31;
+			Str31.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
+			CUStrPtr Str32;
+			Str32.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
 
-			TCStr<TCStrTraitsPtr<ch8, EStrType_UTF>::CType> Str30_0; Str30_0.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
-			TCStr<TCStrTraitsPtr<ch16, EStrType_UTF>::CType> Str31_0; Str31_0.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
-			TCStr<TCStrTraitsPtr<ch32, EStrType_Unicode>::CType> Str32_0; Str32_0.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
+			TCStr<TCStrTraitsPtr<ch8, EStrType_UTF>::CType> Str30_0;
+			Str30_0.f_SetConstPtr(str_utf8("CStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf8("CStrPtr 実際にあっ 24bit:𠀀")));
+			TCStr<TCStrTraitsPtr<ch16, EStrType_UTF>::CType> Str31_0;
+			Str31_0.f_SetConstPtr(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf16("CWStrPtr 実際にあっ 24bit:𠀀")));
+			TCStr<TCStrTraitsPtr<ch32, EStrType_Unicode>::CType> Str32_0;
+			Str32_0.f_SetConstPtr(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀"), fg_StrLen(str_utf32("CUStrPtr 実際にあっ 24bit:𠀀")));
 
 			CMStrDeprecated MixedStr8(CStr(str_utf8("CStr")));
 			CMStrDeprecated MixedStr16(CStr(str_utf8("CWStr 実際にあっ")));
@@ -345,7 +344,6 @@ public:
 			IntrusiveList.f_Insert(Vector.f_Insert(8));
 			IntrusiveList.f_Insert(Vector.f_Insert(1));
 			IntrusiveList.f_Insert(Vector.f_Insert(3));
-
 
 			LinkedList.f_Insert(5);
 			LinkedList.f_Insert(8);
@@ -449,18 +447,25 @@ public:
 				}
 			;
 
-			auto iVectorEmpty = Vector.f_GetIterator(); fMakeEmpty(iVectorEmpty);
-			auto iIntrusiveListEmpty = IntrusiveList.f_GetIterator(); fMakeEmpty(iIntrusiveListEmpty);
-			auto iLinkedListEmpty = LinkedList.f_GetIterator(); fMakeEmpty(iLinkedListEmpty);
-			auto iAVLTreeEmpty = AVLTree.f_GetIterator(); fMakeEmpty(iAVLTreeEmpty);
-			auto iIntrusiveSingleListEmpty = IntrusiveSingleList.f_GetIterator(); fMakeEmpty(iIntrusiveSingleListEmpty);
-			auto iMapEmpty = Map.f_GetIterator(); fMakeEmpty(iMapEmpty);
-			auto iSetEmtpy = Set.f_GetIterator(); fMakeEmpty(iSetEmtpy);
+			auto iVectorEmpty = Vector.f_GetIterator();
+			fMakeEmpty(iVectorEmpty);
+			auto iIntrusiveListEmpty = IntrusiveList.f_GetIterator();
+			fMakeEmpty(iIntrusiveListEmpty);
+			auto iLinkedListEmpty = LinkedList.f_GetIterator();
+			fMakeEmpty(iLinkedListEmpty);
+			auto iAVLTreeEmpty = AVLTree.f_GetIterator();
+			fMakeEmpty(iAVLTreeEmpty);
+			auto iIntrusiveSingleListEmpty = IntrusiveSingleList.f_GetIterator();
+			fMakeEmpty(iIntrusiveSingleListEmpty);
+			auto iMapEmpty = Map.f_GetIterator();
+			fMakeEmpty(iMapEmpty);
+			auto iSetEmtpy = Set.f_GetIterator();
+			fMakeEmpty(iSetEmtpy);
 
 			using namespace NTime;
 
 			CTime Time = CTime::fs_NowUTC();
-			CTimeSpan TimeSpan = CTimeSpanConvert::fs_CreateSpan(0,5,3,2);
+			CTimeSpan TimeSpan = CTimeSpanConvert::fs_CreateSpan(0, 5, 3, 2);
 
 			CTime StartOfTime = CTime::fs_StartOfTime();
 			CTime EndOfTime = CTime::fs_EndOfTime();
@@ -540,11 +545,10 @@ public:
 			ufp64 UFloat64_Smallest = ufp64::fs_Smallest();
 			ufp64 UFloat64_SmallestDenormal = ufp64::fs_SmallestDenormal();
 
-			static NStorage::TCAggregate<int32> s_Aggregate = { DAggregateInit };
-			static NStorage::TCAggregate<int32> s_AggregateEmpty = { DAggregateInit };
+			static NStorage::TCAggregate<int32> s_Aggregate = {DAggregateInit};
+			static NStorage::TCAggregate<int32> s_AggregateEmpty = {DAggregateInit};
 
-			auto CleanupAggregate
-				= fg_OnScopeExit
+			auto CleanupAggregate = fg_OnScopeExit
 				(
 					[&]()
 					{
@@ -555,7 +559,7 @@ public:
 
 			*s_Aggregate = 55;
 
-			NStorage::TCAggregateSimple<int32> AggregateSimple = { DAggregateInit };
+			NStorage::TCAggregateSimple<int32> AggregateSimple = {DAggregateInit};
 
 			AggregateSimple.f_Construct(55);
 
@@ -578,10 +582,11 @@ public:
 					[]() -> NThread::CThreadLocalInterface::CSafeAllocMemory
 					{
 						return
-						{
-							NMemory::CAllocator_Heap::f_AllocAligned(sizeof(int32), fg_Max(umint(DMibPMemoryCacheLineSize), alignof(int32)))
-							, sizeof(int32)
-						};
+							{
+								NMemory::CAllocator_Heap::f_AllocAligned(sizeof(int32), fg_Max(umint(DMibPMemoryCacheLineSize), alignof(int32)))
+								, sizeof(int32)
+							}
+						;
 					}
 					, [](NThread::CThreadLocalInterface::CSafeAllocMemory const &_Alloc) -> void
 					{
@@ -591,18 +596,12 @@ public:
 					{
 						(void)_bMove;
 						if (_pParent)
-							return new (_pMemory) int32(*_pParent);
-						return new (_pMemory) int32();
+							return new(_pMemory) int32(*_pParent);
+						return new(_pMemory) int32();
 					}
 					, [](int32 *_pData) -> void
 					{
-						fg_DeleteObjectDefiniteType
-							(
-								NMemory::CAllocator_Heap()
-								, _pData
-								, fg_Max(umint(DMibPMemoryCacheLineSize), alignof(int32))
-							)
-						;
+						fg_DeleteObjectDefiniteType(NMemory::CAllocator_Heap(), _pData, fg_Max(umint(DMibPMemoryCacheLineSize), alignof(int32)));
 					}
 				)
 			;
@@ -622,7 +621,10 @@ public:
 			TCVariant<void, int32, fp32, fp16> VoidVariant;
 
 			NMib::NNumeric::TCFloat<1, 5, 10, 0, NMib::NNumeric::CNoImplicit, 1, short> FloatWhat(fp32(3.4f));
-			struct CTaggedIntegerTestTag {};
+			struct CTaggedIntegerTestTag
+			{
+			};
+
 			NNumeric::TCTaggedInteger<int32, CTaggedIntegerTestTag> TaggedInteger = NNumeric::TCTaggedInteger<int32, CTaggedIntegerTestTag>::fs_Create(42);
 
 			Variant0 = 3;
@@ -630,24 +632,8 @@ public:
 			Variant2.f_Set<2>(fp32(3.4f));
 			Variant3.f_Set<2>(6);
 
-			TCStreamableVariant
-				<
-					int
-					, NStorage::TCMember<int32, 0>
-					, NStorage::TCMember<fp32, 1>
-					, NStorage::TCMember<fp16, 2>
-				>
-				StreamableVariant0
-			;
-			TCStreamableVariant
-				<
-					int
-					, NStorage::TCMember<int32, 0>
-					, NStorage::TCMember<fp32, 1>
-					, NStorage::TCMember<fp16, 2>
-				>
-				StreamableVariant1
-			;
+			TCStreamableVariant<int, NStorage::TCMember<int32, 0>, NStorage::TCMember<fp32, 1>, NStorage::TCMember<fp16, 2>> StreamableVariant0;
+			TCStreamableVariant<int, NStorage::TCMember<int32, 0>, NStorage::TCMember<fp32, 1>, NStorage::TCMember<fp16, 2>> StreamableVariant1;
 			TCStreamableVariant
 				<
 					int
@@ -674,10 +660,10 @@ public:
 					m_LinkedList.f_Insert(5);
 					m_LinkedList.f_Insert(6);
 				}
+
 				void f_Test()
 				{
-					auto fTest
-						= [this]()
+					auto fTest = [this]()
 						{
 							m_LinkedList.f_Insert(66);
 							m_LinkedList.f_Insert(67);
@@ -687,8 +673,8 @@ public:
 					fTest();
 				}
 			};
-			auto fTest
-				= [&]()
+
+			auto fTest = [&]()
 				{
 					IntrusiveList.f_GetIterator();
 					AVLTree.f_GetIterator();
@@ -733,11 +719,11 @@ public:
 			IntrusiveListLooped.f_Insert(VectorLooped.f_Insert(1));
 			IntrusiveListLooped.f_Insert(VectorLooped.f_Insert(3));
 
-			*((void**)(&(VectorLooped[3].m_Link))) = (void*)(&(VectorLooped[1].m_Link));
+			*((void **)(&(VectorLooped[3].m_Link))) = (void *)(&(VectorLooped[1].m_Link));
 
 			IntrusiveListLooped.f_Construct();
 			for (umint i = 0; i < 4; ++i)
-				*((void**)(&(VectorLooped[i].m_Link))) = nullptr;
+				*((void **)(&(VectorLooped[i].m_Link))) = nullptr;
 
 			CTest2 Test2(665);
 
@@ -803,7 +789,7 @@ public:
 
 			zmint AutoClear_zmint = 6;
 			zfp32 AutoClear_zfp32 = fp32(5.6f);
-			CSecureByteVector SecureByteVector{3,4,5};
+			CSecureByteVector SecureByteVector{3, 4, 5};
 
 			using namespace NMib::NEncoding;
 			CJsonSorted Json(EJsonType_Object);
@@ -861,10 +847,9 @@ public:
 				Object["KeyFloat"] = 167.6;
 				Object["KeyArray"] = EJsonType_Array;
 				Object["KeyObject"] = EJsonType_Object;
-				Object["KeyBinary"] = CByteVector{0,1,2};
+				Object["KeyBinary"] = CByteVector{0, 1, 2};
 				Object["KeyDate"] = CTime::fs_NowUTC();
 				Object["KeyUser"] = CEJsonUserTypeSorted{"TestType", Json};
-
 
 				auto &Array = ToReturn["KeyArray"];
 				Array.f_Insert(25);
@@ -906,12 +891,12 @@ public:
 
 			struct CTestingFunctor
 			{
-				void operator() () const
+				void operator () () const
 				{
 					DMibConOut("Test {}:{}\n", DMibPFile, DMibPLine);
 				}
 
-				void operator() ()
+				void operator () ()
 				{
 					DMibConOut("Test {}:{}\n", DMibPFile, DMibPLine);
 				}
@@ -919,12 +904,12 @@ public:
 
 			struct CTestingFunctorConstTemplateParam
 			{
-				void operator() (TCFunctionConstTemplateParam<int32 const> const &) const
+				void operator () (TCFunctionConstTemplateParam<int32 const> const &) const
 				{
 					DMibConOut("Test {}:{}\n", DMibPFile, DMibPLine);
 				}
 
-				void operator() (TCFunctionConstTemplateParam<int32 const> const &)
+				void operator () (TCFunctionConstTemplateParam<int32 const> const &)
 				{
 					DMibConOut("Test {}:{}\n", DMibPFile, DMibPLine);
 				}
@@ -1235,7 +1220,6 @@ public:
 			auto volatile &AutoClear_zmintVolatileRef = AutoClear_zmint;
 			auto volatile &AutoClear_zfp32VolatileRef = AutoClear_zfp32;
 
-
 			auto *RawStr0Ptr = &RawStr0;
 			auto *RawStr1Ptr = &RawStr1;
 			auto *RawStr2Ptr = &RawStr2;
@@ -1362,7 +1346,6 @@ public:
 			auto *pAutoClearInt = &AutoClearInt;
 			auto *pAutoClear_zmint = &AutoClear_zmint;
 			auto *pAutoClear_zfp32 = &AutoClear_zfp32;
-
 
 			auto **RawStr0PtrPtr = &RawStr0Ptr;
 			auto **RawStr1PtrPtr = &RawStr1Ptr;
@@ -2281,8 +2264,8 @@ public:
 			DKeepDebugVisualizerVariableActive(x1);
 			DKeepDebugVisualizerVariableActive(x2);
 #undef DKeepDebugVisualizerVariableActive
-			};
-		}
-	};
+		};
+	}
+};
 
 DMibTestRegister(CDebug_Tests, Malterlib::Debug);

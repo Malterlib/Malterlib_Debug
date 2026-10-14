@@ -5,7 +5,7 @@
 
 namespace NMib
 {
-	void fg_MalterlibFatalError(const ch8 *_pMessage)
+	void fg_MalterlibFatalError(ch8 const *_pMessage)
 	{
 		fg_GetSys()->f_FatalError(_pMessage);
 	}

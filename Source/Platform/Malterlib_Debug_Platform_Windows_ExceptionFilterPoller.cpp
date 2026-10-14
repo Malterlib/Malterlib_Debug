@@ -17,23 +17,22 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-
 			typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
 			{
-				ULONG Flags;                    //Reserved.
-				PCUNICODE_STRING FullDllName;   //The full path name of the DLL module.
-				PCUNICODE_STRING BaseDllName;   //The base file name of the DLL module.
-				PVOID DllBase;                  //A pointer to the base address for the DLL in memory.
-				ULONG SizeOfImage;              //The size of the DLL image, in bytes.
+				ULONG Flags; //Reserved.
+				PCUNICODE_STRING FullDllName; //The full path name of the DLL module.
+				PCUNICODE_STRING BaseDllName; //The base file name of the DLL module.
+				PVOID DllBase; //A pointer to the base address for the DLL in memory.
+				ULONG SizeOfImage; //The size of the DLL image, in bytes.
 			} LDR_DLL_LOADED_NOTIFICATION_DATA, *PLDR_DLL_LOADED_NOTIFICATION_DATA;
 
 			typedef struct _LDR_DLL_UNLOADED_NOTIFICATION_DATA
 			{
-				ULONG Flags;                    //Reserved.
-				PCUNICODE_STRING FullDllName;   //The full path name of the DLL module.
-				PCUNICODE_STRING BaseDllName;   //The base file name of the DLL module.
-				PVOID DllBase;                  //A pointer to the base address for the DLL in memory.
-				ULONG SizeOfImage;              //The size of the DLL image, in bytes.
+				ULONG Flags; //Reserved.
+				PCUNICODE_STRING FullDllName; //The full path name of the DLL module.
+				PCUNICODE_STRING BaseDllName; //The base file name of the DLL module.
+				PVOID DllBase; //A pointer to the base address for the DLL in memory.
+				ULONG SizeOfImage; //The size of the DLL image, in bytes.
 			} LDR_DLL_UNLOADED_NOTIFICATION_DATA, *PLDR_DLL_UNLOADED_NOTIFICATION_DATA;
 
 			typedef union _LDR_DLL_NOTIFICATION_DATA
@@ -42,13 +41,12 @@ namespace NMib
 				LDR_DLL_UNLOADED_NOTIFICATION_DATA Unloaded;
 			} LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
 
+			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context);
 
-			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION )(ULONG NotificationReason, const PLDR_DLL_NOTIFICATION_DATA NotificationData, PVOID Context);
-
-			static VOID NTAPI DllLoadedCallback(ULONG NotificationReason, const PLDR_DLL_NOTIFICATION_DATA NotificationData, PVOID Context)
+			static VOID NTAPI DllLoadedCallback(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context)
 			{
 				CSubSystem_Debug_Platform_Windows *pThis = (CSubSystem_Debug_Platform_Windows *)Context;
-				pThis->m_bPollCheckExceptionFilterTimes = 1000/25;
+				pThis->m_bPollCheckExceptionFilterTimes = 1000 / 25;
 				pThis->m_ExceptionFilterPoller.m_EventWantQuit.f_Signal();
 				if (!fg_GetSys()->f_DestroyingThreadSpecific() && pThis->m_bExceptionFilterPollerInstalled.f_Exchange(1) == 0)
 					pThis->m_ExceptionFilterPoller.f_Start();
@@ -60,7 +58,6 @@ namespace NMib
 				else
 					DMibTraceSafe("Unknown loaded code", 0);*/
 			}
-
 
 			NStr::CStr CSubSystem_Debug_Platform_Windows::CExceptionFilterPoller::f_GetThreadName()
 			{
@@ -86,7 +83,14 @@ namespace NMib
 					LPTOP_LEVEL_EXCEPTION_FILTER pTop = SetUnhandledExceptionFilter(&CSubSystem_Debug_Platform_Windows::fsp_UnhandledException);
 					if (pTop != &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException)
 					{
-						DMibDTrace("ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: Unhandled exception filter was lost({} != {}): {}\n", pTop, &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException, Timer);
+						DMibDTrace
+							(
+								"ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: Unhandled exception filter was lost({} != {}): {}\n"
+								, pTop
+								, &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException
+								, Timer
+							)
+						;
 						//m_pSystem->m_pPrevExceptionFilter = pTop;
 					}
 				}
@@ -157,7 +161,6 @@ namespace NMib
 						}
 					}
 				}
-
 			}
 		}
 	}

@@ -135,10 +135,12 @@ def fg_GetAVLTreeOffset(_TreeType, _DataType, _NodeType):
 
 class CSynthProvider_TCAVLTreeAggregate_Node:
 	def fp_Left(self):
-		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(0).GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
+		Child = self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(0).GetValueAsUnsigned(0)
+		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((Child >> 2) << 2).AddressOf(), self.m_NodeType)
 
 	def fp_Right(self):
-		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(1).GetValueAsUnsigned(0) >> 2) << 2).AddressOf(), self.m_NodeType)
+		Child = self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(1).GetValueAsUnsigned(0)
+		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((Child >> 2) << 2).AddressOf(), self.m_NodeType)
 
 	def fp_GetNode(self, _pNodePointer):
 		return fg_CreateDynamicValue(self.m_Node, '[TempData]', _pNodePointer, self.m_NodeType)

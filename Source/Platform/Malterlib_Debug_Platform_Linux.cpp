@@ -11,7 +11,7 @@
 // Libunwind may buy us some more info, but the output from that (even Apple's variant) is pretty
 // much the same as from dladdr as far as I can tell.
 
-bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo & _oInfo, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
+bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
 {
 	if (_bCanAllocNonTracked)
 	{
@@ -50,7 +50,6 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo & _oInfo, CMibCod
 	return true;
 }
 
-
 NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _pAddress)
 {
 	return NMib::NDebug::NPlatform::fg_GetSymbols().f_AcquireStackTraceInfo((umint)_pAddress);
@@ -58,7 +57,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 
 extern "C"
 {
-	module_export void nontracked_free (void *__ptr) __THROW;
+	module_export void nontracked_free(void *__ptr) __THROW;
 }
 
 void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
@@ -77,40 +76,39 @@ void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 		// Nothing to deallocate
 	}
 	else if (_pInfo->m_pContext)
-	{
 		NMib::NDebug::NPlatform::fg_GetSymbols().f_ReleaseStackTraceInfo((CStackTraceInfo *)_pInfo->m_pContext);
-	}
 	else
 		NMib::NDebug::NPlatform::fg_GetSymbols().f_ReleaseStackTraceInfo(_pInfo);
 }
 
 void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib::NStr::CStr const &_Message)
 {
-
 }
 
-void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const NMib::NStr::CStr &_SecondStr, const NMib::NStr::CStr &_FirstName, const NMib::NStr::CStr &_SecondName)
+void NMib::NSys::fg_Debug_DiffStrings(NMib::NStr::CStr const &_FirstStr, NMib::NStr::CStr const &_SecondStr, NMib::NStr::CStr const &_FirstName, NMib::NStr::CStr const &_SecondName)
 {
 	DMibError("Not implemented - fg_Debug_DiffStrings");
 }
 
-void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
+void NMib::NSys::fg_Debug_GenerateCrashDump(NMib::NStr::CStr const &_Message, NMib::NStr::CStr const &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
-
 }
 
-NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const ch8 *_pFileName, int32 _Line, void *_pCodePointer, const NMib::NStr::CStrNonTracked &_ErrorMessage)
+NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 const *_pFileName, int32 _Line, void *_pCodePointer, NMib::NStr::CStrNonTracked const &_ErrorMessage)
 {
 	return EDebugContractFailureAction_NotHandled;
 }
 
 void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
 {
-
 }
 
-void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats(NMib::NStr::CStrNonTracked const &_CustomMessage, NMib::NStr::CStrNonTracked const &_CanContinueMessage, NMib::NStr::CStrNonTracked const &_NoContinueMessage)
+void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats
+	(
+		NMib::NStr::CStrNonTracked const &_CustomMessage
+		, NMib::NStr::CStrNonTracked const &_CanContinueMessage
+		, NMib::NStr::CStrNonTracked const &_NoContinueMessage
+	)
 {
-
 }
 

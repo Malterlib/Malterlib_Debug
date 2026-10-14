@@ -24,19 +24,19 @@ namespace NMib
 		{
 			static bool fg_DefaultCrashDumpUserNotify
 				(
-					NMib::NStr::CStrNonTracked const &_CustomMessage,
-					NMib::NStr::CStrNonTracked const &_ProgramName,
-					NMib::NStr::CStrNonTracked const &_SupportEmail,
-					NMib::NStr::CStrNonTracked const &_FileName,
-					NMib::NStr::CStrNonTracked const &_FileNameDumpMini,
-					NMib::NStr::CStrNonTracked const &_FileNameDump,
-					NMib::NStr::CStrNonTracked const &_FileNameMetadata,
-					bool _bAllowContinue
+					NMib::NStr::CStrNonTracked const &_CustomMessage
+					, NMib::NStr::CStrNonTracked const &_ProgramName
+					, NMib::NStr::CStrNonTracked const &_SupportEmail
+					, NMib::NStr::CStrNonTracked const &_FileName
+					, NMib::NStr::CStrNonTracked const &_FileNameDumpMini
+					, NMib::NStr::CStrNonTracked const &_FileNameDump
+					, NMib::NStr::CStrNonTracked const &_FileNameMetadata
+					, bool _bAllowContinue
 				)
 			;
 			NStr::CStr CSubSystem_Debug_Platform_Windows::fs_FixLineEndings(NStr::CStr const &_In)
 			{
-				const ch8 *pParse = _In;
+				ch8 const *pParse = _In;
 				NStr::CStr Ret;
 				while (*pParse)
 				{
@@ -64,7 +64,7 @@ namespace NMib
 
 			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::f_DumpObjects()
 			{
-				using fEnumProcesses = BOOL WINAPI (DWORD * lpidProcess, DWORD   cb, DWORD * cbNeeded);
+				using fEnumProcesses = BOOL WINAPI (DWORD * lpidProcess, DWORD cb, DWORD * cbNeeded);
 				using fGetModuleBaseNameW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpBaseName, DWORD nSize);
 				using fGetModuleFileNameExW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 				using fGetProcessImageFileNameW = DWORD WINAPI (HANDLE hProcess, LPWSTR lpImageFileName, DWORD nSize);
@@ -80,7 +80,7 @@ namespace NMib
 					if (pEnumProcesses)
 					{
 						NStr::CStrNonTracked Ret = "\r\n\r\nDump of GDI and User Objects\r\n\r\n";
-						const ch8 * pFormatStr = "{sj128,a-}{sj18,a-}{sj18,a-}\r\n";
+						ch8 const *pFormatStr = "{sj128,a-}{sj18,a-}{sj18,a-}\r\n";
 						Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Process" << "GDI Objects" << "User Objects";
 						NContainer::TCVector<DWORD, NMemory::CAllocator_NonTrackedHeap> ProcessIDs;
 
@@ -104,13 +104,13 @@ namespace NMib
 									nTotalUser += nUser;
 
 									NStr::CWStrNonTracked BaseName;
-		#if 1
+#if 1
 									if (pGetProcessImageFileName)
 										pGetProcessImageFileName(hProcess, BaseName.f_GetStr(1024), 1024);
 									else
-		#endif
+#endif
 										if (pGetModuleFileNameEx)
-										pGetModuleFileNameEx(hProcess, nullptr, BaseName.f_GetStr(1024), 1024);
+											pGetModuleFileNameEx(hProcess, nullptr, BaseName.f_GetStr(1024), 1024);
 									else if (pGetModuleBaseName)
 										pGetModuleBaseName(hProcess, nullptr, BaseName.f_GetStr(1024), 1024);
 
@@ -140,7 +140,7 @@ namespace NMib
 				EnumProcessModules(hProcess, 0, 0, &NeededBytes);
 				Modules.f_SetLen((NeededBytes * 2) / sizeof(HMODULE));
 				NStr::CStrNonTracked Ret = "\r\n\r\nDump of Process modules\r\n\r\n";
-				const ch8 * pFormatStr = "{sj128,a-}{sj19,a-}{sj19,a-}{sj19,a-}\r\n";
+				ch8 const *pFormatStr = "{sj128,a-}{sj19,a-}{sj19,a-}{sj19,a-}\r\n";
 				Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Module" << "Start" << "End" << "Size";
 				if (EnumProcessModules(hProcess, Modules.f_GetArray(), Modules.f_GetLen() * sizeof(HMODULE), &NeededBytes))
 				{
@@ -150,9 +150,7 @@ namespace NMib
 						HMODULE hModule = Modules[i];
 						NStr::CWStrNonTracked ModuleName;
 						if (GetModuleFileNameEx(hProcess, hModule, ModuleName.f_GetStr(1024), 1024))
-						{
 							ModuleName.f_SetModified();
-						}
 						else
 							ModuleName.f_Clear();
 
@@ -175,12 +173,11 @@ namespace NMib
 				return Ret;
 			}
 
-
 			LONG WINAPI CSubSystem_Debug_Platform_Windows::fsp_DumpExceptionInformation
 				(
 					struct _EXCEPTION_POINTERS *_pExceptionInfo
-					, const NStr::CStr &_Message
-					, const NStr::CStr &_ExtraLog
+					, NStr::CStr const &_Message
+					, NStr::CStr const &_ExtraLog
 					, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs
 					, bool _bDisplayGUI
 				)
@@ -190,13 +187,16 @@ namespace NMib
 				auto &SubSystem = fg_Debug_Platfrom_Windows();
 				DMibLock(SubSystem.m_DumpExceptionInfoLock);
 
-				auto fl_GenerateException
-					= [&_Message, &_ExtraLog, _pExceptionInfo, _pGeneratedLogs, _bDisplayGUI] (NThread::CThreadObjectNonTracked *_pThread) -> aint
+				auto fl_GenerateException = [&_Message, &_ExtraLog, _pExceptionInfo, _pGeneratedLogs, _bDisplayGUI](NThread::CThreadObjectNonTracked *_pThread) -> aint
 					{
 						umint nCache = EWindowCache;
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
 
-						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>(NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("MalterlibCrashDumpDir")));
+						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>
+							(
+								NSys::fg_Process_GetEnvironmentVariable_NonProtected(NStr::CStrNonTracked("MalterlibCrashDumpDir"))
+							)
+						;
 						if (CrashDumpPath.f_IsEmpty() || !fs_CheckAccessRights(CrashDumpPath))
 						{
 							CrashDumpPath = NMib::NFile::CFile::fs_AppendPath(NMib::fg_GetSys()->f_GetProgramRootNonTracked(), NStr::CStrNonTracked("CrashDumps"));
@@ -207,9 +207,7 @@ namespace NMib
 								{
 									CrashDumpPath = NMib::NFile::CFile::fs_AppendPath(NFile::CFile::fs_GetUserLocalProgramDirectoryNonTracked(), NStr::CStrNonTracked("CrashDumps"));
 									if (!fs_CheckAccessRights(CrashDumpPath))
-									{
 										return EXCEPTION_CONTINUE_SEARCH;
-									}
 								}
 							}
 						}
@@ -222,13 +220,14 @@ namespace NMib
 							NTime::CTimeConvert::CDateTime DateTime;
 							NTime::CTimeConvert(NTime::CTime::fs_NowLocal()).f_ExtractDateTime(DateTime);
 
-							int32 Fraction = (DateTime.m_Fraction*1000.0).f_ToIntRound();
+							int32 Fraction = (DateTime.m_Fraction * 1000.0).f_ToIntRound();
 							if (Fraction >= 1000)
 								Fraction = 999;
 
 							uint32 RandomValue = SubSystem.f_GetRandom();
 
-							NStr::CStrNonTracked CrashDumpID = NStr::CStrNonTracked::CFormat("{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0}.{sj8,sf0,nfh}")
+							NStr::CStrNonTracked CrashDumpID
+								= NStr::CStrNonTracked::CFormat("{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0}.{sj8,sf0,nfh}")
 								<< DateTime.m_Year
 								<< DateTime.m_Month
 								<< DateTime.m_DayOfMonth
@@ -294,10 +293,24 @@ namespace NMib
 										File.f_Open(FileNameDumpMini, NFile::EFileOpen_Write);
 										if (File.f_IsValid())
 										{
-											MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE )(MiniDumpWithHandleData | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData);
-											if (!SubSystem.m_StackTrace.MiniDumpWriteDump(SubSystem.m_StackTrace.m_hProcess, GetCurrentProcessId(), File.f_GetOSFile(), DumpType, &Info, nullptr, nullptr))
+											MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE)(MiniDumpWithHandleData | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData);
+											if
+											(
+												!SubSystem.m_StackTrace.MiniDumpWriteDump
+												(
+													SubSystem.m_StackTrace.m_hProcess
+													, GetCurrentProcessId()
+													, File.f_GetOSFile()
+													, DumpType
+													, &Info
+													, nullptr
+													, nullptr
+												)
+											)
 											{
-												NStr::CFStr256 ErrorStr = NStr::CFStr256::CFormat("Could not write mini dump. The error was: {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError());
+												NStr::CFStr256 ErrorStr
+													= NStr::CFStr256::CFormat("Could not write mini dump. The error was: {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError())
+												;
 												DMibDTrace("{}\n", ErrorStr);
 												ExceptionInfo += ErrorStr + "\r\n\r\n";
 												FileNameDumpMini.f_Clear();
@@ -311,12 +324,35 @@ namespace NMib
 										File.f_Open(FileNameDump, NFile::EFileOpen_Write);
 										if (File.f_IsValid())
 										{
-											MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE)(MiniDumpWithDataSegs | MiniDumpWithFullMemory | MiniDumpWithHandleData | MiniDumpWithUnloadedModules
-												| MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData | MiniDumpWithPrivateReadWriteMemory);
+											MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE)
+												(
+													MiniDumpWithDataSegs
+													| MiniDumpWithFullMemory
+													| MiniDumpWithHandleData
+													| MiniDumpWithUnloadedModules
+													| MiniDumpWithIndirectlyReferencedMemory
+													| MiniDumpWithProcessThreadData
+													| MiniDumpWithPrivateReadWriteMemory
+												)
+											;
 
-											if (!SubSystem.m_StackTrace.MiniDumpWriteDump(SubSystem.m_StackTrace.m_hProcess, GetCurrentProcessId(), File.f_GetOSFile(), DumpType, &Info, nullptr, nullptr))
+											if
+											(
+												!SubSystem.m_StackTrace.MiniDumpWriteDump
+												(
+													SubSystem.m_StackTrace.m_hProcess
+													, GetCurrentProcessId()
+													, File.f_GetOSFile()
+													, DumpType
+													, &Info
+													, nullptr
+													, nullptr
+												)
+											)
 											{
-												NStr::CFStr256 ErrorStr = NStr::CFStr256::CFormat("Could not write full dump. The error was: {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError());
+												NStr::CFStr256 ErrorStr
+													= NStr::CFStr256::CFormat("Could not write full dump. The error was: {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError())
+												;
 												DMibDTrace("{}\n", ErrorStr);
 												ExceptionInfo += ErrorStr + "\r\n\r\n";
 												FileNameDump.f_Clear();
@@ -332,7 +368,6 @@ namespace NMib
 								NStr::CFStr256 ErrorStr = NStr::CFStr256::CFormat("Could not initialize debug help context. The error was: {}") << StackTraceError;
 								DMibDTrace("{}\n", ErrorStr);
 								ExceptionInfo += ErrorStr + "\r\n\r\n";
-
 							}
 						}
 
@@ -347,46 +382,64 @@ namespace NMib
 						case EXCEPTION_ACCESS_VIOLATION:
 							{
 								if (_pExceptionInfo->ExceptionRecord->ExceptionInformation[0])
-									Code = NStr::CStrNonTracked::CFormat("Access violation trying to write to address: 0x{nfh,sf0,sj*}") <<
-									((umint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(umint) * 2)
+								{
+									Code
+										= NStr::CStrNonTracked::CFormat("Access violation trying to write to address: 0x{nfh,sf0,sj*}")
+										<< ((umint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1])
+										<< (sizeof(umint) * 2)
 									;
+								}
 								else
-									Code = NStr::CStrNonTracked::CFormat("Access violation trying to read to address: 0x{nfh,sf0,sj*}") <<
-									((umint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1]) << (sizeof(umint) * 2)
+								{
+									Code
+										= NStr::CStrNonTracked::CFormat("Access violation trying to read to address: 0x{nfh,sf0,sj*}")
+										<< ((umint)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1])
+										<< (sizeof(umint) * 2)
 									;
-
+								}
 							}
 							break;
-						case EXCEPTION_ARRAY_BOUNDS_EXCEEDED: Code = "Array bounds exceeded";break;
-						case EXCEPTION_BREAKPOINT: Code = "Breakpoint";break;
-						case EXCEPTION_DATATYPE_MISALIGNMENT: Code = "Datatype misalignment";break;
-						case EXCEPTION_FLT_DENORMAL_OPERAND: Code = "Float denormal operand";break;
-						case EXCEPTION_FLT_DIVIDE_BY_ZERO: Code = "Float divide by zero";break;
-						case EXCEPTION_FLT_INEXACT_RESULT: Code = "Float inexact result";break;
-						case EXCEPTION_FLT_INVALID_OPERATION: Code = "Float invalid operation";break;
-						case EXCEPTION_FLT_OVERFLOW: Code = "Float overflow";break;
-						case EXCEPTION_FLT_STACK_CHECK: Code = "Float stack check";break;
-						case EXCEPTION_FLT_UNDERFLOW: Code = "Float underflow";break;
-						case EXCEPTION_ILLEGAL_INSTRUCTION: Code = "Illegal instruction";break;
-						case EXCEPTION_IN_PAGE_ERROR: Code = "In page error";break;
-						case EXCEPTION_INT_DIVIDE_BY_ZERO: Code = "Integer divide by zero";break;
-						case EXCEPTION_INT_OVERFLOW: Code = "Integer overflow";break;
-						case EXCEPTION_INVALID_DISPOSITION: Code = "Invalid disposition";break;
-						case EXCEPTION_NONCONTINUABLE_EXCEPTION: Code = "Noncontinuable exception";break;
-						case EXCEPTION_PRIV_INSTRUCTION: Code = "Priviledged instruction";break;
-						case EXCEPTION_SINGLE_STEP: Code = "Single step";break;
-						case EXCEPTION_STACK_OVERFLOW: Code = "Stack overflow";break;
+						case EXCEPTION_ARRAY_BOUNDS_EXCEEDED: Code = "Array bounds exceeded"; break;
+						case EXCEPTION_BREAKPOINT: Code = "Breakpoint"; break;
+						case EXCEPTION_DATATYPE_MISALIGNMENT: Code = "Datatype misalignment"; break;
+						case EXCEPTION_FLT_DENORMAL_OPERAND: Code = "Float denormal operand"; break;
+						case EXCEPTION_FLT_DIVIDE_BY_ZERO: Code = "Float divide by zero"; break;
+						case EXCEPTION_FLT_INEXACT_RESULT: Code = "Float inexact result"; break;
+						case EXCEPTION_FLT_INVALID_OPERATION: Code = "Float invalid operation"; break;
+						case EXCEPTION_FLT_OVERFLOW: Code = "Float overflow"; break;
+						case EXCEPTION_FLT_STACK_CHECK: Code = "Float stack check"; break;
+						case EXCEPTION_FLT_UNDERFLOW: Code = "Float underflow"; break;
+						case EXCEPTION_ILLEGAL_INSTRUCTION: Code = "Illegal instruction"; break;
+						case EXCEPTION_IN_PAGE_ERROR: Code = "In page error"; break;
+						case EXCEPTION_INT_DIVIDE_BY_ZERO: Code = "Integer divide by zero"; break;
+						case EXCEPTION_INT_OVERFLOW: Code = "Integer overflow"; break;
+						case EXCEPTION_INVALID_DISPOSITION: Code = "Invalid disposition"; break;
+						case EXCEPTION_NONCONTINUABLE_EXCEPTION: Code = "Noncontinuable exception"; break;
+						case EXCEPTION_PRIV_INSTRUCTION: Code = "Priviledged instruction"; break;
+						case EXCEPTION_SINGLE_STEP: Code = "Single step"; break;
+						case EXCEPTION_STACK_OVERFLOW: Code = "Stack overflow"; break;
 						default:
 							{
-								if (_pExceptionInfo->ExceptionRecord && _pExceptionInfo->ExceptionRecord->NumberParameters >= 3 && _pExceptionInfo->ExceptionRecord->ExceptionInformation[0] == 0x19930520)
+								if
+								(
+									_pExceptionInfo->ExceptionRecord
+									&& _pExceptionInfo->ExceptionRecord->NumberParameters >= 3
+									&& _pExceptionInfo->ExceptionRecord->ExceptionInformation[0] == 0x19930520
+								)
 								{
 									NException::CException *pException = (NException::CException *)_pExceptionInfo->ExceptionRecord->ExceptionInformation[1];
 									if (pException->f_IsValid())
 									{
-										Code = NStr::CStrNonTracked::CFormat("{} in {}\r\n" DMibPFileLineFormat " {}") << pException->f_GetClass() << pException->f_GetFunction() << pException->f_GetFile() << pException->f_GetLine() << pException->f_GetErrorStrNonTracked();
+										Code
+											= NStr::CStrNonTracked::CFormat("{} in {}\r\n" DMibPFileLineFormat " {}")
+											<< pException->f_GetClass()
+											<< pException->f_GetFunction()
+											<< pException->f_GetFile()
+											<< pException->f_GetLine()
+											<< pException->f_GetErrorStrNonTracked()
+										;
 									}
 								}
-
 							}
 						}
 
@@ -395,18 +448,19 @@ namespace NMib
 
 						ExceptionInfo += "Exception type: " + Code + "\r\n\r\n";
 
-						#if defined(DMibContract_AnyEnabled) || DMibEnableSafeCheck > 0
-							NStr::CStrNonTracked LastContract = NSys::fg_System_GetContractViolationMessage();;
-							if (!LastContract.f_IsEmpty())
-							{
-								ExceptionInfo += "Last contract violation: \r\n";
-								ExceptionInfo += LastContract;
-								ExceptionInfo += "\r\n\r\n";
-							}
-						#endif
+#if defined(DMibContract_AnyEnabled) || DMibEnableSafeCheck > 0
+						NStr::CStrNonTracked LastContract = NSys::fg_System_GetContractViolationMessage();
+						if (!LastContract.f_IsEmpty())
+						{
+							ExceptionInfo += "Last contract violation: \r\n";
+							ExceptionInfo += LastContract;
+							ExceptionInfo += "\r\n\r\n";
+						}
+#endif
 
-
-						bool bCanContinue = !(_pExceptionInfo->ExceptionRecord->ExceptionFlags & EXCEPTION_NONCONTINUABLE) && _pExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_BREAKPOINT;
+						bool bCanContinue
+							= !(_pExceptionInfo->ExceptionRecord->ExceptionFlags & EXCEPTION_NONCONTINUABLE) && _pExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_BREAKPOINT
+						;
 				//		if (!bCanContinue)
 				//			ExceptionInfo += "Exception is noncontinuable\r\n";
 
@@ -417,13 +471,22 @@ namespace NMib
 
 						if (pAddressInfo)
 						{
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*} ({}!{})\r\n\r\n") << ((umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(umint) * 2)
-									<< (pAddressInfo->m_pModuleName) << (pAddressInfo->m_pFunctionName);
+							ExceptionInfo
+								+= NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*} ({}!{})\r\n\r\n")
+								<< ((umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress)
+								<< (sizeof(umint) * 2)
+								<< (pAddressInfo->m_pModuleName)
+								<< (pAddressInfo->m_pFunctionName)
+							;
 							SubSystem.f_ReleaseStackTraceInfo(pAddressInfo);
 						}
 						else
 						{
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*1}\r\n\r\n") << ((umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress) << (sizeof(umint) * 2);
+							ExceptionInfo
+								+= NStr::CStrNonTracked::CFormat("Exception address: 0x{nfh,sf0,sj*1}\r\n\r\n")
+								<< ((umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress)
+								<< (sizeof(umint) * 2)
+							;
 						}
 
 						//
@@ -431,17 +494,20 @@ namespace NMib
 						//
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_INTEGER)
 						{
-				#if defined(DArchitecture_arm64)
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Integer registers:\r\n"
-								" x0=0x{}   x1=0x{}   x2=0x{}   x3=0x{}\r\n"
-								" x4=0x{}   x5=0x{}   x6=0x{}   x7=0x{}\r\n"
-								" x8=0x{}   x9=0x{}  x10=0x{}  x11=0x{}\r\n"
-								"x12=0x{}  x13=0x{}  x14=0x{}  x15=0x{}\r\n"
-								"x16=0x{}  x17=0x{}  x18=0x{}  x19=0x{}\r\n"
-								"x20=0x{}  x21=0x{}  x22=0x{}  x23=0x{}\r\n"
-								"x24=0x{}  x25=0x{}  x26=0x{}  x27=0x{}\r\n"
-								"x28=0x{}\r\n"
-								"\r\n")
+#if defined(DArchitecture_arm64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Integer registers:\r\n"
+									" x0=0x{}   x1=0x{}   x2=0x{}   x3=0x{}\r\n"
+									" x4=0x{}   x5=0x{}   x6=0x{}   x7=0x{}\r\n"
+									" x8=0x{}   x9=0x{}  x10=0x{}  x11=0x{}\r\n"
+									"x12=0x{}  x13=0x{}  x14=0x{}  x15=0x{}\r\n"
+									"x16=0x{}  x17=0x{}  x18=0x{}  x19=0x{}\r\n"
+									"x20=0x{}  x21=0x{}  x22=0x{}  x23=0x{}\r\n"
+									"x24=0x{}  x25=0x{}  x26=0x{}  x27=0x{}\r\n"
+									"x28=0x{}\r\n"
+									"\r\n"
+								)
 								<< ((void *)_pExceptionInfo->ContextRecord->X0)
 								<< ((void *)_pExceptionInfo->ContextRecord->X1)
 								<< ((void *)_pExceptionInfo->ContextRecord->X2)
@@ -472,14 +538,17 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->X27)
 								<< ((void *)_pExceptionInfo->ContextRecord->X28)
 							;
-				#elif defined(DArchitecture_x64)
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Integer registers:\r\n"
-								"rdi=0x{} rsi=0x{} rax=0x{}\r\n"
-								"rbx=0x{} rcx=0x{} rdx=0x{}\r\n"
-								"r8=0x{}  r9=0x{}  r10=0x{}\r\n"
-								"r11=0x{} r12=0x{} r13=0x{}\r\n"
-								"r14=0x{} r15=0x{}\r\n"
-								"\r\n")
+#elif defined(DArchitecture_x64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Integer registers:\r\n"
+									"rdi=0x{} rsi=0x{} rax=0x{}\r\n"
+									"rbx=0x{} rcx=0x{} rdx=0x{}\r\n"
+									"r8=0x{}  r9=0x{}  r10=0x{}\r\n"
+									"r11=0x{} r12=0x{} r13=0x{}\r\n"
+									"r14=0x{} r15=0x{}\r\n"
+									"\r\n"
+								)
 								<< ((void *)_pExceptionInfo->ContextRecord->Rdi)
 								<< ((void *)_pExceptionInfo->ContextRecord->Rsi)
 								<< ((void *)_pExceptionInfo->ContextRecord->Rax)
@@ -495,10 +564,13 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->R14)
 								<< ((void *)_pExceptionInfo->ContextRecord->R15)
 							;
-				#else
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Integer registers:\r\n"
-								"edi=0x{} esi=0x{} eax=0x{}\r\n"
-								"ebx=0x{} ecx=0x{} edx=0x{}\r\n\r\n")
+#else
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Integer registers:\r\n"
+									"edi=0x{} esi=0x{} eax=0x{}\r\n"
+									"ebx=0x{} ecx=0x{} edx=0x{}\r\n\r\n"
+								)
 								<< ((void *)_pExceptionInfo->ContextRecord->Edi)
 								<< ((void *)_pExceptionInfo->ContextRecord->Esi)
 								<< ((void *)_pExceptionInfo->ContextRecord->Eax)
@@ -506,33 +578,37 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->Ecx)
 								<< ((void *)_pExceptionInfo->ContextRecord->Edx)
 							;
-				#endif
+#endif
 						}
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_CONTROL)
 						{
-				#if defined(DArchitecture_arm64)
-							ExceptionInfo
-								+= NStr::CStrNonTracked::CFormat("Control registers:\r\n"
-								"cpsr=0x{nfh,sj8,sf0}\r\n"
-								"fp=0x{}\r\n"
-								"lr=0x{}\r\n"
-								"sp=0x{}\r\n"
-								"pc=0x{}\r\n"
-								"\r\n")
+#if defined(DArchitecture_arm64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Control registers:\r\n"
+									"cpsr=0x{nfh,sj8,sf0}\r\n"
+									"fp=0x{}\r\n"
+									"lr=0x{}\r\n"
+									"sp=0x{}\r\n"
+									"pc=0x{}\r\n"
+									"\r\n"
+								)
 								<< ((uint32)_pExceptionInfo->ContextRecord->Cpsr)
 								<< ((void *)_pExceptionInfo->ContextRecord->Fp)
 								<< ((void *)_pExceptionInfo->ContextRecord->Lr)
 								<< ((void *)_pExceptionInfo->ContextRecord->Sp)
 								<< ((void *)_pExceptionInfo->ContextRecord->Pc)
 							;
-				#elif defined(DArchitecture_x64)
-							ExceptionInfo
-								+= NStr::CStrNonTracked::CFormat("Control registers:\r\n"
-								"rip=0x{} rbp=0x{} rsp=0x{}\r\n"
-								"SegCs=0x{nfh,sj4,sf0} SegDs=0x{nfh,sj4,sf0}\r\n"
-								"SegEs=0x{nfh,sj4,sf0} SegFs=0x{nfh,sj4,sf0}\r\n"
-								"SegGs=0x{nfh,sj4,sf0} SegSs=0x{nfh,sj4,sf0}\r\n"
-								"EFlags=0x{nfh,sj8,sf0}\r\n\r\n")
+#elif defined(DArchitecture_x64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Control registers:\r\n"
+									"rip=0x{} rbp=0x{} rsp=0x{}\r\n"
+									"SegCs=0x{nfh,sj4,sf0} SegDs=0x{nfh,sj4,sf0}\r\n"
+									"SegEs=0x{nfh,sj4,sf0} SegFs=0x{nfh,sj4,sf0}\r\n"
+									"SegGs=0x{nfh,sj4,sf0} SegSs=0x{nfh,sj4,sf0}\r\n"
+									"EFlags=0x{nfh,sj8,sf0}\r\n\r\n"
+								)
 								<< ((void *)_pExceptionInfo->ContextRecord->Rip)
 								<< ((void *)_pExceptionInfo->ContextRecord->Rbp)
 								<< ((void *)_pExceptionInfo->ContextRecord->Rsp)
@@ -544,29 +620,36 @@ namespace NMib
 								<< ((uint16)_pExceptionInfo->ContextRecord->SegSs)
 								<< ((uint32)_pExceptionInfo->ContextRecord->EFlags)
 							;
-				#else
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Control registers:\r\n"
-								"eip=0x{} ebp=0x{} esp=0x{}\r\n"
-								"SegCs=0x{nfh,sj8,sf0} SegSs=0x{nfh,sj8,sf0} EFlags=0x{nfh,sj8,sf0}\r\n\r\n")
+#else
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Control registers:\r\n"
+									"eip=0x{} ebp=0x{} esp=0x{}\r\n"
+									"SegCs=0x{nfh,sj8,sf0} SegSs=0x{nfh,sj8,sf0} EFlags=0x{nfh,sj8,sf0}\r\n\r\n"
+								)
 								<< ((void *)_pExceptionInfo->ContextRecord->Eip)
 								<< ((void *)_pExceptionInfo->ContextRecord->Ebp)
 								<< ((void *)_pExceptionInfo->ContextRecord->Esp)
 								<< ((uint32)_pExceptionInfo->ContextRecord->SegCs)
 								<< ((uint32)_pExceptionInfo->ContextRecord->SegSs)
 								<< ((uint32)_pExceptionInfo->ContextRecord->EFlags)
-								;
-				#endif
+							;
+#endif
 						}
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_DEBUG_REGISTERS)
 						{
-				#if defined(DArchitecture_arm64)
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Debug registers:\r\n"
-								"bcr0=0x{nfh,sf0,sj8} bcr1=0x{nfh,sf0,sj8} bcr2=0x{nfh,sf0,sj8} bcr3=0x{nfh,sf0,sj8} bcr4=0x{nfh,sf0,sj8} bcr5=0x{nfh,sf0,sj8} bcr6=0x{nfh,sf0,sj8} bcr7=0x{nfh,sf0,sj8}\r\n"
-								"wcr0=0x{nfh,sf0,sj8} wcr1=0x{nfh,sf0,sj8}\r\n"
-								"bcr0=0x{} bcr1=0x{} bcr2=0x{} bcr3=0x{} bcr4=0x{} bcr5=0x{} bcr6=0x{} bcr7=0x{}\r\n"
-								"wcr0=0x{} wcr1=0x{}\r\n"
-								"\r\n")
+#if defined(DArchitecture_arm64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Debug registers:\r\n"
+									"bcr0=0x{nfh,sf0,sj8} bcr1=0x{nfh,sf0,sj8} bcr2=0x{nfh,sf0,sj8} bcr3=0x{nfh,sf0,sj8} bcr4=0x{nfh,sf0,sj8} bcr5=0x{nfh,sf0,sj8} bcr6=0x{nfh,sf0,sj8} "
+									"bcr7=0x{nfh,sf0,sj8}\r\n"
+									"wcr0=0x{nfh,sf0,sj8} wcr1=0x{nfh,sf0,sj8}\r\n"
+									"bcr0=0x{} bcr1=0x{} bcr2=0x{} bcr3=0x{} bcr4=0x{} bcr5=0x{} bcr6=0x{} bcr7=0x{}\r\n"
+									"wcr0=0x{} wcr1=0x{}\r\n"
+									"\r\n"
+								)
 								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[0])
 								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[1])
 								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[2])
@@ -588,10 +671,13 @@ namespace NMib
 								<< ((void *)_pExceptionInfo->ContextRecord->Wvr[0])
 								<< ((void *)_pExceptionInfo->ContextRecord->Wvr[1])
 							;
-				#else
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Debug registers:\r\n"
-								"Dr0=0x{} Dr1=0x{} Dr2=0x{}\r\n"
-								"Dr3=0x{} Dr6=0x{} Dr7=0x{}\r\n\r\n")
+#else
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Debug registers:\r\n"
+									"Dr0=0x{} Dr1=0x{} Dr2=0x{}\r\n"
+									"Dr3=0x{} Dr6=0x{} Dr7=0x{}\r\n\r\n"
+								)
 								<< ((umint)_pExceptionInfo->ContextRecord->Dr0)
 								<< ((umint)_pExceptionInfo->ContextRecord->Dr1)
 								<< ((umint)_pExceptionInfo->ContextRecord->Dr2)
@@ -599,91 +685,102 @@ namespace NMib
 								<< ((umint)_pExceptionInfo->ContextRecord->Dr6)
 								<< ((umint)_pExceptionInfo->ContextRecord->Dr7)
 							;
-				#endif
+#endif
 						}
 
-				#ifdef DArchitecture_x86
+#ifdef DArchitecture_x86
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_SEGMENTS)
 						{
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Segment registers:\r\n"
-								"SegGs=0x{} SegFs=0x{}\r\n"
-								"SegEs=0x{} SegDs=0x{}\r\n\r\n")
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Segment registers:\r\n"
+									"SegGs=0x{} SegFs=0x{}\r\n"
+									"SegEs=0x{} SegDs=0x{}\r\n\r\n"
+								)
 								<< ((umint)_pExceptionInfo->ContextRecord->SegGs)
 								<< ((umint)_pExceptionInfo->ContextRecord->SegFs)
 								<< ((umint)_pExceptionInfo->ContextRecord->SegEs)
 								<< ((umint)_pExceptionInfo->ContextRecord->SegDs)
-								;
+							;
 						}
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
 						{
 							FLOATING_SAVE_AREA &FloatSaveArea = _pExceptionInfo->ContextRecord->FloatSave;
 
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Floating point registers:\r\n"
-								"ControlWord=0x{nfh,sf0,sj4} StatusWord=0x{nfh,sf0,sj4} TagWord=0x{nfh,sf0,sj4}\r\n"
-								"ErrorOffset=0x{} ErrorSelector=0x{} DataOffset=0x{}\r\n"
-								"DataSelector=0x{} \r\n")
-								<< ((uint16)FloatSaveArea.ControlWord&0xffff)
-								<< ((uint16)FloatSaveArea.StatusWord&0xffff)
-								<< ((uint64)FloatSaveArea.TagWord&0xffff)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Floating point registers:\r\n"
+									"ControlWord=0x{nfh,sf0,sj4} StatusWord=0x{nfh,sf0,sj4} TagWord=0x{nfh,sf0,sj4}\r\n"
+									"ErrorOffset=0x{} ErrorSelector=0x{} DataOffset=0x{}\r\n"
+									"DataSelector=0x{} \r\n"
+								)
+								<< ((uint16)FloatSaveArea.ControlWord & 0xffff)
+								<< ((uint16)FloatSaveArea.StatusWord & 0xffff)
+								<< ((uint64)FloatSaveArea.TagWord & 0xffff)
 								<< ((umint)FloatSaveArea.ErrorOffset)
 								<< ((umint)FloatSaveArea.ErrorSelector)
 								<< ((umint)FloatSaveArea.DataOffset)
 								<< ((umint)FloatSaveArea.DataSelector)
-								;
+							;
 
-							ExceptionInfo += NStr::CStrNonTracked::CFormat(
-								"St0=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St1=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
-								"St2=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St3=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
-								"St4=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St5=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
-								"St6=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St7=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n\r\n")
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[0*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[0*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[1*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[1*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[2*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[2*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[3*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[3*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[4*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[4*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[5*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[5*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[6*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[6*10]))
-								<< (*((uint16 *)&FloatSaveArea.RegisterArea[7*10+8]))
-								<< (*((uint64 *)&FloatSaveArea.RegisterArea[7*10]))
-								;
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"St0=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St1=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
+									"St2=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St3=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
+									"St4=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St5=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n"
+									"St6=0x{nfh,sf0,sj4}{nfh,sf0,sj16} St7=0x{nfh,sf0,sj4}{nfh,sf0,sj16}\r\n\r\n"
+								)
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[0 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[0 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[1 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[1 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[2 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[2 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[3 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[3 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[4 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[4 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[5 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[5 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[6 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[6 * 10]))
+								<< (*((uint16 *)&FloatSaveArea.RegisterArea[7 * 10 + 8]))
+								<< (*((uint64 *)&FloatSaveArea.RegisterArea[7 * 10]))
+							;
 						}
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_EXTENDED_REGISTERS)
 						{
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("SSE registers:\r\n"
-								"MXCSR=0x{}\r\n"
-								"Xmm0=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm1=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
-								"Xmm2=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm3=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
-								"Xmm4=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm5=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
-								"Xmm6=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm7=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n\r\n")
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"SSE registers:\r\n"
+									"MXCSR=0x{}\r\n"
+									"Xmm0=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm1=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
+									"Xmm2=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm3=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
+									"Xmm4=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm5=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n"
+									"Xmm6=0x{nfh,sf0,sj16}{nfh,sf0,sj16} Xmm7=0x{nfh,sf0,sj16}{nfh,sf0,sj16}\r\n\r\n"
+								)
 								<< (*((uint32 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[24]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[10*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[10*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[11*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[11*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[12*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[12*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[13*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[13*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[14*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[14*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[15*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[15*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[16*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[16*16]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[17*16+8]))
-								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[17*16]))
-								;
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[10 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[10 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[11 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[11 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[12 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[12 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[13 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[13 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[14 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[14 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[15 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[15 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[16 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[16 * 16]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[17 * 16 + 8]))
+								<< (*((uint64 *)&_pExceptionInfo->ContextRecord->ExtendedRegisters[17 * 16]))
+							;
 						}
-				#elif defined(DArchitecture_arm64)
+#elif defined(DArchitecture_arm64)
 						// CONTEXT_FLOATING_POINT specifies Fpcr, Fpsr and Q0-Q31 / D0-D31 / S0-S31
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
 						{
@@ -701,10 +798,8 @@ namespace NMib
 							umint iRegister = 0;
 							for (auto &Register : _pExceptionInfo->ContextRecord->V)
 							{
-								ExceptionInfo += NStr::CStrNonTracked::CFormat
-									(
-										"v{}=0x{nfh,sf0,sj16}{nfh,sf0,sj16} d0={} d1={} s0={} s1={} s2={} s3={}\r\n"
-									)
+								ExceptionInfo
+									+= NStr::CStrNonTracked::CFormat("v{}=0x{nfh,sf0,sj16}{nfh,sf0,sj16} d0={} d1={} s0={} s1={} s2={} s3={}\r\n")
 									<< iRegister
 									<< Register.High
 									<< Register.Low
@@ -716,15 +811,13 @@ namespace NMib
 									<< Register.S[3]
 								;
 
-
 								++iRegister;
 							}
 						}
-				#else
+#else
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
 						{
-							ExceptionInfo
-								+= NStr::CStrNonTracked::CFormat
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
 								(
 									"Floating point registers:\r\n"
 									"MXCSR=0x{}\r\n"
@@ -786,7 +879,6 @@ namespace NMib
 								<< _pExceptionInfo->ContextRecord->FltSave.XmmRegisters[14].Low
 								<< _pExceptionInfo->ContextRecord->FltSave.XmmRegisters[15].High
 								<< _pExceptionInfo->ContextRecord->FltSave.XmmRegisters[15].Low
-
 								<< _pExceptionInfo->ContextRecord->VectorRegister[0].High
 								<< _pExceptionInfo->ContextRecord->VectorRegister[0].Low
 								<< _pExceptionInfo->ContextRecord->VectorRegister[1].High
@@ -842,7 +934,7 @@ namespace NMib
 							;
 						}
 
-				#endif
+#endif
 
 						//
 						// Stack trace
@@ -852,17 +944,16 @@ namespace NMib
 							umint StackStart = (umint)pTEB->Tib.StackBase;
 							umint StackEnd = (umint)pTEB->Tib.StackLimit;
 
-
 #ifndef DArchitecture_arm64
 							ExceptionInfo += "StackTrace: \r\n";
 							int iMaxDepth = 1024;
 							try
 							{
-				#ifdef DArchitecture_x64
+#	ifdef DArchitecture_x64
 								umint StackFrame = _pExceptionInfo->ContextRecord->Rbp;
-				#else
+#	else
 								umint StackFrame = _pExceptionInfo->ContextRecord->Ebp;
-				#endif
+#	endif
 								umint LastCode = (umint)_pExceptionInfo->ExceptionRecord->ExceptionAddress;
 								while (iMaxDepth)
 								{
@@ -874,16 +965,19 @@ namespace NMib
 
 									if (pAddressInfo)
 									{
-										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*} {}!{}\r\n{}:{}\r\n") << (umint)LastCode << sizeof(umint) * 2
-											<< pAddressInfo->m_pModuleName << pAddressInfo->m_pFunctionName
-											<< pAddressInfo->m_pSourceFileName << pAddressInfo->m_SourceLine
-											;
+										ExceptionInfo
+											+= NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*} {}!{}\r\n{}:{}\r\n")
+											<< (umint)LastCode
+											<< sizeof(umint) * 2
+											<< pAddressInfo->m_pModuleName
+											<< pAddressInfo->m_pFunctionName
+											<< pAddressInfo->m_pSourceFileName
+											<< pAddressInfo->m_SourceLine
+										;
 										SubSystem.f_ReleaseStackTraceInfo(pAddressInfo);
 									}
 									else
-									{
 										ExceptionInfo += NStr::CStrNonTracked::CFormat("0x{nfh,sf0,sj*1}\r\n") << (LastCode) << (sizeof(umint) * 2);
-									}
 									ExceptionInfo += NStr::CStrNonTracked::CFormat("StackFrame: 0x{nfh,sf0,sj*1}\r\n") << (StackFrame) << (sizeof(umint) * 2);
 									ExceptionInfo += "\r\n";
 
@@ -893,7 +987,7 @@ namespace NMib
 									--iMaxDepth;
 								}
 							}
-							catch(...)
+							catch (...)
 							{
 							}
 #endif
@@ -961,9 +1055,7 @@ namespace NMib
 						ExceptionInfo += ModuleDump;
 
 						if (!_ExtraLog.f_IsEmpty())
-						{
 							ExceptionInfo += fs_FixLineEndings(_ExtraLog);
-						}
 
 						{
 							NFile::CFile::fs_WriteStringToFile(FileName, ExceptionInfo);
@@ -997,7 +1089,6 @@ namespace NMib
 
 							if (_bDisplayGUI)
 							{
-
 								if (SubSystem.m_pCrashDumpUserNotifyFunction && !NMib::NSys::fg_ConsoleErrorOutputValid())
 									bContinue = (*(SubSystem.m_pCrashDumpUserNotifyFunction))(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, bCanContinue);
 								else
@@ -1010,11 +1101,11 @@ namespace NMib
 						{
 							if (!_pGeneratedLogs)
 							{
-					#ifdef DArchitecture_x64
+#	ifdef DArchitecture_x64
 								_pExceptionInfo->ContextRecord->Rip++;
-					#else
+#	else
 								_pExceptionInfo->ContextRecord->Eip++;
-					#endif
+#	endif
 							}
 							return EXCEPTION_CONTINUE_EXECUTION;
 						}
@@ -1038,8 +1129,11 @@ namespace NMib
 				}
 				else
 				{
-					NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> pThread
-						= NThread::CThreadObjectNonTracked::fs_StartThread(fl_GenerateException, "DumpExceptionsThread")
+					NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread
+						(
+							fl_GenerateException
+							, "DumpExceptionsThread"
+						)
 					;
 					pThread->f_Stop();
 					return pThread->f_GetReturnValue();
@@ -1068,10 +1162,8 @@ namespace NMib
 
 					if (_SupportEmail)
 					{
-						EmailMessage = NStr::CStrNonTracked::CFormat
-							(
-								" Please send the following crash log files to {0} along with a description of what you were doing when the program crashed."
-							)
+						EmailMessage
+							= NStr::CStrNonTracked::CFormat(" Please send the following crash log files to {0} along with a description of what you were doing when the program crashed.")
 							<< _SupportEmail
 						;
 					}
@@ -1099,8 +1191,17 @@ namespace NMib
 							;
 						}
 						else
-							MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CanContinueMessage)
-								<< _ProgramName << _SupportEmail << _FileName << _FileNameDumpMini << _FileNameDump << _FileNameMetadata;
+						{
+							MessageText
+								= NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CanContinueMessage)
+								<< _ProgramName
+								<< _SupportEmail
+								<< _FileName
+								<< _FileNameDumpMini
+								<< _FileNameDump
+								<< _FileNameMetadata
+							;
+						}
 					}
 					else
 					{
@@ -1125,7 +1226,8 @@ namespace NMib
 						}
 						else
 						{
-							MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_NoContinueMessage)
+							MessageText
+								= NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_NoContinueMessage)
 								<< _ProgramName
 								<< _SupportEmail
 								<< _FileName
@@ -1158,7 +1260,8 @@ namespace NMib
 					}
 					else
 					{
-						MessageText = NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CustomMessage)
+						MessageText
+							= NStr::CStrNonTracked::CFormat(SubSystem.m_CrashDumpUserNotifyFormat_CustomMessage)
 							<< _CustomMessage
 							<< _FileName
 							<< _FileNameDumpMini
@@ -1185,10 +1288,12 @@ namespace NMib
 						{
 							return "Malterlib_MessageBoxThread";
 						}
+
 						virtual NStr::CStr f_GetThreadName()
 						{
 							return "Malterlib_MessageBoxThread";
 						}
+
 						NStr::CStrNonTracked m_MessageBoxText;
 						NStr::CStrNonTracked m_MessageBoxHeading;
 						uint32 m_MessageBoxFlags;
@@ -1196,9 +1301,17 @@ namespace NMib
 
 						aint f_Main()
 						{
-							m_bRet = MessageBoxW(nullptr, NStr::NPlatform::fg_StrToWindows<NStr::CWStrNonTracked>(m_MessageBoxText), NStr::NPlatform::fg_StrToWindows<NStr::CWStrNonTracked>(m_MessageBoxHeading), m_MessageBoxFlags);
+							m_bRet = MessageBoxW
+								(
+									nullptr
+									, NStr::NPlatform::fg_StrToWindows<NStr::CWStrNonTracked>(m_MessageBoxText)
+									, NStr::NPlatform::fg_StrToWindows<NStr::CWStrNonTracked>(m_MessageBoxHeading)
+									, m_MessageBoxFlags
+								)
+							;
 							return 0;
 						}
+
 						void f_Run()
 						{
 							if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)

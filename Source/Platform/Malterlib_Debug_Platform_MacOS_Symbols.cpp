@@ -11,7 +11,6 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-
 			struct CSubSystem_Debug_Platform_MacOS_Symbols : public CSubSystem
 			{
 				CSymbols m_Symbols;
@@ -28,14 +27,14 @@ namespace NMib
 			}
 
 			template <typename tf_CCompare, typename t_CFind>
-			aint fg_BinarySearchLowerBound(umint _nItems, tf_CCompare &&_fCompare, const t_CFind &_ToFind)
+			aint fg_BinarySearchLowerBound(umint _nItems, tf_CCompare &&_fCompare, t_CFind const &_ToFind)
 			{
 				umint Len = _nItems;
 
 				umint Low = 0;
 				umint High = Len;
 
-				while(Low < High)
+				while (Low < High)
 				{
 					umint Mid = (Low + High) >> 1;
 					if (fg_CheckOrdering(_fCompare(Mid, _ToFind)) < 0)
@@ -51,7 +50,7 @@ namespace NMib
 				: mp_AddressOffset(0)
 				, mp_pSymbols(nullptr)
 			{
-				mach_header const* pHeader = (mach_header const*)_dyld_get_image_header(0);
+				mach_header const *pHeader = (mach_header const *)_dyld_get_image_header(0);
 
 				if (pHeader)
 				{
@@ -59,13 +58,11 @@ namespace NMib
 
 					if (pHeader->magic == MH_MAGIC)
 					{
-						struct load_command const* pCmd = reinterpret_cast<struct load_command const*>(pHeader + 1);
+						struct load_command const *pCmd = reinterpret_cast<struct load_command const *>(pHeader + 1);
 
-						for (unsigned int iCmd = 0
-							;iCmd < pHeader->ncmds
-							;++iCmd)
+						for (unsigned int iCmd = 0; iCmd < pHeader->ncmds; ++iCmd)
 						{
-							struct segment_command const* pSegment = reinterpret_cast<struct segment_command const*>(pCmd);
+							struct segment_command const *pSegment = reinterpret_cast<struct segment_command const *>(pCmd);
 
 							if (!NStr::fg_StrCmp(pSegment->segname, "__TEXT"))
 							{
@@ -73,20 +70,18 @@ namespace NMib
 								break;
 							}
 
-							pCmd = reinterpret_cast<struct load_command*>( (char*)pCmd + pCmd->cmdsize );
+							pCmd = reinterpret_cast<struct load_command *>((char *)pCmd + pCmd->cmdsize);
 						}
 					}
 					else if (pHeader->magic == MH_MAGIC_64)
 					{
-						mach_header_64 const* pHeader64 = (mach_header_64 const*)_dyld_get_image_header(0);
+						mach_header_64 const *pHeader64 = (mach_header_64 const *)_dyld_get_image_header(0);
 
-						struct load_command const* pCmd = reinterpret_cast<struct load_command const*>(pHeader64 + 1);
+						struct load_command const *pCmd = reinterpret_cast<struct load_command const *>(pHeader64 + 1);
 
-						for (unsigned int iCmd = 0
-							;iCmd < pHeader64->ncmds
-							;++iCmd)
+						for (unsigned int iCmd = 0; iCmd < pHeader64->ncmds; ++iCmd)
 						{
-							struct segment_command_64 const* pSegment = reinterpret_cast<struct segment_command_64 const*>(pCmd);
+							struct segment_command_64 const *pSegment = reinterpret_cast<struct segment_command_64 const *>(pCmd);
 
 							if (!NStr::fg_StrCmp(pSegment->segname, "__TEXT"))
 							{
@@ -94,7 +89,7 @@ namespace NMib
 								break;
 							}
 
-							pCmd = reinterpret_cast<struct load_command*>( (char*)pCmd + pCmd->cmdsize );
+							pCmd = reinterpret_cast<struct load_command *>((char *)pCmd + pCmd->cmdsize);
 						}
 					}
 				}
@@ -111,7 +106,7 @@ namespace NMib
 				fp_Unload();
 			}
 
-			void CSymbols::f_SetSymbolsFile(char const* _pFilename)
+			void CSymbols::f_SetSymbolsFile(char const *_pFilename)
 			{
 				DMibLock(mp_Lock);
 
@@ -144,7 +139,6 @@ namespace NMib
 					return false;
 				}
 
-
 				return true;
 			}
 
@@ -164,7 +158,7 @@ namespace NMib
 				Offset += sizeof(nBytes);
 
 				CSymStr Str;
-				char* pRawStr = Str.f_GetStr(nBytes + 1);
+				char *pRawStr = Str.f_GetStr(nBytes + 1);
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, pRawStr, Offset, nBytes);
 				pRawStr[nBytes] = 0;
 
@@ -176,7 +170,7 @@ namespace NMib
 				// If things get slow this is where you cache the functions :-)
 			}
 
-			CSymbols::CFunction const* CSymbols::fp_ReadFunction(uint32 _FuncIndex, CFunction* _pTmp)
+			CSymbols::CFunction const *CSymbols::fp_ReadFunction(uint32 _FuncIndex, CFunction *_pTmp)
 			{
 				uint32 Offset = mp_Header.m_FunctionsOffset + BytesPerFunction * _FuncIndex;
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, _pTmp, Offset, sizeof(CFunction));
@@ -184,8 +178,7 @@ namespace NMib
 				return _pTmp;
 			}
 
-
-			bool CSymbols::f_Lookup(umint _Address, CAddressInfo& _oInfo)
+			bool CSymbols::f_Lookup(umint _Address, CAddressInfo &_oInfo)
 			{
 				DMibLock(mp_Lock);
 
@@ -197,31 +190,31 @@ namespace NMib
 
 				try
 				{
-
 					// Find function
 					CFunction TmpFunc;
 
-					aint iFoundFunc = fg_BinarySearchLowerBound(
+					aint iFoundFunc = fg_BinarySearchLowerBound
+						(
 							mp_Header.m_nFunctions
-						,	[&](umint _FuncIndex, umint _Address) -> COrdering_Partial
+							, [&](umint _FuncIndex, umint _Address) -> COrdering_Partial
 							{
-								CFunction const* pFunc = fp_ReadFunction(_FuncIndex, &TmpFunc);
+								CFunction const *pFunc = fp_ReadFunction(_FuncIndex, &TmpFunc);
 
 								if (pFunc)
 									return pFunc->m_Address <=> _Address;
 								else
 									return COrdering_Partial::unordered;
 							}
-						,	_Address
-						);
+							, _Address
+						)
+					;
 
 					if (iFoundFunc >= mp_Header.m_nFunctions)
 						return false;
 
-					CFunction const* pFunc = fp_ReadFunction(iFoundFunc, &TmpFunc);
+					CFunction const *pFunc = fp_ReadFunction(iFoundFunc, &TmpFunc);
 
-					if (	_Address >= pFunc->m_Address
-						&&	_Address < (pFunc->m_Address + pFunc->m_Size))
+					if (_Address >= pFunc->m_Address && _Address < (pFunc->m_Address + pFunc->m_Size))
 					{
 						_oInfo.m_Address = _Address;
 						_oInfo.m_Function = fp_ReadString(pFunc->m_NameOffset);
@@ -232,11 +225,12 @@ namespace NMib
 						CLinesHeader LinesHeader;
 
 						uint32 Offset = pFunc->m_FirstLine;
-						NMib::NSys::NFile::fg_Read(mp_pSymbols, (char*)&LinesHeader, Offset, sizeof(LinesHeader));
+						NMib::NSys::NFile::fg_Read(mp_pSymbols, (char *)&LinesHeader, Offset, sizeof(LinesHeader));
 
-						aint iFoundLine = fg_BinarySearchLowerBound(
+						aint iFoundLine = fg_BinarySearchLowerBound
+							(
 								LinesHeader.m_nLines
-							,	[&](umint _LineIndex, umint _Address) -> COrdering_Partial
+								, [&](umint _LineIndex, umint _Address) -> COrdering_Partial
 								{
 									CLine Line;
 
@@ -246,7 +240,9 @@ namespace NMib
 
 									return Line.m_Address <=> _Address;
 								}
-							,	_Address);
+								, _Address
+							)
+						;
 
 						if (iFoundLine < LinesHeader.m_nLines)
 						{
@@ -255,8 +251,7 @@ namespace NMib
 							uint32 Offset = pFunc->m_FirstLine + BytesPerFunctionLines + BytesPerLine * iFoundLine;
 							NMib::NSys::NFile::fg_Read(mp_pSymbols, &Line, Offset, sizeof(Line));
 
-							if (	_Address >= Line.m_Address
-								&&	_Address <= (Line.m_Address + Line.m_Size) )
+							if (_Address >= Line.m_Address && _Address <= (Line.m_Address + Line.m_Size))
 							{
 								_oInfo.m_Line = Line.m_Line;
 
@@ -270,11 +265,9 @@ namespace NMib
 						return true;
 					}
 					else
-					{
 						return false;
-					}
 				}
-				catch(NFile::CExceptionFile const&)
+				catch (NFile::CExceptionFile const &)
 				{
 					return false;
 				}

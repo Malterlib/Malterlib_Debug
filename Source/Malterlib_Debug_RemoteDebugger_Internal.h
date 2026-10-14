@@ -53,15 +53,17 @@ namespace NMib::NDebug::NRemoteDebugger
 	class TCRemoteDebuggerPool
 	{
 		using CSuper = NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>;
+
 	public:
 		template <typename ...tfp_CParams>
-		static t_CType *fs_New(tfp_CParams &&...p_Params)
+		static t_CType *fs_New(tfp_CParams && ...p_Params)
 		{
 			auto Memory = NMemory::CAllocator_NonTrackedHeap::f_AllocSafe(sizeof(t_CType), alignof(t_CType));
 			auto pReturn = new(Memory.m_pMemory) t_CType(fg_Forward<tfp_CParams>(p_Params)...);
 			Memory.f_Claim();
 			return pReturn;
 		}
+
 		static void fs_Delete(t_CType *_pObject)
 		{
 			_pObject->~t_CType();
@@ -74,14 +76,21 @@ namespace NMib::NDebug::NRemoteDebugger
 	struct CPacket
 	{
 	private:
-		CPacket(CPacket const& ) {}
+		CPacket(CPacket const &)
+		{
+		}
+
 	public:
-		CPacket() {}
-		CPacket(CPacket&& _ToMove)
+		CPacket()
+		{
+		}
+
+		CPacket(CPacket &&_ToMove)
 			: m_Channel(_ToMove.m_Channel)
 			, m_PacketID(_ToMove.m_PacketID)
 			, m_Data(fg_Move(_ToMove.m_Data))
-		{}
+		{
+		}
 
 		EChannel m_Channel;
 		EPacket m_PacketID;
@@ -97,17 +106,20 @@ namespace NMib::NDebug::NRemoteDebugger
 		CConnection *mp_pConnection;
 		CPacketReference(CPacketReference const &_Other);
 		CPacketReference &operator = (CPacketReference const &_Other);
+
 	public:
 		CPacketReference(CPacket *_pPacket, CConnection *_pConnection)
 			: mp_pPacket(_pPacket)
 			, mp_pConnection(_pConnection)
 		{
 		}
+
 		CPacketReference()
 			: mp_pPacket(nullptr)
 			, mp_pConnection(nullptr)
 		{
 		}
+
 		CPacketReference(CPacketReference &&_Other)
 			: mp_pPacket(_Other.mp_pPacket)
 			, mp_pConnection(_Other.mp_pConnection)
@@ -118,14 +130,16 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		~CPacketReference();
 
-		operator bool()
+		operator bool ()
 		{
 			return mp_pPacket != nullptr;
 		}
+
 		EChannel f_Channel() const
 		{
 			return mp_pPacket->m_Channel;
 		}
+
 		EPacket f_PacketID() const
 		{
 			return mp_pPacket->m_PacketID;
@@ -140,22 +154,22 @@ namespace NMib::NDebug::NRemoteDebugger
 	class CConnection
 	{
 		friend class CPacketReference;
-	public:
 
+	public:
 		enum EMode
 		{
-			EMode_Listen,
-			EMode_Connect,
-			EMode_DelayedConnect,
+			EMode_Listen
+			, EMode_Connect
+			, EMode_DelayedConnect
 		};
 
 		enum EState
 		{
-			EState_None,
-			EState_Connected,
-			EState_Failed,
-			EState_Disconnected,
-			EState_Listening,
+			EState_None
+			, EState_Connected
+			, EState_Failed
+			, EState_Disconnected
+			, EState_Listening
 		};
 
 		struct CDataBlock
@@ -165,16 +179,15 @@ namespace NMib::NDebug::NRemoteDebugger
 
 			DMibListLinkDS_Link(CConnection::CDataBlock, m_Link);
 
-			template<typename t_CPacket>
-			void f_Fill(EChannel _Channel, EPacket _PacketID, t_CPacket const& _Packet, TCStackTrace<umint> const* _pTrace)
+			template <typename t_CPacket>
+			void f_Fill(EChannel _Channel, EPacket _PacketID, t_CPacket const &_Packet, TCStackTrace<umint> const *_pTrace)
 			{
 				m_Channel = _Channel;
 
 				NStream::CBinaryStreamMemoryRef<NStream::CBinaryStreamDefault, CDataBuffer> Stream(m_Data);
 				Stream.f_ResetStream();
 
-				CPacketHeader Header =
-					{ (uint8)_Channel, (uint8)0, (uint16)_PacketID, 0 };
+				CPacketHeader Header = {(uint8)_Channel, (uint8)0, (uint16)_PacketID, 0};
 
 				Header.f_Write(Stream);
 
@@ -199,7 +212,6 @@ namespace NMib::NDebug::NRemoteDebugger
 		};
 
 	private:
-
 		NStr::CStrNonTracked mp_Address;
 		uint16 mp_Port;
 
@@ -213,18 +225,18 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		NAtomic::TCAtomic<uint32> mp_bDataToSend;
 		NThread::CMutual mp_SendLock;
-			DMibListLinkDS_List(CConnection::CDataBlock, m_Link) mp_SendData;
+		DMibListLinkDS_List(CConnection::CDataBlock, m_Link) mp_SendData;
 
 		NThread::CMutual mp_FreeDataBlocksLock;
-			DMibListLinkDS_List(CConnection::CDataBlock, m_Link) mp_FreeDataBlocks;
-			NThread::CEventAutoReset mp_FreeDataBlocksAvailable;
+		DMibListLinkDS_List(CConnection::CDataBlock, m_Link) mp_FreeDataBlocks;
+		NThread::CEventAutoReset mp_FreeDataBlocksAvailable;
 
 		NThread::CMutual mp_ReceiveLock;
-			DMibListLinkDS_List(CPacket, m_Link) mp_ReceivedPackets;
+		DMibListLinkDS_List(CPacket, m_Link) mp_ReceivedPackets;
 
 		NThread::CMutual mp_FreePacketsLock;
-			DMibListLinkDS_List(CPacket, m_Link) mp_FreePackets;
-			NThread::CEventAutoReset mp_FreePacketsAvailable;
+		DMibListLinkDS_List(CPacket, m_Link) mp_FreePackets;
+		NThread::CEventAutoReset mp_FreePacketsAvailable;
 
 		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> mp_pThread;
 		NThread::CEvent mp_Initialized;
@@ -236,7 +248,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		CPacket *fp_GetPacket();
 
 	public:
-		CConnection(NThread::CSemaphoreAggregate* _pReportTo); // Should be private. Do not use.
+		CConnection(NThread::CSemaphoreAggregate *_pReportTo); // Should be private. Do not use.
 		CConnection(EMode _Mode, NStr::CStrNonTracked const &_Address, uint16 _Port, NThread::CSemaphoreAggregate *_pReportTo);
 		~CConnection();
 
@@ -248,14 +260,14 @@ namespace NMib::NDebug::NRemoteDebugger
 		// For connection connections :-)
 
 		// Always succeed.
-		CDataBlock* f_GetDataBlock();
+		CDataBlock *f_GetDataBlock();
 		void f_ReturnDataBlock(CDataBlock *_pBlock);
-		void f_SendDataBlock(CDataBlock* _pBlock);
+		void f_SendDataBlock(CDataBlock *_pBlock);
 
-		template<typename t_CPacket>
-		void f_SendPacket(EChannel _Channel, EPacket _PacketID, t_CPacket const& _Packet, TCStackTrace<umint> const* _pTrace = nullptr)
+		template <typename t_CPacket>
+		void f_SendPacket(EChannel _Channel, EPacket _PacketID, t_CPacket const &_Packet, TCStackTrace<umint> const *_pTrace = nullptr)
 		{
-			CDataBlock* pBlock = f_GetDataBlock();
+			CDataBlock *pBlock = f_GetDataBlock();
 			pBlock->f_Fill(_Channel, _PacketID, _Packet, _pTrace);
 			f_SendDataBlock(pBlock);
 		}
@@ -266,7 +278,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		// For listen connections
 
 		// Can return nullptr. Wait on _pReportTo for when connections.
-		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> f_Accept(NThread::CSemaphoreAggregate* _pReportTo);
+		NStorage::TCUniquePointer<CConnection, NMemory::CAllocator_NonTrackedHeap> f_Accept(NThread::CSemaphoreAggregate *_pReportTo);
 	};
 
 	class CReportMemoryToRemote;
@@ -285,7 +297,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		NThread::CEvent mp_InitializedEvent;
 
-		NMemory::CReportMemory* mp_pOldReporter;
+		NMemory::CReportMemory *mp_pOldReporter;
 		NStorage::TCUniquePointer<CReportMemoryToRemote, NMemory::CAllocator_NonTrackedHeap> mp_pMemoryReporter;
 
 		NStr::CStrNonTracked mp_Address;
@@ -302,8 +314,10 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		bool f_Connect();
 
-		CConnection* f_GetConnection() { return mp_pConnection.f_Get(); }
-
+		CConnection *f_GetConnection()
+		{
+			return mp_pConnection.f_Get();
+		}
 	};
 
 	class CServer
@@ -318,54 +332,45 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		uint64 mp_ClientPID;
 
-
 		void fp_Process();
 		void fp_Process_Listening();
 		void fp_Process_Connected();
 		void fp_EmitEvent(EServerEvent _Event);
 
-		void fp_DecodeMemoryPacket(EPacket _Packet, CDataBuffer const& _Data);
+		void fp_DecodeMemoryPacket(EPacket _Packet, CDataBuffer const &_Data);
 
 	public:
-		CServer(CServerSettings&& _Settings);
+		CServer(CServerSettings &&_Settings);
 		~CServer();
 
 		bool f_Start();
 		bool f_IsRunning();
 		void f_Stop();
 
-		uint64 f_GetClientPID() const { return mp_ClientPID;  }
+		uint64 f_GetClientPID() const
+		{
+			return mp_ClientPID;
+		}
 	};
-
 
 	class CReportMemoryToRemote : public NMemory::CGlobalReportMemory
 	{
 	private:
-		CClient* mp_pClient;
+		CClient *mp_pClient;
 		bool mp_bStackTrace;
 		NAtomic::TCAtomic<uint32> mp_SequenceNum;
 
 	public:
-		CReportMemoryToRemote(CClient* _pClient, bool _bStackTrace);
+		CReportMemoryToRemote(CClient *_pClient, bool _bStackTrace);
 		virtual ~CReportMemoryToRemote();
 
-		void f_AllocatorName(umint _MemoryAllocator, ch8 const* _pAllocatorName) override;
+		void f_AllocatorName(umint _MemoryAllocator, ch8 const *_pAllocatorName) override;
 		void f_AllocatorDelete(umint _MemoryAllocator) override;
 
 		void f_ScopeEnter(umint _MemoryAllocator) override;
 		void f_ScopeExit(umint _MemoryAllocator) override;
 
-		void f_Alloc
-			(
-				umint _MemoryAllocator
-				, umint _Address
-				, umint _RequestedAlignment
-				, umint _RequestedSize
-				, umint _ReturnedSize
-				, fp32 _nBytesOverhead
-				, void *_pAllocationInfo
-			) override
-		;
+		void f_Alloc(umint _MemoryAllocator, umint _Address, umint _RequestedAlignment, umint _RequestedSize, umint _ReturnedSize, fp32 _nBytesOverhead, void *_pAllocationInfo) override;
 		void f_Resize
 			(
 				umint _MemoryAllocator
@@ -378,7 +383,8 @@ namespace NMib::NDebug::NRemoteDebugger
 				, umint _ReturnedSize
 				, fp32 _nBytesOverhead
 				, void *_pAllocationInfo
-			) override
+			)
+			override
 		;
 		void f_Realloc
 			(
@@ -392,7 +398,8 @@ namespace NMib::NDebug::NRemoteDebugger
 				, umint _ReturnedSize
 				, fp32 _nBytesOverhead
 				, void *_pAllocationInfo
-			) override
+			)
+			override
 		;
 		void f_Free(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo) override;
 		void f_GetSize(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo) override;

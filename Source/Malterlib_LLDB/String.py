@@ -579,7 +579,13 @@ def fg_AddRawStringArrayReferenceSummary(_Debugger, _Provider, _Type):
 	fg_AddSummary(_Debugger, _Provider, "(^|^const |^volatile |^const volatile )" + _Type + "( const| volatile| const volatile)? \\(&\\)\\[[0-9]+\\]$", True)
 
 def fg_AddRawStringArrayPointerSummary(_Debugger, _Provider, _Type):
-	fg_AddSummary(_Debugger, _Provider, "(^|^const |^volatile |^const volatile )" + _Type + "( const| volatile| const volatile)? \\(\\*( const| volatile| const volatile)?\\)\\[[0-9]+\\]$", True)
+	fg_AddSummary(
+		_Debugger,
+		_Provider,
+		"(^|^const |^volatile |^const volatile )" + _Type
+		+ "( const| volatile| const volatile)? \\(\\*( const| volatile| const volatile)?\\)\\[[0-9]+\\]$",
+		True,
+	)
 
 def fg_MibLLDBInit_String(_Debugger):
 
@@ -659,33 +665,87 @@ def fg_MibLLDBInit_String(_Debugger):
 
 	# Ptr
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CStr>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Ptr_ch8,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, "
+		"(NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CWStr>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Ptr_ch16,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, "
+		"(NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraitsPtr_CUStr>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Ptr_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Ptr_ch32,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, "
+		"(NMib::NStr::)TCStrImp_Ptr<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>[[:space:]]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 
 	# Dynamic
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CStr[a-zA-Z]*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Dynamic_ch8,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, "
+		"(NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CWStr[a-zA-Z]*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Dynamic_ch16,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, "
+		"(NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)CStrTraits_CUStr[a-zA-Z]*>$", True)
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, (NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Dynamic_ch32,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>, "
+		"(NMib::NStr::)TCStrImp_Dynamic<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CStrImp_Dynamic_[a-zA-Z]*>[[:space:]]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )NMib::NStr::CMStrDeprecated$", True)
 	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Dynamic_ch8, "(^|^const )NMib::NStr::CMStrPreserve$", True)
 
 	# Fixed
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch8, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Fixed_ch8,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, "
+		"(NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch16, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Fixed_ch16,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, "
+		"(NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<(char16_t|wchar_t), [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
-	fg_AddSummary(_Debugger, fg_SummaryProvider_Str_Fixed_ch32, "(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, (NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$", True)
+	fg_AddSummary(
+		_Debugger,
+		fg_SummaryProvider_Str_Fixed_ch32,
+		"(^|^const )(NMib::NStr::)TCStr<(NMib::NStr::)TCTCStrTraits<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, "
+		"(NMib::NStr::)TCStrImp_Fixed<(NMib::NStr::)TCStrTraits<char32_t, [0-9]*, (NMib::NStr::)CDefaultStrParams>, [0-9]*>[[:space:]]*>[[:space:]]*>$",
+		True,
+	)
 
 	return

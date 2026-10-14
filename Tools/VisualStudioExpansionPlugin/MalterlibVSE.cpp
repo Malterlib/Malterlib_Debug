@@ -14,7 +14,6 @@
 
 // Helper routine that converts a system time into ASCII
 
-
 template <typename t_CStrType>
 HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved, bool _bDecodeAddress)
 {
@@ -27,15 +26,13 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 	try
 	{
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000 || !_bDecodeAddress)
+		if (pHelper->dwVersion < 0x20000 || !_bDecodeAddress)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		uint32 Processor = pHelper->GetProcessorType(pHelper);
 		bool b64Bit = false;
@@ -56,12 +53,12 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 			uint32 nGot = 0;
 
 			// read system time from debuggee memory space
-			if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(String), &String, &nGot)!=S_OK)
+			if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(String), &String, &nGot) != S_OK)
 			{
 				fg_StrCopy(pResult, (CStr::CFormat("PtrFail(0x{nfh,sf0,sj16}, {})") << Address << sizeof(String)).f_GetStr());
 				return S_OK;
 			}
-			if (nGot!=sizeof(String))
+			if (nGot != sizeof(String))
 			{
 				fg_StrCopy(pResult, "nGot!=sizeof(String) failed");
 				return S_OK;
@@ -77,21 +74,22 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 					public:
 						int64 m_Ref;
 						uint64 m_Len;
-						uint64 m_StrLen:sizeof(uint64)*8-2;
+						uint64 m_StrLen:sizeof(uint64) * 8 - 2;
 						// TODO(Str): Fix this
 						uint64 m_Type:2;
 					};
+
 					CTempData StrData;
 					StrData.m_Ref = 0;
 					StrData.m_Len = 0;
 					StrData.m_StrLen = 0;
 					StrData.m_Type = 0;
-					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot)!=S_OK)
+					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot) != S_OK)
 					{
 						fg_StrCopy(pResult, (CStr::CFormat("StrFail(0x{nfh,sf0,sj16}, {})") << Data << sizeof(StrData)).f_GetStr());
 						return S_OK;
 					}
-					if (nGot!=sizeof(StrData))
+					if (nGot != sizeof(StrData))
 					{
 						fg_StrCopy(pResult, "nGot!=sizeof(StrData) failed");
 						return S_OK;
@@ -107,12 +105,12 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 					t_CStrType::CChar *pStr = Temp.f_GetStr(Len);
 					if (Len)
 					{
-						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot)!=S_OK)
+						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot) != S_OK)
 						{
 							fg_StrCopy(pResult, (CStr::CFormat("DataFail(0x{nfh,sf0,sj16}, {})") << (Data + sizeof(CTempData)) << Len).f_GetStr());
 							return S_OK;
 						}
-						if (nGot!=Len)
+						if (nGot != Len)
 						{
 							fg_StrCopy(pResult, "nGot!=Len failed");
 							return S_OK;
@@ -120,9 +118,7 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 					}
 					pStr[Len/sizeof(t_CStrType::CChar)] = 0;
 					if (StrData.m_Type > EStrType_UTF)
-					{
 						fg_StrCopy(pResult, "Invalid String Type");
-					}
 					else
 					{
 						if (StrData.m_Type == EStrType_UTF)
@@ -164,17 +160,16 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 		}
 		else
 		{
-
 			uint32 String = 0;
 			uint32 nGot = 0;
 
 			// read system time from debuggee memory space
-			if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(String), &String, &nGot)!=S_OK)
+			if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(String), &String, &nGot) != S_OK)
 			{
 				fg_StrCopy(pResult, (CStr::CFormat("PtrFail(0x{nfh,sf0,sj8}, {})") << Address << sizeof(String)).f_GetStr());
 				return S_OK;
 			}
-			if (nGot!=sizeof(String))
+			if (nGot != sizeof(String))
 			{
 				fg_StrCopy(pResult, "nGot!=sizeof(String) failed");
 				return S_OK;
@@ -190,20 +185,21 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 					public:
 						int32 m_Ref;
 						uint32 m_Len;
-						uint32 m_StrLen:sizeof(uint32)*8-2;
+						uint32 m_StrLen:sizeof(uint32) * 8 - 2;
 						uint32 m_Type:2;
 					};
+
 					CTempData StrData;
 					StrData.m_Ref = 0;
 					StrData.m_Len = 0;
 					StrData.m_StrLen = 0;
 
-					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot)!=S_OK)
+					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot) != S_OK)
 					{
 						fg_StrCopy(pResult, (CStr::CFormat("StrFail(0x{nfh,sf0,sj8}, {})") << Data << sizeof(StrData)).f_GetStr());
 						return S_OK;
 					}
-					if (nGot!=sizeof(StrData))
+					if (nGot != sizeof(StrData))
 					{
 						fg_StrCopy(pResult, "nGot!=sizeof(StrData) failed");
 						return S_OK;
@@ -218,12 +214,12 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 					t_CStrType::CChar *pStr = Temp.f_GetStr(Len);
 					if (Len)
 					{
-						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot)!=S_OK)
+						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot) != S_OK)
 						{
 							fg_StrCopy(pResult, (CStr::CFormat("DataFail(0x{nfh,sf0,sj8}, {})") << (Data + sizeof(CTempData)) << Len).f_GetStr());
 							return S_OK;
 						}
-						if (nGot!=Len)
+						if (nGot != Len)
 						{
 							fg_StrCopy(pResult, "nGot!=Len failed");
 							return S_OK;
@@ -232,9 +228,7 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 					pStr[Len/sizeof(t_CStrType::CChar)] = 0;
 
 					if (StrData.m_Type > EStrType_UTF)
-					{
 						fg_StrCopy(pResult, "Invalid String Type");
-					}
 					else
 					{
 						if (StrData.m_Type == EStrType_UTF)
@@ -284,17 +278,17 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_Str<CStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_Str<CWStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_Str<CUStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
@@ -311,15 +305,13 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 	try
 	{
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000 || !_bDecodeAddress)
+		if (pHelper->dwVersion < 0x20000 || !_bDecodeAddress)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		ch8 const *pPrepend = "? ";
 		if (sizeof(t_CStrType::CChar) == 1)
@@ -345,18 +337,19 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 					class CTempData
 					{
 					public:
-						uint64 m_Len:sizeof(uint64)*8-2;
+						uint64 m_Len:sizeof(uint64) * 8 - 2;
 						uint64 m_Type:2;
 					};
+
 					CTempData StrData;
 					StrData.m_Len = 0;
 					StrData.m_Type = 0;
-					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot)!=S_OK)
+					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot) != S_OK)
 					{
 						fg_StrCopy(pResult, (CStr::CFormat("StrFail(0x{nfh,sf0,sj16}, {})") << Data << sizeof(StrData)).f_GetStr());
 						return S_OK;
 					}
-					if (nGot!=sizeof(StrData))
+					if (nGot != sizeof(StrData))
 					{
 						fg_StrCopy(pResult, "nGot!=sizeof(StrData) failed");
 						return S_OK;
@@ -367,12 +360,12 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 					t_CStrType::CChar *pStr = Temp.f_GetStr(Len);
 					if (Len)
 					{
-						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot)!=S_OK)
+						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot) != S_OK)
 						{
 							fg_StrCopy(pResult, (CStr::CFormat("DataFail(0x{nfh,sf0,sj16}, {})") << (Data + sizeof(CTempData)) << Len).f_GetStr());
 							return S_OK;
 						}
-						if (nGot!=Len)
+						if (nGot != Len)
 						{
 							fg_StrCopy(pResult, "nGot!=Len failed");
 							return S_OK;
@@ -380,9 +373,7 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 					}
 					pStr[Len/sizeof(t_CStrType::CChar)] = 0;
 					if (StrData.m_Type > EStrType_UTF)
-					{
 						fg_StrCopy(pResult, "Invalid String Type");
-					}
 					else
 					{
 						if (StrData.m_Type == EStrType_UTF)
@@ -433,19 +424,20 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 					class CTempData
 					{
 					public:
-						uint32 m_Len:sizeof(uint32)*8-2;
+						uint32 m_Len:sizeof(uint32) * 8 - 2;
 						uint32 m_Type:2;
 					};
+
 					CTempData StrData;
 					StrData.m_Len = 0;
 					StrData.m_Type = 0;
 
-					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot)!=S_OK)
+					if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data, sizeof(StrData), &StrData, &nGot) != S_OK)
 					{
 						fg_StrCopy(pResult, (CStr::CFormat("StrFail(0x{nfh,sf0,sj8}, {})") << Data << sizeof(StrData)).f_GetStr());
 						return S_OK;
 					}
-					if (nGot!=sizeof(StrData))
+					if (nGot != sizeof(StrData))
 					{
 						fg_StrCopy(pResult, "nGot!=sizeof(StrData) failed");
 						return S_OK;
@@ -455,12 +447,12 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 					t_CStrType::CChar *pStr = Temp.f_GetStr(Len);
 					if (Len)
 					{
-						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot)!=S_OK)
+						if (pHelper->ReadDebuggeeMemoryEx(pHelper, Data + sizeof(CTempData), Len, pStr, &nGot) != S_OK)
 						{
 							fg_StrCopy(pResult, (CStr::CFormat("DataFail(0x{nfh,sf0,sj8}, {})") << (Data + sizeof(CTempData)) << Len).f_GetStr());
 							return S_OK;
 						}
-						if (nGot!=Len)
+						if (nGot != Len)
 						{
 							fg_StrCopy(pResult, "nGot!=Len failed");
 							return S_OK;
@@ -469,9 +461,7 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 					pStr[Len/sizeof(t_CStrType::CChar)] = 0;
 
 					if (StrData.m_Type > EStrType_UTF)
-					{
 						fg_StrCopy(pResult, "Invalid String Type");
-					}
 					else
 					{
 						if (StrData.m_Type == EStrType_UTF)
@@ -522,22 +512,22 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CFUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CFUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_FStr<CUStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CFWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CFWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_FStr<CWStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CFStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CFStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_FStr<CStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -556,19 +546,18 @@ ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 				uint32 m_Type_uint32;
 			};
 		};
+
 		CMStren String;
 		uint32 nGot;
 
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000)
+		if (pHelper->dwVersion < 0x20000)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		uint32 Processor = pHelper->GetProcessorType(pHelper);
 		uint32 Mul64 = 1;
@@ -576,15 +565,11 @@ ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 			Mul64 = 2;
 
 		// read system time from debuggee memory space
-		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(String), &String, &nGot)!=S_OK)
-		{
+		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(String), &String, &nGot) != S_OK)
 			return E_FAIL;
-		}
 
-		if (nGot!=sizeof(String))
-		{
+		if (nGot != sizeof(String))
 			return E_FAIL;
-		}
 
 		{
 			fg_StrCopy(pResult, "");
@@ -592,26 +577,22 @@ ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 			{
 			case EMStr_Type_CStr:
 				{
-					return VSE_Str<CStr>(Address+sizeof(uint32)*Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
+					return VSE_Str<CStr>(Address + sizeof(uint32) * Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
 				}
 				break;
 			case EMStr_Type_CWStr:
 				{
-					return VSE_Str<CWStr>(Address+sizeof(uint32)*Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
+					return VSE_Str<CWStr>(Address + sizeof(uint32) * Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
 				}
 				break;
 			case EMStr_Type_CUStr:
 				{
-					return VSE_Str<CUStr>(Address+sizeof(uint32)*Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
+					return VSE_Str<CUStr>(Address + sizeof(uint32) * Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
 				}
 				break;
-			case EMStr_Type_None:
-				break;
-			default:
-				fg_StrCopy(pResult, "Invalid Type");
-				break;
+			case EMStr_Type_None: break;
+			default: fg_StrCopy(pResult, "Invalid Type"); break;
 			}
-
 		}
 
 		return S_OK;
@@ -625,8 +606,7 @@ ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 	}
 }
 
-
-ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -640,30 +620,24 @@ ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 		uint32 nGot = 0;
 
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000)
+		if (pHelper->dwVersion < 0x20000)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		// read system time from debuggee memory space
-		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Time), &Time, &nGot)!=S_OK)
-		{
+		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Time), &Time, &nGot) != S_OK)
 			return E_FAIL;
-		}
-		if (nGot!=sizeof(Time))
-		{
+		if (nGot != sizeof(Time))
 			return E_FAIL;
-		}
 
 		{
 			if (Time.f_IsValid())
 			{
-				const ch8 *Days[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+				ch8 const *Days[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 				CTimeConvert::CDateTime DateTime;
 				CTimeConvert(Time).f_ExtractDateTime(DateTime);
 				CTimeConvert_ISOWeek::CDateTime DateTime2;
@@ -680,23 +654,37 @@ ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 						"{}-{sj2,sf0}-{sj2,sf0} {sj2,sf0}:{sj2,sf0}:{sj2,sf0}.{sj3,sf0} | {}-W{sj2,sf0} | {} | DayOfYear: {} | IsLeapYear: {}\r\n"
 						"{}-{sj2,sf0}-{sj2,sf0} {sj2,sf0}:{sj2,sf0}:{sj2,sf0}.{sj3,sf0} | {}-W{sj2,sf0} | {} | DayOfYear: {} | IsLeapYear: {}"
 					)
-					<< DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth
-					<< DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << (DateTime.m_Fraction * 1000.0).f_ToInt()
-					<< DateTime2.m_Year << DateTime2.m_Week << Days[DateTime.m_DayOfWeek]
-					<< DateTime.m_DayOfYear << DateTime.m_bIsLeapYear
-					<< LocalDateTime.m_Year << LocalDateTime.m_Month << LocalDateTime.m_DayOfMonth
-					<< LocalDateTime.m_Hour << LocalDateTime.m_Minute << LocalDateTime.m_Second << (LocalDateTime.m_Fraction * 1000.0).f_ToInt()
-					<< LocalDateTime2.m_Year << LocalDateTime2.m_Week << Days[LocalDateTime.m_DayOfWeek]
-					<< LocalDateTime.m_DayOfYear << LocalDateTime.m_bIsLeapYear
-					;
+					<< DateTime.m_Year
+					<< DateTime.m_Month
+					<< DateTime.m_DayOfMonth
+					<< DateTime.m_Hour
+					<< DateTime.m_Minute
+					<< DateTime.m_Second
+					<< (DateTime.m_Fraction * 1000.0).f_ToInt()
+					<< DateTime2.m_Year
+					<< DateTime2.m_Week
+					<< Days[DateTime.m_DayOfWeek]
+					<< DateTime.m_DayOfYear
+					<< DateTime.m_bIsLeapYear
+					<< LocalDateTime.m_Year
+					<< LocalDateTime.m_Month
+					<< LocalDateTime.m_DayOfMonth
+					<< LocalDateTime.m_Hour
+					<< LocalDateTime.m_Minute
+					<< LocalDateTime.m_Second
+					<< (LocalDateTime.m_Fraction * 1000.0).f_ToInt()
+					<< LocalDateTime2.m_Year
+					<< LocalDateTime2.m_Week
+					<< Days[LocalDateTime.m_DayOfWeek]
+					<< LocalDateTime.m_DayOfYear
+					<< LocalDateTime.m_bIsLeapYear
+				;
 
 				fg_StrCopy(pResult, Return.f_GetStr(), max - 1);
 				pResult[max - 1] = 0;
 			}
 			else
-			{
 				fg_StrCopy(pResult, "Invalid Date");
-			}
 		}
 
 		return S_OK;
@@ -709,7 +697,7 @@ ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -722,45 +710,43 @@ ADDIN_API HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, in
 		uint32 nGot = 0;
 
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000)
+		if (pHelper->dwVersion < 0x20000)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		// read system time from debuggee memory space
-		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Time), &Time, &nGot)!=S_OK)
-		{
+		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Time), &Time, &nGot) != S_OK)
 			return E_FAIL;
-		}
-		if (nGot!=sizeof(Time))
-		{
+		if (nGot != sizeof(Time))
 			return E_FAIL;
-		}
 
 		{
 			if (Time.f_IsValid())
 			{
 				CFStr1024 Return;
-				Return = CFStr1024::CFormat("{} Weeks | {} Days | {} Hours | {} Minutes | {}.{sj2,sf0} Seconds | {} Hours {} Minutes {}.{sj2,sf0} Seconds")
-					<< CTimeSpanConvert(Time).f_GetWeeks() << CTimeSpanConvert(Time).f_GetDays()
-					<< CTimeSpanConvert(Time).f_GetHours() << CTimeSpanConvert(Time).f_GetMinutes()
-					<< CTimeSpanConvert(Time).f_GetSeconds() << (CTimeSpanConvert(Time).f_GetFraction() * 100.0).f_ToInt()
-					<< CTimeSpanConvert(Time).f_GetHours() << CTimeSpanConvert(Time).f_GetMinuteOfHour()
-					<< CTimeSpanConvert(Time).f_GetSecondOfMinute() << (CTimeSpanConvert(Time).f_GetFraction() * 100.0).f_ToInt()
-					;
+				Return
+					= CFStr1024::CFormat("{} Weeks | {} Days | {} Hours | {} Minutes | {}.{sj2,sf0} Seconds | {} Hours {} Minutes {}.{sj2,sf0} Seconds")
+					<< CTimeSpanConvert(Time).f_GetWeeks()
+					<< CTimeSpanConvert(Time).f_GetDays()
+					<< CTimeSpanConvert(Time).f_GetHours()
+					<< CTimeSpanConvert(Time).f_GetMinutes()
+					<< CTimeSpanConvert(Time).f_GetSeconds()
+					<< (CTimeSpanConvert(Time).f_GetFraction() * 100.0).f_ToInt()
+					<< CTimeSpanConvert(Time).f_GetHours()
+					<< CTimeSpanConvert(Time).f_GetMinuteOfHour()
+					<< CTimeSpanConvert(Time).f_GetSecondOfMinute()
+					<< (CTimeSpanConvert(Time).f_GetFraction() * 100.0).f_ToInt()
+				;
 
 				fg_StrCopy(pResult, Return.f_GetStr(), max - 1);
 				pResult[max - 1] = 0;
 			}
 			else
-			{
 				fg_StrCopy(pResult, "Invalid Date");
-			}
 		}
 
 		return S_OK;
@@ -773,8 +759,7 @@ ADDIN_API HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, in
 	}
 }
 
-
-ADDIN_API HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -787,25 +772,19 @@ ADDIN_API HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBa
 		uint32 nGot = 0;
 
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000)
+		if (pHelper->dwVersion < 0x20000)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		// read system time from debuggee memory space
-		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Variable), &Variable, &nGot)!=S_OK)
-		{
+		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Variable), &Variable, &nGot) != S_OK)
 			return E_FAIL;
-		}
-		if (nGot!=sizeof(Variable))
-		{
+		if (nGot != sizeof(Variable))
 			return E_FAIL;
-		}
 
 		{
 			fg_StrCopy(pResult, (CFStr1024::CFormat("{fsi,fsd,fsn}") << Variable).f_GetStr().f_GetStr(), max - 1);
@@ -822,7 +801,7 @@ ADDIN_API HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBa
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -835,25 +814,19 @@ ADDIN_API HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBa
 		uint32 nGot = 0;
 
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000)
+		if (pHelper->dwVersion < 0x20000)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		// read system time from debuggee memory space
-		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Variable), &Variable, &nGot)!=S_OK)
-		{
+		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Variable), &Variable, &nGot) != S_OK)
 			return E_FAIL;
-		}
-		if (nGot!=sizeof(Variable))
-		{
+		if (nGot != sizeof(Variable))
 			return E_FAIL;
-		}
 
 		{
 			fg_StrCopy(pResult, (CFStr1024::CFormat("{fsi,fsd,fsn}") << Variable).f_GetStr().f_GetStr(), max - 1);
@@ -870,7 +843,7 @@ ADDIN_API HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBa
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_fp128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved )
+ADDIN_API HRESULT WINAPI VSE_fp128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -883,25 +856,19 @@ ADDIN_API HRESULT WINAPI VSE_fp128(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 		uint32 nGot = 0;
 
 		DWORDLONG Address = 0;
-		if (pHelper->dwVersion<0x20000)
+		if (pHelper->dwVersion < 0x20000)
 		{
 			// Visual C++ 6.0 version
 			Address = dwAddress;
 		}
 		else
-		{
 			Address = pHelper->GetRealAddress(pHelper);
-		}
 
 		// read system time from debuggee memory space
-		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Variable), &Variable, &nGot)!=S_OK)
-		{
+		if (pHelper->ReadDebuggeeMemoryEx(pHelper, Address, sizeof(Variable), &Variable, &nGot) != S_OK)
 			return E_FAIL;
-		}
-		if (nGot!=sizeof(Variable))
-		{
+		if (nGot != sizeof(Variable))
 			return E_FAIL;
-		}
 
 		{
 			fg_StrCopy(pResult, (CFStr1024::CFormat("{fsi,fsd,fsn}") << Variable).f_GetStr().f_GetStr(), max - 1);
@@ -917,8 +884,6 @@ ADDIN_API HRESULT WINAPI VSE_fp128(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 //		return E_FAIL;
 	}
 }
-
-
 
 DMibAppNoClass;
 DMibPMain;

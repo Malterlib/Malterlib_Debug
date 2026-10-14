@@ -57,6 +57,7 @@ namespace NMib
 				{
 					this->m_pContext = nullptr;
 				}
+
 				CSymStr m_FunctionName;
 				CSymStr m_ModuleName;
 				CSymStr m_FileName;
@@ -77,7 +78,6 @@ namespace NMib
 			class CSymbols
 			{
 			private:
-
 				struct CHeader
 				{
 					uint32 m_Version;
@@ -119,14 +119,13 @@ namespace NMib
 					uint32 m_NameOffset;
 
 					uint32 m_FirstLine;
-
 				}; // 32 bytes (in file)
 
 				enum
 				{
-					BytesPerFunction = 32,
-					BytesPerLine = 24,
-					BytesPerFunctionLines = 4,
+					BytesPerFunction        = 32
+					, BytesPerLine          = 24
+					, BytesPerFunctionLines = 4
 				};
 
 			private:
@@ -141,7 +140,6 @@ namespace NMib
 				NContainer::TCMap<umint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
 
 			private:
-
 				// All private methods assume mp_Lock is taken.
 
 				bool fp_EnsureLoaded();
@@ -150,17 +148,15 @@ namespace NMib
 				CSymStr fp_ReadString(uint32 _Offset);
 
 				void fp_LoadFunctionCache();
-				CFunction const* fp_ReadFunction(uint32 _FuncIndex, CFunction* _pTmp);
-
+				CFunction const *fp_ReadFunction(uint32 _FuncIndex, CFunction *_pTmp);
 
 			public:
-
 				CSymbols();
 				~CSymbols();
 
-				void f_SetSymbolsFile(char const* _pFilename);
+				void f_SetSymbolsFile(char const *_pFilename);
 
-				bool f_Lookup(umint _Address, CAddressInfo& _oInfo);
+				bool f_Lookup(umint _Address, CAddressInfo &_oInfo);
 
 				CAddressInfoCache &f_GetCache(umint _Address)
 				{
