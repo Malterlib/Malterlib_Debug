@@ -22,7 +22,7 @@ namespace NMib
 				CSymStr m_ModuleName;
 				CSymStr m_FileName;
 
-				CLinuxStackTraceInfo(CSymStr&& _FuncName, CSymStr&& _ModuleName, CSymStr&& _FileName, int _iLine)
+				CLinuxStackTraceInfo(CSymStr &&_FuncName, CSymStr &&_ModuleName, CSymStr &&_FileName, int _iLine)
 					: m_FunctionName(std::move(_FuncName))
 					, m_ModuleName(std::move(_ModuleName))
 					, m_FileName(std::move(_FileName))
@@ -47,21 +47,19 @@ namespace NMib
 			private:
 				NThread::CMutual mp_Lock;
 
-				NContainer::TCMap<
-							CSymStr
-						,	NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>
-						,	NMib::CSort_Default
-						,	NMemory::CAllocator_NonTrackedHeap> mp_IndexLookup;
+				NContainer::TCMap<CSymStr, NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>, NMib::CSort_Default, NMemory::CAllocator_NonTrackedHeap>
+					mp_IndexLookup
+				;
 
 			public:
 				CSymbols();
 				~CSymbols();
 
-				CStackTraceInfo* f_AcquireStackTraceInfo(umint _Address);
-				void f_ReleaseStackTraceInfo(CStackTraceInfo* _pInfo);
+				CStackTraceInfo *f_AcquireStackTraceInfo(umint _Address);
+				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 			};
 
-			CSymbols& fg_GetSymbols();
+			CSymbols &fg_GetSymbols();
 		}
 	}
 }

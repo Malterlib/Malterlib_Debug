@@ -59,15 +59,15 @@ namespace NMib
 
 				NEncoding::CEJsonSorted Metadata
 					{
-						"Product"_ = BuildMetadata.m_pProduct
-						, "Application"_ = BuildMetadata.m_pApplication
-						, "Configuration"_ = BuildMetadata.m_pConfiguration
-						, "GitBranch"_ = BuildMetadata.m_pGitBranch
-						, "GitCommit"_ = BuildMetadata.m_pGitCommit
-						, "Platform"_ = BuildMetadata.m_pPlatform
-						, "Version"_ = BuildMetadata.m_pVersion
+						"Product"_= BuildMetadata.m_pProduct
+						, "Application"_= BuildMetadata.m_pApplication
+						, "Configuration"_= BuildMetadata.m_pConfiguration
+						, "GitBranch"_= BuildMetadata.m_pGitBranch
+						, "GitCommit"_= BuildMetadata.m_pGitCommit
+						, "Platform"_= BuildMetadata.m_pPlatform
+						, "Version"_= BuildMetadata.m_pVersion
 #if defined(DMibContract_AnyEnabled) || DMibEnableSafeCheck > 0
-						, "ExceptionInfo"_ = "{ExceptionInfo}"
+						, "ExceptionInfo"_= "{ExceptionInfo}"
 #endif
 					}
 				;
@@ -125,12 +125,20 @@ namespace NMib
 				return m_Random.f_GetValue<uint32>();
 			}
 
-			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::fs_FormatTimeFileName(const NTime::CTime &_Time)
+			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::fs_FormatTimeFileName(NTime::CTime const &_Time)
 			{
 				NTime::CTimeConvert::CDateTime DateTime;
 				NTime::CTimeConvert(_Time).f_ExtractDateTime(DateTime);
 
-				return NStr::CStrNonTracked::CFormat("{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0,fe3}") << DateTime.m_Year << DateTime.m_Month << DateTime.m_DayOfMonth << DateTime.m_Hour << DateTime.m_Minute << DateTime.m_Second << DateTime.m_Fraction * 1000.0;
+				return NStr::CStrNonTracked::CFormat("{}-{sj2,sf0}-{sj2,sf0}_{sj2,sf0}.{sj2,sf0}.{sj2,sf0}.{sj3,sf0,fe3}")
+					<< DateTime.m_Year
+					<< DateTime.m_Month
+					<< DateTime.m_DayOfMonth
+					<< DateTime.m_Hour
+					<< DateTime.m_Minute
+					<< DateTime.m_Second
+					<< DateTime.m_Fraction * 1000.0
+				;
 			}
 
 			bool CSubSystem_Debug_Platform_Windows::fs_CheckAccessRights(NStr::CStrNonTracked &_Path)
@@ -155,7 +163,6 @@ namespace NMib
 					NFile::CFile::fs_DeleteFile(FileName);
 
 					return true;
-
 				}
 				catch (NFile::CExceptionFile)
 				{
@@ -163,18 +170,17 @@ namespace NMib
 				}
 			}
 
-
-			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination)
+			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(ch8 const *_pName, NStr::CStr &_Destination)
 			{
 				return m_StackTrace.f_UndecorateName(_pName, _Destination);
 			}
 
-			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination)
+			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(ch8 const *_pName, NStr::CStrNonTracked &_Destination)
 			{
 				return m_StackTrace.f_UndecorateName(_pName, _Destination);
 			}
 
-			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen)
+			void CSubSystem_Debug_Platform_Windows::f_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen)
 			{
 				return m_StackTrace.f_UndecorateName(_pName, _pDestination, _MaxLen);
 			}
@@ -188,7 +194,6 @@ namespace NMib
 			{
 				return m_StackTrace.f_ReleaseStackTraceInfo((CStackTraceContext::CLocalStackTraceInfo *)_pInfo);
 			}
-
 
 			constinit NMib::TCSubSystem<CSubSystem_Debug_Platform_Windows, NMib::ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Windows = {DAggregateInit};
 
@@ -209,10 +214,12 @@ void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib
 		{
 			return "Malterlib_MessageBoxThread";
 		}
+
 		virtual NMib::NStr::CStr f_GetThreadName()
 		{
 			return "Malterlib_MessageBoxThread";
 		}
+
 		NMib::NStr::CStrNonTracked m_MessageBoxText;
 		NMib::NStr::CStrNonTracked m_MessageBoxHeading;
 		uint32 m_MessageBoxFlags;
@@ -220,9 +227,17 @@ void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib
 
 		aint f_Main()
 		{
-			m_bRet = ::MessageBoxW(nullptr, NMib::NStr::NPlatform::fg_StrToWindows<NMib::NStr::CWStrNonTracked>(m_MessageBoxText), NMib::NStr::NPlatform::fg_StrToWindows<NMib::NStr::CWStrNonTracked>(m_MessageBoxHeading), m_MessageBoxFlags);
+			m_bRet = ::MessageBoxW
+				(
+					nullptr
+					, NMib::NStr::NPlatform::fg_StrToWindows<NMib::NStr::CWStrNonTracked>(m_MessageBoxText)
+					, NMib::NStr::NPlatform::fg_StrToWindows<NMib::NStr::CWStrNonTracked>(m_MessageBoxHeading)
+					, m_MessageBoxFlags
+				)
+			;
 			return 0;
 		}
+
 		void f_Run()
 		{
 			if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
@@ -242,10 +257,9 @@ void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib
 	MessageBox.m_MessageBoxFlags = MB_OK;
 	MessageBox.m_bRet = 0;
 	MessageBox.f_Run();
-
 }
 
-void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const NMib::NStr::CStr &_SecondStr, const NMib::NStr::CStr &_FirstName, const NMib::NStr::CStr &_SecondName)
+void NMib::NSys::fg_Debug_DiffStrings(NMib::NStr::CStr const &_FirstStr, NMib::NStr::CStr const &_SecondStr, NMib::NStr::CStr const &_FirstName, NMib::NStr::CStr const &_SecondName)
 {
 #if 1
 
@@ -298,9 +312,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 			}
 		}
 		if (!NMib::NFile::CFile::fs_FileExists(ExecutablePath))
-		{
 			ExecutablePath = "C:/Program Files/Perforce/p4merge.exe";
-		}
 		{
 			uint32 FileHash0 = NMib::NStr::CStr(_FirstStr).f_Hash();
 			uint32 FileHash1 = NMib::NStr::CStr(_SecondStr).f_Hash();
@@ -337,7 +349,7 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 #endif
 }
 
-void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
+void NMib::NSys::fg_Debug_GenerateCrashDump(NMib::NStr::CStr const &_Message, NMib::NStr::CStr const &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_GenerateCrashDump(_Message, _ExtraLog, _GeneratedLogs, _bDisplayGUI);
@@ -345,7 +357,7 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, co
 
 void NMib::NSys::fg_Debug_GenerateMemoryDump
 	(
-		NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
+		NMib::NContainer::TCVector<void *, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
 		, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 	)
 {
@@ -368,13 +380,11 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCode
 	return false;
 }
 
-
 NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _Address)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_AquireStackTraceInfo(_Address);
 }
-
 
 void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 {
@@ -385,16 +395,14 @@ void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 		return SubSystem.f_ReleaseStackTraceInfo(_pInfo);
 }
 
-
-NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const ch8 *_pFileName, int32 _Line, void *_pCodePointer, const NMib::NStr::CStrNonTracked &_ErrorMessage)
+NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 const *_pFileName, int32 _Line, void *_pCodePointer, NMib::NStr::CStrNonTracked const &_ErrorMessage)
 {
 	DMibDeadlockDetectorPause;
 
 	NMib::EDebugCheckFailureAction Ret;
-	auto fl_DisplayMessage
-		= [&] (NThread::CThreadObjectNonTracked *_pThread) -> aint
+	auto fl_DisplayMessage = [&](NThread::CThreadObjectNonTracked *_pThread) -> aint
 		{
-		#if defined(DDebug) && 0
+#if defined(DDebug) && 0
 			// _CrtDbgReportW uses memory manager so it's not optimal to use this
 			UndocumentedPEB *pPeb = fg_GetPEB(fg_GetTEB());
 			if (pPeb->BeingDebugged)
@@ -404,7 +412,16 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 			}
 
 			auto Module = NMib::NFile::CFile::fs_GetFile(NSys::NFile::fg_GetModulePathNonTracked(_pCodePointer));
-			int LocalRet = _CrtDbgReportW(_CRT_ASSERT, NStr::NPlatform::fg_StrToWindows<CWStrNonTracked>(CStrNonTracked(_pFileName)), _Line, fg_StrToWindows<CWStrNonTracked>(Module), str_utf16("%s"), fg_StrToWindows<CWStrNonTracked>(_ErrorMessage).f_GetStr());
+			int LocalRet = _CrtDbgReportW
+				(
+					_CRT_ASSERT
+					, NStr::NPlatform::fg_StrToWindows<CWStrNonTracked>(CStrNonTracked(_pFileName))
+					, _Line
+					, fg_StrToWindows<CWStrNonTracked>(Module)
+					, str_utf16("%s")
+					, fg_StrToWindows<CWStrNonTracked>(_ErrorMessage).f_GetStr()
+				)
+			;
 			if (LocalRet == 1)
 			{
 				Ret = EDebugContractFailureAction_Break;
@@ -412,7 +429,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 			}
 
 			Ret = EDebugContractFailureAction_Continue;
-		#else
+#else
 			UndocumentedPEB *pPeb = fg_GetPEB(fg_GetTEB());
 			if (pPeb->BeingDebugged)
 			{
@@ -446,20 +463,21 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const 
 				return 0;
 			}
 			Ret = EDebugContractFailureAction_Continue;
-		#endif
+#endif
 
 			return 0;
 		}
 	;
 
 	if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
-	{
 		fl_DisplayMessage(nullptr);
-	}
 	else
 	{
-		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMib::NMemory::CAllocator_NonTrackedHeap> pThread
-			= NThread::CThreadObjectNonTracked::fs_StartThread(fl_DisplayMessage, "Report assert display message thread")
+		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMib::NMemory::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread
+			(
+				fl_DisplayMessage
+				, "Report assert display message thread"
+			)
 		;
 	}
 
@@ -472,10 +490,15 @@ void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNot
 	return SubSystem.f_SetCrashDumpUserNotifyFunction(_pCrashDumpUserNotify);
 }
 
-void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats(NMib::NStr::CStrNonTracked const &_CustomMessage, NMib::NStr::CStrNonTracked const &_CanContinueMessage, NMib::NStr::CStrNonTracked const &_NoContinueMessage)
+void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats
+	(
+		NMib::NStr::CStrNonTracked const &_CustomMessage
+		, NMib::NStr::CStrNonTracked const &_CanContinueMessage
+		, NMib::NStr::CStrNonTracked const &_NoContinueMessage
+	)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
-	return SubSystem.f_SetCrashDumpUserNotifyFormats( _CustomMessage, _CanContinueMessage, _NoContinueMessage );
+	return SubSystem.f_SetCrashDumpUserNotifyFormats(_CustomMessage, _CanContinueMessage, _NoContinueMessage);
 }
 
 void NMib::NSys::fg_Debug_EnableCrashDumpCaches()
@@ -484,25 +507,23 @@ void NMib::NSys::fg_Debug_EnableCrashDumpCaches()
 	return SubSystem.f_EnableCrashDumpCaches();
 }
 
-
-void NMib::NSys::fg_Debug_UndecorateName(const ch8 *_pName, NMib::NStr::CStr &_Destination)
+void NMib::NSys::fg_Debug_UndecorateName(ch8 const *_pName, NMib::NStr::CStr &_Destination)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_UndecorateName(_pName, _Destination);
 }
 
-void NMib::NSys::fg_Debug_UndecorateName(const ch8 *_pName, NMib::NStr::CStrNonTracked &_Destination)
+void NMib::NSys::fg_Debug_UndecorateName(ch8 const *_pName, NMib::NStr::CStrNonTracked &_Destination)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_UndecorateName(_pName, _Destination);
 }
 
-void NMib::NSys::fg_Debug_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen)
+void NMib::NSys::fg_Debug_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
 	return SubSystem.f_UndecorateName(_pName, _pDestination, _MaxLen);
 }
-
 
 void NMib::NSys::fg_Debug_EnableCrashDumps()
 {

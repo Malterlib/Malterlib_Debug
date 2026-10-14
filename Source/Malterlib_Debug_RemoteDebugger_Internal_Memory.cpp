@@ -21,8 +21,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		bool bStackTrace = mp_Settings.m_Features & EFeature_MemoryStackTrace;
 		TCStackTrace<uint64> StackTrace;
 
-		auto fl_ReadStackTrace =
-			[&]()
+		auto fl_ReadStackTrace = [&]()
 			{
 				if (bStackTrace)
 				{
@@ -32,13 +31,12 @@ namespace NMib::NDebug::NRemoteDebugger
 					umint nLevelsSubOne = nLevels - 1;
 					umint Half = nLevels >> 1;
 					for (umint iL = 0; iL < Half; ++iL)
-					{
-						fg_Swap(StackTrace.m_lStack[iL], StackTrace.m_lStack[nLevelsSubOne - iL] );
-					}
+						fg_Swap(StackTrace.m_lStack[iL], StackTrace.m_lStack[nLevelsSubOne - iL]);
 				}
-			};
+			}
+		;
 
-		switch(_Packet)
+		switch (_Packet)
 		{
 		case EPacket_Mem_AllocatorName:
 			{
@@ -47,17 +45,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_AllocatorName(
-								Packet.m_ThreadID
-							,	Packet.m_MemoryAllocator
-							,	Packet.m_Name
-							, StackTrace
-						);
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_AllocatorName(Packet.m_ThreadID, Packet.m_MemoryAllocator, Packet.m_Name, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_AllocatorDelete:
@@ -67,16 +62,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_AllocatorDelete(
-								Packet.m_ThreadID
-							,	Packet.m_MemoryAllocator
-							, StackTrace
-						);
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_AllocatorDelete(Packet.m_ThreadID, Packet.m_MemoryAllocator, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_ScopeEnter:
@@ -86,16 +79,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_ScopeEnter(
-								Packet.m_ThreadID
-							,	Packet.m_MemoryAllocator
-							, StackTrace
-						);
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_ScopeEnter(Packet.m_ThreadID, Packet.m_MemoryAllocator, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_ScopeExit:
@@ -105,16 +96,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_ScopeExit(
-								Packet.m_ThreadID
-							,	Packet.m_MemoryAllocator
-							, StackTrace
-						);
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_ScopeExit(Packet.m_ThreadID, Packet.m_MemoryAllocator, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Alloc:
@@ -124,23 +113,25 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Alloc
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_Address
-								, Packet.m_RequestedAlignment
-								, Packet.m_RequestedSize
-								, Packet.m_ReturnedSize
-								, Packet.m_nBytesOverhead
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Alloc
+								(
+									Packet.m_ThreadID
+									, Packet.m_MemoryAllocator
+									, Packet.m_Address
+									, Packet.m_RequestedAlignment
+									, Packet.m_RequestedSize
+									, Packet.m_ReturnedSize
+									, Packet.m_nBytesOverhead
+									, StackTrace
+								)
+							;
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Resize:
@@ -150,24 +141,26 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Resize
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_OldAddress
-								, Packet.m_Address
-								, Packet.m_RequestedAlignment
-								, Packet.m_RequestedSize
-								, Packet.m_ReturnedSize
-								, Packet.m_nBytesOverhead
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Resize
+								(
+									Packet.m_ThreadID
+									, Packet.m_MemoryAllocator
+									, Packet.m_OldAddress
+									, Packet.m_Address
+									, Packet.m_RequestedAlignment
+									, Packet.m_RequestedSize
+									, Packet.m_ReturnedSize
+									, Packet.m_nBytesOverhead
+									, StackTrace
+								)
+							;
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Realloc:
@@ -177,24 +170,26 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Realloc
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_OldAddress
-								, Packet.m_Address
-								, Packet.m_RequestedAlignment
-								, Packet.m_RequestedSize
-								, Packet.m_ReturnedSize
-								, Packet.m_nBytesOverhead
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Realloc
+								(
+									Packet.m_ThreadID
+									, Packet.m_MemoryAllocator
+									, Packet.m_OldAddress
+									, Packet.m_Address
+									, Packet.m_RequestedAlignment
+									, Packet.m_RequestedSize
+									, Packet.m_ReturnedSize
+									, Packet.m_nBytesOverhead
+									, StackTrace
+								)
+							;
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Free:
@@ -204,19 +199,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Free
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_Address
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Free(Packet.m_ThreadID, Packet.m_MemoryAllocator, Packet.m_Address, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_GetSize:
@@ -226,20 +216,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_GetSize
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_Address
-								, Packet.m_Size
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_GetSize(Packet.m_ThreadID, Packet.m_MemoryAllocator, Packet.m_Address, Packet.m_Size, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Protect:
@@ -249,21 +233,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Protect
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_Address
-								, Packet.m_Size
-								, Packet.m_Protect
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Protect(Packet.m_ThreadID, Packet.m_MemoryAllocator, Packet.m_Address, Packet.m_Size, Packet.m_Protect, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Commit:
@@ -273,20 +250,14 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Commit
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_Address
-								, Packet.m_Size
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Commit(Packet.m_ThreadID, Packet.m_MemoryAllocator, Packet.m_Address, Packet.m_Size, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		case EPacket_Mem_Decommit:
@@ -296,27 +267,21 @@ namespace NMib::NDebug::NRemoteDebugger
 				Packet.f_Read(Stream);
 				fl_ReadStackTrace();
 
-				mp_Settings.m_MemoryDispatcher(
-					[this, Packet, StackTrace]()
-					{
-						mp_Settings.m_pMemoryReporter->f_Decommit
-							(
-								Packet.m_ThreadID
-								, Packet.m_MemoryAllocator
-								, Packet.m_Address
-								, Packet.m_Size
-								, StackTrace
-							)
-						;
-					}
-				);
+				mp_Settings.m_MemoryDispatcher
+					(
+						[this, Packet, StackTrace]()
+						{
+							mp_Settings.m_pMemoryReporter->f_Decommit(Packet.m_ThreadID, Packet.m_MemoryAllocator, Packet.m_Address, Packet.m_Size, StackTrace);
+						}
+					)
+				;
 			}
 			break;
 		default: break;
 		}
 	}
 
-	CReportMemoryToRemote::CReportMemoryToRemote(CClient* _pClient, bool _bStackTrace)
+	CReportMemoryToRemote::CReportMemoryToRemote(CClient *_pClient, bool _bStackTrace)
 		: mp_pClient(_pClient)
 		, mp_bStackTrace(_bStackTrace)
 	{
@@ -326,28 +291,25 @@ namespace NMib::NDebug::NRemoteDebugger
 	{
 	}
 
-
-	void CReportMemoryToRemote::f_AllocatorName(umint _MemoryAllocator, ch8 const* _pAllocatorName)
+	void CReportMemoryToRemote::f_AllocatorName(umint _MemoryAllocator, ch8 const *_pAllocatorName)
 	{
 		auto pConnection = mp_pClient->f_GetConnection();
 		if (!pConnection)
 			return;
 
 		CMemPacket_AllocatorName Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _pAllocatorName
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _pAllocatorName
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_AllocatorName
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr
-								);
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_AllocatorName, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_AllocatorDelete(umint _MemoryAllocator)
@@ -357,20 +319,17 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_AllocatorDelete Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_AllocatorDelete
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr
-								);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_AllocatorDelete, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_ScopeEnter(umint _MemoryAllocator)
@@ -380,19 +339,17 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_ScopeEnter Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_ScopeEnter
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr
-								);
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_ScopeEnter, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_ScopeExit(umint _MemoryAllocator)
@@ -402,21 +359,18 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_ScopeExit Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_ScopeExit
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr
-								);
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_ScopeExit, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
-
 
 	void CReportMemoryToRemote::f_Alloc
 		(
@@ -434,29 +388,27 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Alloc Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			,_MemoryAllocator
-			, _Address
-			, _RequestedAlignment
-			, _RequestedSize
-			, _ReturnedSize
-			, _nBytesOverhead
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _Address
+				, _RequestedAlignment
+				, _RequestedSize
+				, _ReturnedSize
+				, _nBytesOverhead
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Alloc
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr
-								);
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Alloc, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_Resize
 		(
-			  umint _MemoryAllocator
+			umint _MemoryAllocator
 			, umint _OldAddress
 			, umint _OldSize
 			, void const *_pOldAllocationInfo
@@ -473,24 +425,23 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Resize Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _OldAddress
-			, _Address
-			, _RequestedAlignment
-			, _RequestedSize
-			, _ReturnedSize
-			, _nBytesOverhead
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _OldAddress
+				, _Address
+				, _RequestedAlignment
+				, _RequestedSize
+				, _ReturnedSize
+				, _nBytesOverhead
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Resize
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Resize, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_Realloc
@@ -512,25 +463,23 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Realloc Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _OldAddress
-			, _Address
-			, _RequestedAlignment
-			, _RequestedSize
-			, _ReturnedSize
-			, _nBytesOverhead
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _OldAddress
+				, _Address
+				, _RequestedAlignment
+				, _RequestedSize
+				, _ReturnedSize
+				, _nBytesOverhead
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Realloc
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Realloc, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_Free(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo)
@@ -540,20 +489,18 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Free Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			,_MemoryAllocator
-			, _Address
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _Address
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Free
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Free, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_GetSize(umint _MemoryAllocator, umint _Address, umint _Size, void const *_pAllocationInfo)
@@ -563,21 +510,19 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_GetSize Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _Address
-			, _Size
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _Address
+				, _Size
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_GetSize
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_GetSize, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_Protect(umint _MemoryAllocator, umint _Address, umint _Size, uaint _Protect)
@@ -587,22 +532,20 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Protect Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _Address
-			, _Size
-			, _Protect
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _Address
+				, _Size
+				, _Protect
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Protect
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Protect, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_Commit(umint _MemoryAllocator, umint _Address, umint _Size)
@@ -612,21 +555,19 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Commit Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _Address
-			, _Size
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _Address
+				, _Size
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Commit
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Commit, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 
 	void CReportMemoryToRemote::f_Decommit(umint _MemoryAllocator, umint _Address, umint _Size)
@@ -636,21 +577,19 @@ namespace NMib::NDebug::NRemoteDebugger
 			return;
 
 		CMemPacket_Decommit Packet =
-		{
-			 NSys::fg_Thread_GetCurrentUID()
-			, _MemoryAllocator
-			, _Address
-			, _Size
-		};
+			{
+				NSys::fg_Thread_GetCurrentUID()
+				, _MemoryAllocator
+				, _Address
+				, _Size
+			}
+		;
 
 		TCStackTrace<umint> Trace;
 		if (mp_bStackTrace)
 			Trace.f_Acquire();
 
-		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Decommit
-									, Packet
-									, mp_bStackTrace ? &Trace : nullptr);
-
+		pConnection->f_SendPacket(EChannel_Memory, EPacket_Mem_Decommit, Packet, mp_bStackTrace ? &Trace : nullptr);
 	}
 }
 

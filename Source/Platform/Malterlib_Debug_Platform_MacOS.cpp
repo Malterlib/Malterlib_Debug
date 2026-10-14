@@ -15,10 +15,9 @@ bool fg_MalterlibMallocOverride_Enabled();
 
 void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib::NStr::CStr const &_Message)
 {
-
 }
 
-void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const NMib::NStr::CStr &_SecondStr, const NMib::NStr::CStr &_FirstName, const NMib::NStr::CStr &_SecondName)
+void NMib::NSys::fg_Debug_DiffStrings(NMib::NStr::CStr const &_FirstStr, NMib::NStr::CStr const &_SecondStr, NMib::NStr::CStr const &_FirstName, NMib::NStr::CStr const &_SecondName)
 {
 	using namespace NMib::NStr;
 	NContainer::TCVector<CStr> DiffPrograms;
@@ -50,14 +49,18 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 			(
 				TempDir
 				, CStr::CFormat("{}-{}-{}.txt")
-				<< FirstName << FirstExt << NMib::NCryptography::fg_GetHashedUuidString(_FirstStr, NMib::NCryptography::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
+				<< FirstName
+				<< FirstExt
+				<< NMib::NCryptography::fg_GetHashedUuidString(_FirstStr, NMib::NCryptography::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
 			)
 		;
 		CStr SecondFile = NMib::NFile::CFile::fs_AppendPath
 			(
 				TempDir
 				, CStr::CFormat("{}-{}-{}.txt")
-				<< SecondName << SecondExt << NMib::NCryptography::fg_GetHashedUuidString(_SecondStr, NMib::NCryptography::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
+				<< SecondName
+				<< SecondExt
+				<< NMib::NCryptography::fg_GetHashedUuidString(_SecondStr, NMib::NCryptography::CUniversallyUniqueIdentifier("{72048B5E-1F9C-4385-AF16-997FDC21F215}"))
 			)
 		;
 		NMib::NFile::CFile::fs_WriteStringToFile(FirstFile, _FirstStr);
@@ -73,18 +76,16 @@ void NMib::NSys::fg_Debug_DiffStrings(const NMib::NStr::CStr &_FirstStr, const N
 	}
 }
 
-void NMib::NSys::fg_Debug_GenerateCrashDump(const NMib::NStr::CStr &_Message, const NMib::NStr::CStr &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
+void NMib::NSys::fg_Debug_GenerateCrashDump(NMib::NStr::CStr const &_Message, NMib::NStr::CStr const &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
 {
-
 }
 
 void NMib::NSys::fg_Debug_GenerateMemoryDump
 	(
-		NMib::NContainer::TCVector<void*, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
+		NMib::NContainer::TCVector<void *, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Locations
 		, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 	)
 {
-
 }
 
 // Libunwind may buy us some more info, but the output from that (even Apple's variant) is pretty
@@ -138,7 +139,7 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCode
 #ifdef _LIBCPP_BUILD_STATIC
 extern "C"
 {
-	void nontracked_free (void *__ptr);
+	void nontracked_free(void *__ptr);
 }
 #endif
 
@@ -252,18 +253,20 @@ void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 	}
 }
 
-
-NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(const ch8 *_pFileName, int32 _Line, void *_pCodePointer, const NMib::NStr::CStrNonTracked &_ErrorMessage)
+NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 const *_pFileName, int32 _Line, void *_pCodePointer, NMib::NStr::CStrNonTracked const &_ErrorMessage)
 {
 	return EDebugContractFailureAction_NotHandled;
 }
 
 void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
 {
-
 }
 
-void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats(NMib::NStr::CStrNonTracked const &_CustomMessage, NMib::NStr::CStrNonTracked const &_CanContinueMessage, NMib::NStr::CStrNonTracked const &_NoContinueMessage)
+void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats
+	(
+		NMib::NStr::CStrNonTracked const &_CustomMessage
+		, NMib::NStr::CStrNonTracked const &_CanContinueMessage
+		, NMib::NStr::CStrNonTracked const &_NoContinueMessage
+	)
 {
-
 }

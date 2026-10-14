@@ -43,9 +43,7 @@ namespace NMib
 					SymCleanup(m_hProcess);
 
 				if (m_hProcess != INVALID_HANDLE_VALUE)
-				{
 					CloseHandle(m_hProcess);
-				}
 
 				if (m_pSymbolInfo)
 					NMemory::CAllocator_NonTrackedHeap::f_Free(m_pSymbolInfo, gc_SymbolSize);
@@ -71,7 +69,6 @@ namespace NMib
 
 					NStorage::TCUniquePointer<CLocalStackTraceInfo, NMemory::CAllocator_NonTrackedHeap> pInfoDelete = fg_Explicit(pInfo);
 				}
-
 			}
 
 			CStackTraceContext::CLocalStackTraceInfo::CLocalStackTraceInfo()
@@ -94,84 +91,93 @@ namespace NMib
 					return false;
 
 				auto InitLambda = [&]() -> bool
-				{
-					#ifdef DArchitecture_x64
-						#define DMibPlatformDir "\\x64"
-					#else
-						#define DMibPlatformDir "\\x86"
-					#endif
-
-					NStr::CStrNonTracked ProgramRoot = fg_GetSys()->f_GetProgramRootNonTracked();
-					fg_StrReplaceChar(ProgramRoot, '/', '\\');
-
-					NStr::CStrNonTracked ProgramPath = NMib::NFile::CFile::fs_GetProgramDirectoryNonTracked();
-					fg_StrReplaceChar(ProgramPath, '/', '\\');
-
-					if (!m_hDbgHelp)
 					{
-						NStr::CStrNonTracked DebugHelpDLL = "\\DebugHelp" DMibPlatformDir "\\Dbghelp.dll";
+#ifdef DArchitecture_x64
+#	define DMibPlatformDir "\\x64"
+#else
+#	define DMibPlatformDir "\\x86"
+#endif
 
-						m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(ProgramRoot + DebugHelpDLL);
+						NStr::CStrNonTracked ProgramRoot = fg_GetSys()->f_GetProgramRootNonTracked();
+						fg_StrReplaceChar(ProgramRoot, '/', '\\');
+
+						NStr::CStrNonTracked ProgramPath = NMib::NFile::CFile::fs_GetProgramDirectoryNonTracked();
+						fg_StrReplaceChar(ProgramPath, '/', '\\');
 
 						if (!m_hDbgHelp)
-							m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(ProgramPath + DebugHelpDLL);
-
-						if (!m_hDbgHelp)
-							m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(NStr::CStrNonTracked("Dbghelp.dll"));
-					}
-
-					// Apperantly some bug in Dbghelp.dll causes symsrv.dll to be unloaded while other modules are still holding a handle to it. Try to prevent this here by adding a reference to the library.
-					if (!m_hSymSrv)
-					{
-						NStr::CStrNonTracked SymServDLL = "\\DebugHelp" DMibPlatformDir "\\SymSrv.dll";
-
-						m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(ProgramRoot + SymServDLL);
-
-						if (!m_hSymSrv)
-							m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(ProgramPath + SymServDLL);
-
-						if (!m_hSymSrv)
-							m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(NStr::CStrNonTracked("SymSrv.dll"));
-					}
-
-					#undef DMibPlatformDir
-
-					if (!m_hDbgHelp)
-					{
-						m_bFailedInitializeDll = true;
-						_Error = "Dbghelp.dll not found";
-						DMibDTrace("StackTrace: Failed to load DbgHelp.dll\n", 0);
-
-						return false;
-					}
-
-					this->SymInitialize = (FSymInitialize*)GetProcAddress(m_hDbgHelp, "SymInitializeW");
-					this->SymCleanup = (FSymCleanup*)GetProcAddress(m_hDbgHelp, "SymCleanup");
-					this->SymRefreshModuleList = (FSymRefreshModuleList*)GetProcAddress(m_hDbgHelp, "SymRefreshModuleList");
-					this->SymGetSymFromAddr64 = (FSymGetSymFromAddr64*)GetProcAddress(m_hDbgHelp, "SymGetSymFromAddr64");
-					this->SymGetLineFromAddr64 = (FSymGetLineFromAddr64*)GetProcAddress(m_hDbgHelp, "SymGetLineFromAddr64");
-					this->SymGetModuleInfo64 = (FSymGetModuleInfo64*)GetProcAddress(m_hDbgHelp, "SymGetModuleInfo64");
-					this->MiniDumpWriteDump = (FMiniDumpWriteDump*)GetProcAddress(m_hDbgHelp, "MiniDumpWriteDump");
-					this->UnDecorateSymbolName = (FUnDecorateSymbolName*)GetProcAddress(m_hDbgHelp, "UnDecorateSymbolName");
-
-
-					if (!this->SymInitialize || !this->SymCleanup || !this->SymGetSymFromAddr64 || !this->SymGetLineFromAddr64 || !this->SymGetModuleInfo64 || !this->MiniDumpWriteDump || !this->SymRefreshModuleList)
-					{
-						m_bFailedInitializeDll = true;
-						FreeLibrary(m_hDbgHelp);
-						m_hDbgHelp = nullptr;
-						_Error = "Dbghelp.dll dose not contain !SymInitialize || !SymCleanup || !SymGetSymFromAddr64 || !SymGetLineFromAddr64 || !SymGetModuleInfo64 || !MiniDumpWriteDump";
-						DMibDTrace("---------------------------------------------------------------------------------------------------------------------\n", 0);
-						for (int i = 0; i < 25; ++i)
 						{
-							DMibDTrace("StackTrace: DbgHelp.dll does not contain the needed functions\n", 0);
+							NStr::CStrNonTracked DebugHelpDLL = "\\DebugHelp" DMibPlatformDir "\\Dbghelp.dll";
 
+							m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(ProgramRoot + DebugHelpDLL);
+
+							if (!m_hDbgHelp)
+								m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(ProgramPath + DebugHelpDLL);
+
+							if (!m_hDbgHelp)
+								m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(NStr::CStrNonTracked("Dbghelp.dll"));
 						}
-						DMibDTrace("---------------------------------------------------------------------------------------------------------------------\n", 0);
-						return false;
+
+						// Apperantly some bug in Dbghelp.dll causes symsrv.dll to be unloaded while other modules are still holding a handle to it. Try to prevent this here by adding a
+						// reference to the library.
+						if (!m_hSymSrv)
+						{
+							NStr::CStrNonTracked SymServDLL = "\\DebugHelp" DMibPlatformDir "\\SymSrv.dll";
+
+							m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(ProgramRoot + SymServDLL);
+
+							if (!m_hSymSrv)
+								m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(ProgramPath + SymServDLL);
+
+							if (!m_hSymSrv)
+								m_hSymSrv = (HMODULE)NSys::fg_LoadLibrary(NStr::CStrNonTracked("SymSrv.dll"));
+						}
+
+#undef DMibPlatformDir
+
+						if (!m_hDbgHelp)
+						{
+							m_bFailedInitializeDll = true;
+							_Error = "Dbghelp.dll not found";
+							DMibDTrace("StackTrace: Failed to load DbgHelp.dll\n", 0);
+
+							return false;
+						}
+
+						this->SymInitialize = (FSymInitialize *)GetProcAddress(m_hDbgHelp, "SymInitializeW");
+						this->SymCleanup = (FSymCleanup *)GetProcAddress(m_hDbgHelp, "SymCleanup");
+						this->SymRefreshModuleList = (FSymRefreshModuleList *)GetProcAddress(m_hDbgHelp, "SymRefreshModuleList");
+						this->SymGetSymFromAddr64 = (FSymGetSymFromAddr64 *)GetProcAddress(m_hDbgHelp, "SymGetSymFromAddr64");
+						this->SymGetLineFromAddr64 = (FSymGetLineFromAddr64 *)GetProcAddress(m_hDbgHelp, "SymGetLineFromAddr64");
+						this->SymGetModuleInfo64 = (FSymGetModuleInfo64 *)GetProcAddress(m_hDbgHelp, "SymGetModuleInfo64");
+						this->MiniDumpWriteDump = (FMiniDumpWriteDump *)GetProcAddress(m_hDbgHelp, "MiniDumpWriteDump");
+						this->UnDecorateSymbolName = (FUnDecorateSymbolName *)GetProcAddress(m_hDbgHelp, "UnDecorateSymbolName");
+
+						if
+						(
+							!this->SymInitialize
+							|| !this->SymCleanup
+							|| !this->SymGetSymFromAddr64
+							|| !this->SymGetLineFromAddr64
+							|| !this->SymGetModuleInfo64
+							|| !this->MiniDumpWriteDump
+							|| !this->SymRefreshModuleList
+						)
+						{
+							m_bFailedInitializeDll = true;
+							FreeLibrary(m_hDbgHelp);
+							m_hDbgHelp = nullptr;
+							_Error
+								= "Dbghelp.dll dose not contain !SymInitialize || !SymCleanup || !SymGetSymFromAddr64 || !SymGetLineFromAddr64 || !SymGetModuleInfo64 || !MiniDumpWriteDump"
+							;
+							DMibDTrace("---------------------------------------------------------------------------------------------------------------------\n", 0);
+							for (int i = 0; i < 25; ++i)
+								DMibDTrace("StackTrace: DbgHelp.dll does not contain the needed functions\n", 0);
+							DMibDTrace("---------------------------------------------------------------------------------------------------------------------\n", 0);
+							return false;
+						}
+						return true;
 					}
-					return true;
-				};
+				;
 
 				bool bReturn = InitLambda();
 
@@ -199,67 +205,65 @@ namespace NMib
 				}
 
 				auto InitLambda = [&]() -> bool
-				{
-					NStr::CWStrNonTracked Strings = NSys::NFile::fg_GetProgramDirectoryNonTracked();
-
-					NStr::CWStrNonTracked TempStr;
-					using namespace NMib::NStr::NPlatform;
-					GetEnvironmentVariableW(str_utf16("_NT_SYMBOL_PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
-
-					if (TempStr.f_GetLen())
-						Strings = Strings + ";" + TempStr;
-					else
 					{
+						NStr::CWStrNonTracked Strings = NSys::NFile::fg_GetProgramDirectoryNonTracked();
 
-						GetEnvironmentVariableW(str_utf16("_NT_ALTERNATE_SYMBOL_PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
+						NStr::CWStrNonTracked TempStr;
+						using namespace NMib::NStr::NPlatform;
+						GetEnvironmentVariableW(str_utf16("_NT_SYMBOL_PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
 
 						if (TempStr.f_GetLen())
 							Strings = Strings + ";" + TempStr;
 						else
 						{
-							GetEnvironmentVariableW(str_utf16("SystemRoot"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
-
-							if (TempStr.f_GetLen())
-								Strings = Strings + ";" + TempStr + "\\Symbols";
-
-							GetEnvironmentVariableW(str_utf16("PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
+							GetEnvironmentVariableW(str_utf16("_NT_ALTERNATE_SYMBOL_PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
 
 							if (TempStr.f_GetLen())
 								Strings = Strings + ";" + TempStr;
-						}
-					}
-
-					m_hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessId());
-					if (m_hProcess == INVALID_HANDLE_VALUE)
-					{
-						DMibDTrace("StackTrace: SymInitialize failed\n", 0);
-						_Error = "Could not open process handle";
-						m_bFailedInitialize = true;
-						return false;
-					}
-
-					if (!g_MalterlibDisableStackTraceContext)
-					{
-						if (!this->SymInitialize(m_hProcess, (ch16 *)Strings.f_GetStr(), false))
-						{
-							if (!this->SymInitialize(m_hProcess, nullptr, false))
+							else
 							{
-								_Error = NStr::CStrNonTracked::CFormat("SymInitialize failed with {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError());
-								DMibDTraceSafe("{}\n", _Error);
-								m_bFailedInitialize = true;
-								return false;
+								GetEnvironmentVariableW(str_utf16("SystemRoot"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
+
+								if (TempStr.f_GetLen())
+									Strings = Strings + ";" + TempStr + "\\Symbols";
+
+								GetEnvironmentVariableW(str_utf16("PATH"), TempStr.f_GetStr(gc_MaxWindowsEnvVarLength), gc_MaxWindowsEnvVarLength);
+
+								if (TempStr.f_GetLen())
+									Strings = Strings + ";" + TempStr;
 							}
 						}
 
-						if (!m_pSymbolInfo)
+						m_hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessId());
+						if (m_hProcess == INVALID_HANDLE_VALUE)
 						{
-							m_pSymbolInfo = (IMAGEHLP_SYMBOL64 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(gc_SymbolSize);
+							DMibDTrace("StackTrace: SymInitialize failed\n", 0);
+							_Error = "Could not open process handle";
+							m_bFailedInitialize = true;
+							return false;
 						}
 
-						this->SymRefreshModuleList(m_hProcess);
+						if (!g_MalterlibDisableStackTraceContext)
+						{
+							if (!this->SymInitialize(m_hProcess, (ch16 *)Strings.f_GetStr(), false))
+							{
+								if (!this->SymInitialize(m_hProcess, nullptr, false))
+								{
+									_Error = NStr::CStrNonTracked::CFormat("SymInitialize failed with {}") << NMib::NPlatform::fg_Win32_GetLastErrorStr(GetLastError());
+									DMibDTraceSafe("{}\n", _Error);
+									m_bFailedInitialize = true;
+									return false;
+								}
+							}
+
+							if (!m_pSymbolInfo)
+								m_pSymbolInfo = (IMAGEHLP_SYMBOL64 *)NMemory::CAllocator_NonTrackedHeap::f_Alloc(gc_SymbolSize);
+
+							this->SymRefreshModuleList(m_hProcess);
+						}
+						return true;
 					}
-					return true;
-				};
+				;
 
 				bool bReturn = InitLambda();
 
@@ -270,8 +274,7 @@ namespace NMib
 				return true;
 			}
 
-
-			void CStackTraceContext::f_UndecorateName(const ch8 *_pName, NStr::CStr &_Destination)
+			void CStackTraceContext::f_UndecorateName(ch8 const *_pName, NStr::CStr &_Destination)
 			{
 				NStr::CStr Dest;
 				f_UndecorateName(_pName, Dest.f_GetStr(4096), 4096);
@@ -279,7 +282,7 @@ namespace NMib
 				_Destination = Dest;
 			}
 
-			void CStackTraceContext::f_UndecorateName(const ch8 *_pName, NStr::CStrNonTracked &_Destination)
+			void CStackTraceContext::f_UndecorateName(ch8 const *_pName, NStr::CStrNonTracked &_Destination)
 			{
 				NStr::CStrNonTracked Dest;
 				f_UndecorateName(_pName, Dest.f_GetStr(4096), 4096);
@@ -287,7 +290,7 @@ namespace NMib
 				_Destination = Dest;
 			}
 
-			void CStackTraceContext::f_UndecorateName(const ch8 *_pName, ch8 *_pDestination, umint _MaxLen)
+			void CStackTraceContext::f_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen)
 			{
 				if (!m_bInitializedDll)
 				{
@@ -304,9 +307,9 @@ namespace NMib
 					return;
 				}
 				uint32 Flags = 0;
-		#ifndef DArchitecture_x64
+#ifndef DArchitecture_x64
 				Flags |= UNDNAME_32_BIT_DECODE;
-		#endif
+#endif
 				umint nChars = UnDecorateSymbolName(_pName, _pDestination, _MaxLen, Flags);
 				if (!nChars)
 				{
@@ -333,9 +336,7 @@ namespace NMib
 				if (pLocalInfo)
 				{
 					if ((++pLocalInfo->m_RefCount) == 1)
-					{
 						pLocalInfo->m_UnusedList.f_Unlink();
-					}
 					return pLocalInfo;
 				}
 
@@ -361,8 +362,8 @@ namespace NMib
 					DWORD Displacement;
 					if (SymGetLineFromAddr64(m_hProcess, _Address, &Displacement, &LineInfo))
 					{
-						const ch8 *pName = LineInfo.FileName;
-						constexpr static const ch8 *c_pCrtStrip[] =
+						ch8 const *pName = LineInfo.FileName;
+						static constexpr ch8 const *c_pCrtStrip[] =
 							{
 								"f:\\rtm\\vctools\\crt_bld\\self_x86\\crt\\src\\"
 								, "f:\\sp\\vctools\\crt_bld\\self_x86\\crt\\src\\"

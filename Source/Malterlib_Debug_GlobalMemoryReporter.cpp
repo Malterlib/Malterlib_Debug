@@ -23,7 +23,7 @@ DMibCompilerMessage("---- Categories memory reporter enabled");
 namespace NMib
 {
 #if (DMibConfig_MemoryManager_Stats_Enable + DMibConfig_MemoryManager_Stats_EnableCallstack + DMibConfig_MemoryManager_Stats_EnableCategories) > 1
-#error "Can only use one memory reporter at a time"
+#	error "Can only use one memory reporter at a time"
 #endif
 #if DMibConfig_MemoryManager_Stats_Enable
 	constinit NMib::NStorage::TCAggregateSimple<NMemory::CStatsMemoryReporter> g_MainReporter = {DAggregateInit};
@@ -36,16 +36,16 @@ namespace NMib
 #if DMibConfig_Memory_Shims_EnableGlobal
 	void CSystem::fp_CreateGlobalMemoryReporter()
 	{
-#if DMibConfig_MemoryManager_Stats_Enable || DMibConfig_MemoryManager_Stats_EnableCallstack || DMibConfig_MemoryManager_Stats_EnableCategories
+#	if DMibConfig_MemoryManager_Stats_Enable || DMibConfig_MemoryManager_Stats_EnableCallstack || DMibConfig_MemoryManager_Stats_EnableCategories
 		g_MainReporter.f_Construct();
-#endif
+#	endif
 	}
+
 	void CSystem::fp_DestroyGlobalMemoryReporter()
 	{
-#if DMibConfig_MemoryManager_Stats_Enable || DMibConfig_MemoryManager_Stats_EnableCallstack || DMibConfig_MemoryManager_Stats_EnableCategories
+#	if DMibConfig_MemoryManager_Stats_Enable || DMibConfig_MemoryManager_Stats_EnableCallstack || DMibConfig_MemoryManager_Stats_EnableCategories
 		g_MainReporter.f_Destruct();
-#endif
+#	endif
 	}
 #endif
-
 } // Namespace NMib

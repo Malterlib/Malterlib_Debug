@@ -40,7 +40,6 @@ struct CTestRecursiveLinked
 class CTest2
 {
 public:
-
 	CTest2(int _Value)
 		: m_Value(_Value)
 	{
@@ -49,7 +48,7 @@ public:
 	class CCompare
 	{
 	public:
-		inline_small const umint &operator () (CTest2 const &_Node) const
+		inline_small umint const &operator () (CTest2 const &_Node) const
 		{
 			return _Node.m_Value;
 		}
