@@ -49,7 +49,8 @@ namespace NMib
 #			define DMibDTraceRaw(...) NMib::NSys::fg_DebugOutput(__VA_ARGS__)
 #			define DMibDTrace(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
 #			define DMibDTraceSafe(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
-#			define DMibDTraceTimed(d_Format, ...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
+#			define DMibDTraceTimed(d_Format, ...) \
+		NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
 #		else
 #			define DMibDTraceRaw(...) (void)0
 #			define DMibDTrace(...) (void)0
@@ -77,7 +78,8 @@ namespace NMib
 #			define DMibTraceRaw(...) NMib::NSys::fg_DebugOutput(__VA_ARGS__)
 #			define DMibTrace(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>(__VA_ARGS__))
 #			define DMibTraceSafe(...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CFStr512>(__VA_ARGS__).f_GetStr())
-#			define DMibTraceTimed(d_Format, ...) NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
+#			define DMibTraceTimed(d_Format, ...) \
+		NMib::NSys::fg_DebugOutput(NMib::NStr::fg_Format<NMib::NStr::CStrNonTracked>("{}: " d_Format, NMib::NTime::CTime::fs_NowLocal(), __VA_ARGS__))
 #		else
 #			define DMibTraceRaw(...) (void)0
 #			define DMibTrace(...) (void)0
@@ -138,7 +140,11 @@ namespace NMib
 # define DMibContractConfigure_InvariantEnabled
 #endif
 
-#if defined DMibContractConfigure_RequireEnabled || defined DMibContractConfigure_EnsureEnabled || defined DMibContractConfigure_CheckEnabled || defined DMibContractConfigure_InvariantEnabled || defined DMibContractConfigure_NeverGetHereEnabled
+#if defined DMibContractConfigure_RequireEnabled \
+	|| defined DMibContractConfigure_EnsureEnabled \
+	|| defined DMibContractConfigure_CheckEnabled \
+	|| defined DMibContractConfigure_InvariantEnabled \
+	|| defined DMibContractConfigure_NeverGetHereEnabled
 #define DMibContract_AnyEnabled
 #endif
 
