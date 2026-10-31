@@ -315,15 +315,15 @@ namespace NMib
 						CurUnit.m_HighPC = ~(umint)0;
 
 					/* TODO: Currently do not handle ranges as clang is not generating them.
-									Dwarf_Unsigned RangesPtr;
-									if (dwarf_attrval_unsigned(pDie, DW_AT_ranges, &RangesPtr, &Error) == DW_DLV_OK)
-									{
-										DMibTraceRaw("\tUnit has ranges\n");
-									}
-									else
-									{
-										DMibTraceRaw("\tUnit does not have ranges\n");
-									}
+						Dwarf_Unsigned RangesPtr;
+						if (dwarf_attrval_unsigned(pDie, DW_AT_ranges, &RangesPtr, &Error) == DW_DLV_OK)
+						{
+							DMibTraceRaw("\tUnit has ranges\n");
+						}
+						else
+						{
+							DMibTraceRaw("\tUnit does not have ranges\n");
+						}
 					*/
 
 					if (dwarf_srclines(pDie, &CurUnit.m_lLines, &CurUnit.m_nLines, &Error) == DW_DLV_OK)
