@@ -98,7 +98,12 @@ def fg_JsonLooksLikeValueType(_TypeName):
 	if _TypeName is None:
 		return False
 
-	return _TypeName.startswith("NMib::NEncoding::CJson") or _TypeName.startswith("NMib::NEncoding::CEJson") or _TypeName.startswith("NMib::NEncoding::TCJsonValue<") or _TypeName.startswith("NMib::NEncoding::TCEJsonValue<")
+	return (
+		_TypeName.startswith("NMib::NEncoding::CJson")
+		or _TypeName.startswith("NMib::NEncoding::CEJson")
+		or _TypeName.startswith("NMib::NEncoding::TCJsonValue<")
+		or _TypeName.startswith("NMib::NEncoding::TCEJsonValue<")
+	)
 
 def fg_JsonIsValueBaseTypeName(_TypeName):
 	return _TypeName is not None and _TypeName.startswith("NMib::NEncoding::NPrivate::TCJsonValueBase<")
@@ -348,7 +353,10 @@ def fg_JsonNormalizedTypeName(_Value):
 def fg_JsonPreviewValueSummary(_Value):
 	TypeName = fg_JsonNormalizedTypeName(_Value)
 	if TypeName is not None:
-		if (TypeName.startswith("NMib::NContainer::TCMapNode<") or TypeName.startswith("NMib::NContainer::TCDestructiveMapNode<")) and "NMib::NEncoding::NPrivate::TCObjectEntry<" in TypeName:
+		if (
+			(TypeName.startswith("NMib::NContainer::TCMapNode<") or TypeName.startswith("NMib::NContainer::TCDestructiveMapNode<"))
+			and "NMib::NEncoding::NPrivate::TCObjectEntry<" in TypeName
+		):
 			return fg_SummaryProvider_TCJsonObjectMapNode(_Value, {})
 		if TypeName.startswith("NMib::NEncoding::NPrivate::TCObjectEntry<"):
 			return fg_SummaryProvider_TCObjectEntry(_Value, {})

@@ -560,13 +560,17 @@ namespace NMib
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_DEBUG_REGISTERS)
 						{
-				#if defined(DArchitecture_arm64)
-							ExceptionInfo += NStr::CStrNonTracked::CFormat("Debug registers:\r\n"
-								"bcr0=0x{nfh,sf0,sj8} bcr1=0x{nfh,sf0,sj8} bcr2=0x{nfh,sf0,sj8} bcr3=0x{nfh,sf0,sj8} bcr4=0x{nfh,sf0,sj8} bcr5=0x{nfh,sf0,sj8} bcr6=0x{nfh,sf0,sj8} bcr7=0x{nfh,sf0,sj8}\r\n"
-								"wcr0=0x{nfh,sf0,sj8} wcr1=0x{nfh,sf0,sj8}\r\n"
-								"bcr0=0x{} bcr1=0x{} bcr2=0x{} bcr3=0x{} bcr4=0x{} bcr5=0x{} bcr6=0x{} bcr7=0x{}\r\n"
-								"wcr0=0x{} wcr1=0x{}\r\n"
-								"\r\n")
+#if defined(DArchitecture_arm64)
+							ExceptionInfo += NStr::CStrNonTracked::CFormat
+								(
+									"Debug registers:\r\n"
+									"bcr0=0x{nfh,sf0,sj8} bcr1=0x{nfh,sf0,sj8} bcr2=0x{nfh,sf0,sj8} bcr3=0x{nfh,sf0,sj8} bcr4=0x{nfh,sf0,sj8} bcr5=0x{nfh,sf0,sj8} bcr6=0x{nfh,sf0,sj8} "
+									"bcr7=0x{nfh,sf0,sj8}\r\n"
+									"wcr0=0x{nfh,sf0,sj8} wcr1=0x{nfh,sf0,sj8}\r\n"
+									"bcr0=0x{} bcr1=0x{} bcr2=0x{} bcr3=0x{} bcr4=0x{} bcr5=0x{} bcr6=0x{} bcr7=0x{}\r\n"
+									"wcr0=0x{} wcr1=0x{}\r\n"
+									"\r\n"
+								)
 								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[0])
 								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[1])
 								<< ((uint32)_pExceptionInfo->ContextRecord->Bcr[2])

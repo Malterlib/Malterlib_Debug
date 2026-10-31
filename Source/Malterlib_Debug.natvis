@@ -944,22 +944,26 @@
 
 
   <Type Name="_EXCEPTION_RECORD">
-    <DisplayString Condition="ExceptionInformation[1] != 0 &amp;&amp; (ExceptionInformation[0] &amp; 0xFFFFFFFFu) == 0x19930520 &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->m_Magic == 0xE538CB10">
+    <DisplayString Condition="ExceptionInformation[1] != 0 &amp;&amp; (ExceptionInformation[0] &amp; 0xFFFFFFFFu) == 0x19930520
+      &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->m_Magic == 0xE538CB10">
       {*((NMib::NException::CExceptionBase *)ExceptionInformation[1])}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="ExceptionInformation[1] != 0 &amp;&amp; (ExceptionInformation[0] &amp; 0xFFFFFFFFu) == 0x19930520 &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->m_Magic == 0xE538CB10">
+      <ExpandedItem Condition="ExceptionInformation[1] != 0 &amp;&amp; (ExceptionInformation[0] &amp; 0xFFFFFFFFu) == 0x19930520
+        &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->m_Magic == 0xE538CB10">
         *((NMib::NException::CExceptionBase *)ExceptionInformation[1])
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="EHExceptionRecord">
-    <DisplayString Condition="params.pExceptionObject != 0 &amp;&amp; params.magicNumber == 0x19930520 &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->m_Magic == 0xE538CB10">
+    <DisplayString Condition="params.pExceptionObject != 0 &amp;&amp; params.magicNumber == 0x19930520
+      &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->m_Magic == 0xE538CB10">
       {*((NMib::NException::CExceptionBase *)params.pExceptionObject)}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="params.pExceptionObject != 0 &amp;&amp; params.magicNumber == 0x19930520 &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->m_Magic == 0xE538CB10">
+      <ExpandedItem Condition="params.pExceptionObject != 0 &amp;&amp; params.magicNumber == 0x19930520
+        &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->m_Magic == 0xE538CB10">
         *((NMib::NException::CExceptionBase *)params.pExceptionObject)
       </ExpandedItem>
     </Expand>
