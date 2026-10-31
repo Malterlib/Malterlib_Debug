@@ -120,7 +120,8 @@ namespace NMib
 							m_hDbgHelp = (HMODULE)NSys::fg_LoadLibrary(NStr::CStrNonTracked("Dbghelp.dll"));
 					}
 
-					// Apperantly some bug in Dbghelp.dll causes symsrv.dll to be unloaded while other modules are still holding a handle to it. Try to prevent this here by adding a reference to the library.
+					// Apperantly some bug in Dbghelp.dll causes symsrv.dll to be unloaded while other modules are still holding a handle to it. Try to prevent this here by adding a
+					// reference to the library.
 					if (!m_hSymSrv)
 					{
 						NStr::CStrNonTracked SymServDLL = "\\DebugHelp" DMibPlatformDir "\\SymSrv.dll";
