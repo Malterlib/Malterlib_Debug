@@ -594,7 +594,6 @@ public:
 					}
 					, [](int32 *_pParent, void *_pMemory, bool _bMove) -> int32 *
 					{
-						(void)_bMove;
 						if (_pParent)
 							return new(_pMemory) int32(*_pParent);
 						return new(_pMemory) int32();
