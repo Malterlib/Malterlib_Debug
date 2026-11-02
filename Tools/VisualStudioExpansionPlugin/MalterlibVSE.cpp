@@ -278,17 +278,17 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_Str<CStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_Str<CWStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_Str<CUStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
@@ -512,22 +512,22 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CFUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CFUStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_FStr<CUStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CFWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CFWStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_FStr<CWStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CFStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CFStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	return VSE_FStr<CStr>(dwAddress, pHelper, nBase, bUniStrings, pResult, max, reserved, true);
 }
 
-ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -606,7 +606,7 @@ ADDIN_API HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -697,7 +697,7 @@ ADDIN_API HRESULT WINAPI VSE_CTime(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -759,7 +759,7 @@ ADDIN_API HRESULT WINAPI VSE_CTimeSpan(DWORD dwAddress, DEBUGHELPER *pHelper, in
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -801,7 +801,7 @@ ADDIN_API HRESULT WINAPI VSE_fp32(DWORD dwAddress, DEBUGHELPER *pHelper, int nBa
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
@@ -843,7 +843,7 @@ ADDIN_API HRESULT WINAPI VSE_fp64(DWORD dwAddress, DEBUGHELPER *pHelper, int nBa
 	}
 }
 
-ADDIN_API HRESULT WINAPI VSE_fp128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
+DAddinApi HRESULT WINAPI VSE_fp128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t max, DWORD reserved)
 {
 	if (bUniStrings)
 	{
