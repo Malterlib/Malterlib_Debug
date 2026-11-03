@@ -69,9 +69,8 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 			{
 				if (Data)
 				{
-					class CTempData
+					struct CTempData
 					{
-					public:
 						int64 m_Ref;
 						uint64 m_Len;
 						uint64 m_StrLen:sizeof(uint64) * 8 - 2;
@@ -180,9 +179,8 @@ HRESULT WINAPI VSE_Str(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL b
 			{
 				if (Data)
 				{
-					class CTempData
+					struct CTempData
 					{
-					public:
 						int32 m_Ref;
 						uint32 m_Len;
 						uint32 m_StrLen:sizeof(uint32) * 8 - 2;
@@ -334,9 +332,8 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 			{
 				if (Data)
 				{
-					class CTempData
+					struct CTempData
 					{
-					public:
 						uint64 m_Len:sizeof(uint64) * 8 - 2;
 						uint64 m_Type:2;
 					};
@@ -421,9 +418,8 @@ HRESULT WINAPI VSE_FStr(uint64 dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL 
 			{
 				if (Data)
 				{
-					class CTempData
+					struct CTempData
 					{
-					public:
 						uint32 m_Len:sizeof(uint32) * 8 - 2;
 						uint32 m_Type:2;
 					};
@@ -537,9 +533,8 @@ DAddinApi HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 
 	try
 	{
-		class CMStren
+		struct CMStren
 		{
-		public:
 			union
 			{
 				EMStr_Type m_Type;

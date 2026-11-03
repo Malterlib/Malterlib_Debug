@@ -15,17 +15,15 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-			class CStackTraceContext
+			struct CStackTraceContext
 			{
-			public:
 				CStackTraceContext();
 				~CStackTraceContext();
 
-				class CAVLCompare_CLocalStackTraceInfo;
+				struct CAVLCompare_CLocalStackTraceInfo;
 
-				class CLocalStackTraceInfo : public CStackTraceInfo
+				struct CLocalStackTraceInfo : public CStackTraceInfo
 				{
-				public:
 					CLocalStackTraceInfo();
 
 					NIntrusive::TCAVLLink<> m_AvlLink;
@@ -34,9 +32,8 @@ namespace NMib
 					umint m_RefCount;
 				};
 
-				class CAVLCompare_CLocalStackTraceInfo
+				struct CAVLCompare_CLocalStackTraceInfo
 				{
-				public:
 					inline_small umint const &operator () (CLocalStackTraceInfo const &_Node) const
 					{
 						return _Node.m_Address;

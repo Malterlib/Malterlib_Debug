@@ -105,7 +105,7 @@ namespace NMib
 				NContainer::TCVector<CFunction, NMemory::CAllocator_NonTrackedHeap> m_lSortedFunctions;
 			};
 
-			class CSymbolsIndex
+			struct CSymbolsIndex
 			{
 				/*
 				NOTE:

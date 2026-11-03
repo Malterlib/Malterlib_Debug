@@ -207,9 +207,8 @@ namespace NMib
 
 void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib::NStr::CStr const &_Message)
 {
-	class CMessageBoxThread : public NMib::NThread::CThread
+	struct CMessageBoxThread : public NMib::NThread::CThread
 	{
-	public:
 		virtual ch8 const *f_GetThreadNameRaw()
 		{
 			return "Malterlib_MessageBoxThread";

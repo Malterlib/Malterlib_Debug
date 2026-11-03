@@ -301,40 +301,8 @@ namespace NMib
 					return Low;
 			}
 
-			class CFileLineReader
+			struct CFileLineReader
 			{
-			private:
-				enum
-				{
-					EReadBufferBytes = 1024,
-				};
-
-				NFile::CFile mp_File;
-				CMibFilePos mp_nFileBytes;
-
-				umint mp_nBufferBytes;
-				TCVector<char> mp_Buffer;
-
-				bool mp_bEOF;
-
-
-				void fp_FillBuffer()
-				{
-					CMibFilePos nBytesLeft = mp_nFileBytes - mp_File.f_GetPosition();
-
-					CMibFilePos nToRead = fg_Min(nBytesLeft, CMibFilePos(EReadBufferBytes));
-
-					if (nToRead > (CMibFilePos)mp_Buffer.f_GetLen())
-						mp_Buffer.f_SetLen(nToRead);
-
-					mp_File.f_Read( mp_Buffer.f_GetArray(), (umint)nToRead );
-					mp_nBufferBytes = nToRead;
-
-					if (nToRead < CMibFilePos(EReadBufferBytes))
-						mp_bEOF = true;
-				}
-
-			public:
 				CFileLineReader(CSymStr const& _Filename)
 					: mp_nFileBytes(0)
 					, mp_nBufferBytes(0)
@@ -395,6 +363,37 @@ namespace NMib
 
 					_oLine = fg_Move(LineStr);
 					return true;
+				}
+
+			private:
+				enum
+				{
+					EReadBufferBytes = 1024,
+				};
+
+				NFile::CFile mp_File;
+				CMibFilePos mp_nFileBytes;
+
+				umint mp_nBufferBytes;
+				TCVector<char> mp_Buffer;
+
+				bool mp_bEOF;
+
+
+				void fp_FillBuffer()
+				{
+					CMibFilePos nBytesLeft = mp_nFileBytes - mp_File.f_GetPosition();
+
+					CMibFilePos nToRead = fg_Min(nBytesLeft, CMibFilePos(EReadBufferBytes));
+
+					if (nToRead > (CMibFilePos)mp_Buffer.f_GetLen())
+						mp_Buffer.f_SetLen(nToRead);
+
+					mp_File.f_Read( mp_Buffer.f_GetArray(), (umint)nToRead );
+					mp_nBufferBytes = nToRead;
+
+					if (nToRead < CMibFilePos(EReadBufferBytes))
+						mp_bEOF = true;
 				}
 			};
 

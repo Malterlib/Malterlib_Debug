@@ -1,9 +1,8 @@
 // Copyright © Unbroken AB
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-class CTestClass
+struct CTestClass
 {
-public:
 	CTestClass(umint _Value)
 		: m_Value(_Value)
 	{
@@ -14,9 +13,8 @@ public:
 	DMibListLinkDS_Link(CTestClass, m_Link);
 };
 
-class CTestClassManyValue
+struct CTestClassManyValue
 {
-public:
 	CTestClassManyValue(umint _Value)
 		: m_Value(_Value)
 	{
@@ -37,17 +35,15 @@ struct CTestRecursiveLinked
 	DMibListLinkDS_List(CTestRecursiveLinked, m_Link) m_Children;
 };
 
-class CTest2
+struct CTest2
 {
-public:
 	CTest2(int _Value)
 		: m_Value(_Value)
 	{
 	}
 
-	class CCompare
+	struct CCompare
 	{
-	public:
 		inline_small umint const &operator () (CTest2 const &_Node) const
 		{
 			return _Node.m_Value;

@@ -19,9 +19,8 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-			class CExceptionData
+			struct CExceptionData
 			{
-			public:
 				bool m_bDisplayGUI;
 				NMib::NContainer::TCVector<NMib::NStr::CStr> &m_GeneratedLogs;
 				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
@@ -69,9 +68,8 @@ namespace NMib
 				NMib::NPlatform::fg_GenerateExcetionHandler(&Data, &CSubSystem_Debug_Platform_Windows::fsp_ExceptionGenerateHandler);
 			}
 
-			class CSubSystem_Debug_Platform_Windows::CExceptionMemoryData
+			struct CSubSystem_Debug_Platform_Windows::CExceptionMemoryData
 			{
-			public:
 				NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &m_Locations;
 				NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &m_Sizes;
 				umint m_iCurrentLocation;

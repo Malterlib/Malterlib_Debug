@@ -15,9 +15,8 @@ namespace NMib
 			// CLinuxStackTraceInfo
 			//
 
-			class CLinuxStackTraceInfo : public CStackTraceInfo
+			struct CLinuxStackTraceInfo : public CStackTraceInfo
 			{
-			public:
 				CSymStr m_FunctionName;
 				CSymStr m_ModuleName;
 				CSymStr m_FileName;
@@ -39,24 +38,22 @@ namespace NMib
 			// CSymbols
 			//
 
-			class CSymbolsIndex;
+			struct CSymbolsIndex;
 
-			class CSymbols
+			struct CSymbols
 			{
-			public:
+				CSymbols();
+				~CSymbols();
+
+				CStackTraceInfo *f_AcquireStackTraceInfo(umint _Address);
+				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
+
 			private:
 				NThread::CMutual mp_Lock;
 
 				NContainer::TCMap<CSymStr, NStorage::TCUniquePointer<CSymbolsIndex, NMemory::CAllocator_NonTrackedHeap>, NMib::CSort_Default, NMemory::CAllocator_NonTrackedHeap>
 					mp_IndexLookup
 				;
-
-			public:
-				CSymbols();
-				~CSymbols();
-
-				CStackTraceInfo *f_AcquireStackTraceInfo(umint _Address);
-				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 			};
 
 			CSymbols &fg_GetSymbols();

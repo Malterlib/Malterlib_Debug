@@ -66,9 +66,8 @@ namespace NMib::NDebug::NRemoteDebugger
 		}
 	};
 
-	class CReportMemoryFromRemote //  : public NMemory::CGlobalReportMemory
+	struct CReportMemoryFromRemote //  : public NMemory::CGlobalReportMemory
 	{
-	public:
 		virtual ~CReportMemoryFromRemote()
 		{
 		}

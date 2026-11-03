@@ -21,7 +21,7 @@ namespace NMib
 		{
 			struct CSubSystem_Debug_Platform_Windows : public NMib::CSubSystem
 			{
-				class CExceptionMemoryData;
+				struct CExceptionMemoryData;
 
 				CSubSystem_Debug_Platform_Windows();
 				~CSubSystem_Debug_Platform_Windows();
@@ -84,9 +84,8 @@ namespace NMib
 					EWindowCache = 10
 				};
 
-				class CExceptionFilterPoller : public NMib::NThread::CThread
+				struct CExceptionFilterPoller : public NMib::NThread::CThread
 				{
-				public:
 					CExceptionFilterPoller();
 					~CExceptionFilterPoller();
 

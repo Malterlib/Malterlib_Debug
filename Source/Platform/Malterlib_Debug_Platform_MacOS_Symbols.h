@@ -75,8 +75,21 @@ namespace NMib
 			CSymbols implements looking up symbols in a .symbols files generated from a dSym via
 			the patched google breakpad dump_syms utility.
 			*/
-			class CSymbols
+			struct CSymbols
 			{
+				CSymbols();
+				~CSymbols();
+
+				void f_SetSymbolsFile(char const *_pFilename);
+
+				bool f_Lookup(umint _Address, CAddressInfo &_oInfo);
+
+				CAddressInfoCache &f_GetCache(umint _Address)
+				{
+					DMibLock(mp_CacheLock);
+					return mp_Cache[_Address];
+				}
+
 			private:
 				struct CHeader
 				{
@@ -149,20 +162,6 @@ namespace NMib
 
 				void fp_LoadFunctionCache();
 				CFunction const *fp_ReadFunction(uint32 _FuncIndex, CFunction *_pTmp);
-
-			public:
-				CSymbols();
-				~CSymbols();
-
-				void f_SetSymbolsFile(char const *_pFilename);
-
-				bool f_Lookup(umint _Address, CAddressInfo &_oInfo);
-
-				CAddressInfoCache &f_GetCache(umint _Address)
-				{
-					DMibLock(mp_CacheLock);
-					return mp_Cache[_Address];
-				}
 			};
 
 			CSymbols &fg_GetSymbols();
@@ -248,15 +247,8 @@ namespace NMib
 				CSymStr m_Function;
 			};
 
-			class CSymbols
+			struct CSymbols
 			{
-				private:
-
-					TCVector<CFile> mp_lFiles;			// Sorted by CFile::m_Index
-					TCVector<CFunction> mp_lFunctions;	// Sorted by CFunc::m_Address
-
-				public:
-
 					CSymbols();
 					~CSymbols();
 
@@ -264,6 +256,11 @@ namespace NMib
 					void f_Clear();
 
 					bool f_Lookup(umint _Address, CAddressInfo& _oInfo);
+
+				private:
+
+					TCVector<CFile> mp_lFiles;			// Sorted by CFile::m_Index
+					TCVector<CFunction> mp_lFunctions;	// Sorted by CFunc::m_Address
 			};
 			*/
 		}
