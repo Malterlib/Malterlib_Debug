@@ -82,7 +82,7 @@ namespace NMib
 
 				void f_SetSymbolsFile(char const *_pFilename);
 
-				bool f_Lookup(umint _Address, CAddressInfo &_oInfo);
+				bool f_Lookup(umint _Address, CAddressInfo &o_Info);
 
 				CAddressInfoCache &f_GetCache(umint _Address)
 				{

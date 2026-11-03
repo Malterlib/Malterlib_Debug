@@ -902,12 +902,12 @@ struct CDebug_Tests : public NMib::NTest::CTest
 
 			struct CTestingFunctorConstTemplateParam
 			{
-				void operator () (TCFunctionConstTemplateParam<int32 const> const &) const
+				void operator () (TCFunctionConstTemplateParam<int32 const> const &_Param) const
 				{
 					DMibConOut("Test {}:{}\n", DMibPFile, DMibPLine);
 				}
 
-				void operator () (TCFunctionConstTemplateParam<int32 const> const &)
+				void operator () (TCFunctionConstTemplateParam<int32 const> const &_Param)
 				{
 					DMibConOut("Test {}:{}\n", DMibPFile, DMibPLine);
 				}
@@ -920,8 +920,8 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			NFunction::TCFunctionNoAlloc<void ()> FunctionFunctor = CTestingFunctor();
 			NFunction::TCFunctionMutable<void ()> FunctionFunctorMutable = CTestingFunctor();
 			NFunction::TCFunctionMovable<void ()> FunctionFunctorMovable = CTestingFunctor();
-			NFunction::TCFunctionMutable<void (TCFunctionConstTemplateParam<int32 const> const &)> FunctionFunctorMutableConstTemplateParam = CTestingFunctorConstTemplateParam();
-			NFunction::TCFunction<void (TCFunctionConstTemplateParam<int32 const> const &)> FunctionFunctorConstThisTagConstTemplateParam = CTestingFunctorConstTemplateParam();
+			NFunction::TCFunctionMutable<void (TCFunctionConstTemplateParam<int32 const> const &_Param)> FunctionFunctorMutableConstTemplateParam = CTestingFunctorConstTemplateParam();
+			NFunction::TCFunction<void (TCFunctionConstTemplateParam<int32 const> const &_Param)> FunctionFunctorConstThisTagConstTemplateParam = CTestingFunctorConstTemplateParam();
 
 			NFunction::TCFunction<void ()> FunctionExternalLambda = fs_BigLambda(EnhancedJson);
 

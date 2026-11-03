@@ -42,21 +42,21 @@ namespace NMib
 				LDR_DLL_UNLOADED_NOTIFICATION_DATA Unloaded;
 			} LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
 
-			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context);
+			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG _NotificationReason, PLDR_DLL_NOTIFICATION_DATA const _pNotificationData, PVOID _pContext);
 			// NOLINTEND(malterlib-type-naming)
 
-			static VOID NTAPI fsg_DllLoadedCallback(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context)
+			static VOID NTAPI fsg_DllLoadedCallback(ULONG _Reason, PLDR_DLL_NOTIFICATION_DATA const _pNotificationData, PVOID _pContext)
 			{
-				CSubSystem_Debug_Platform_Windows *pThis = (CSubSystem_Debug_Platform_Windows *)Context;
+				CSubSystem_Debug_Platform_Windows *pThis = (CSubSystem_Debug_Platform_Windows *)_pContext;
 				pThis->m_bPollCheckExceptionFilterTimes = 1000 / 25;
 				pThis->m_ExceptionFilterPoller.m_EventWantQuit.f_Signal();
 				if (!fg_GetSys()->f_DestroyingThreadSpecific() && pThis->m_bExceptionFilterPollerInstalled.f_Exchange(1) == 0)
 					pThis->m_ExceptionFilterPoller.f_Start();
 
-				/*if (NotificationReason == 1)
-					DMibTraceSafe("Loaded: {}\r\n", NotificationData->Loaded.FullDllName->Buffer);
-				else if (NotificationReason == 2)
-					DMibTraceSafe("Unlaoded: {}\r\n", NotificationData->Unloaded.FullDllName->Buffer);
+				/*if (_Reason == 1)
+					DMibTraceSafe("Loaded: {}\r\n", _pNotificationData->Loaded.FullDllName->Buffer);
+				else if (_Reason == 2)
+					DMibTraceSafe("Unlaoded: {}\r\n", _pNotificationData->Unloaded.FullDllName->Buffer);
 				else
 					DMibTraceSafe("Unknown loaded code", 0);*/
 			}
@@ -125,7 +125,7 @@ namespace NMib
 					HMODULE pNTDll = NLocal::g_hNtDll;
 					if (pNTDll)
 					{
-						NTSTATUS (NTAPI *pLdrRegisterDllNotification)(ULONG Flags, PLDR_DLL_NOTIFICATION_FUNCTION NotificationFunction, PVOID Context, PVOID *Cookie);
+						NTSTATUS (NTAPI *pLdrRegisterDllNotification)(ULONG _Flags, PLDR_DLL_NOTIFICATION_FUNCTION _fNotification, PVOID _pContext, PVOID *o_pCookie);
 
 						(FARPROC &)pLdrRegisterDllNotification = GetProcAddress(pNTDll, "LdrRegisterDllNotification");
 
@@ -152,7 +152,7 @@ namespace NMib
 					HMODULE pNTDll = NLocal::g_hNtDll;
 					if (pNTDll)
 					{
-						NTSTATUS (NTAPI *pLdrUnregisterDllNotification)(PVOID Cookie);
+						NTSTATUS (NTAPI *pLdrUnregisterDllNotification)(PVOID _pCookie);
 
 						(FARPROC &)pLdrUnregisterDllNotification = GetProcAddress(pNTDll, "LdrUnregisterDllNotification");
 

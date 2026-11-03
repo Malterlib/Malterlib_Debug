@@ -348,9 +348,9 @@ namespace NMib
 
 						CurUnit.m_lSortedLines.f_Sort
 							(
-								[](CLineEntry const &_A, CLineEntry const &_B)
+								[](CLineEntry const &_Left, CLineEntry const &_Right)
 								{
-									return _A.m_PC <=> _B.m_PC;
+									return _Left.m_PC <=> _Right.m_PC;
 								}
 							)
 						;
@@ -396,9 +396,9 @@ namespace NMib
 
 				_Unit.m_lSortedFunctions.f_Sort
 					(
-						[](CFunction const &_A, CFunction const &_B)
+						[](CFunction const &_Left, CFunction const &_Right)
 						{
-							return _A.m_LowPC <=> _B.m_HighPC;
+							return _Left.m_LowPC <=> _Right.m_HighPC;
 						}
 					)
 				;

@@ -11,19 +11,19 @@
 // Libunwind may buy us some more info, but the output from that (even Apple's variant) is pretty
 // much the same as from dladdr as far as I can tell.
 
-bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
+bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
 {
 	if (_bCanAllocNonTracked)
 	{
 		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_Address);
 		if (!pInfo)
 			return false;
-		_oInfo = *pInfo;
-		_oInfo.m_pContext = pInfo;
+		o_Info = *pInfo;
+		o_Info.m_pContext = pInfo;
 		return true;
 	}
 
-	_oInfo.m_pContext = (void *)1;
+	o_Info.m_pContext = (void *)1;
 
 	Dl_info DLInfo;
 	int DLResult = dladdr((void const *)_Address, &DLInfo);
@@ -31,8 +31,8 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCode
 	if (DLResult == 0)
 		return false;
 
-	_oInfo.m_pFunctionName = DLInfo.dli_sname;
-	_oInfo.m_pModuleName = DLInfo.dli_fname;
+	o_Info.m_pFunctionName = DLInfo.dli_sname;
+	o_Info.m_pModuleName = DLInfo.dli_fname;
 
 	if (_bCanAllocNonTracked)
 	{
@@ -41,12 +41,12 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCode
 		char *pDemangled = abi::__cxa_demangle(DLInfo.dli_sname, nullptr, nullptr, &Status);
 		if (Status == 0)
 		{
-			_oInfo.m_pFunctionName = pDemangled;
-			_oInfo.m_pContext = (void *)2;
+			o_Info.m_pFunctionName = pDemangled;
+			o_Info.m_pContext = (void *)2;
 		}
 	}
 	else
-		_oInfo.m_pFunctionName = DLInfo.dli_sname;
+		o_Info.m_pFunctionName = DLInfo.dli_sname;
 	return true;
 }
 

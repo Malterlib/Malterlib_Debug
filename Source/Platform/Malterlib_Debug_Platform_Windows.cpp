@@ -27,12 +27,12 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-			static LRESULT WINAPI fsg_WindowCacheProc(HWND _hWnd, UINT _Message, WPARAM _wParam, LPARAM _lParam)
+			static LRESULT WINAPI fsg_WindowCacheProc(HWND _Window, UINT _Message, WPARAM _WParam, LPARAM _LParam)
 			{
 				if (_Message == WM_ENDSESSION || _Message == WM_QUERYENDSESSION)
 					NMib::NPlatform::fg_ReportIsShuttingDown();
 
-				return DefWindowProc(_hWnd, _Message, _wParam, _lParam);
+				return DefWindowProc(_Window, _Message, _WParam, _LParam);
 			}
 
 			CSubSystem_Debug_Platform_Windows::CSubSystem_Debug_Platform_Windows()
@@ -364,15 +364,15 @@ void NMib::NSys::fg_Debug_GenerateMemoryDump
 	SubSystem.f_GenerateMemoryDump(_Locations, _Sizes);
 }
 
-bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &_oInfo, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
+bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
 {
 	if (_bCanAllocNonTracked)
 	{
 		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_Address);
 		if (!pInfo)
 			return false;
-		_oInfo = *pInfo;
-		_oInfo.m_pContext = pInfo;
+		o_Info = *pInfo;
+		o_Info.m_pContext = pInfo;
 		return true;
 	}
 

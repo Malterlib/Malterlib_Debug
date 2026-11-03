@@ -65,10 +65,10 @@ namespace NMib
 
 			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::f_DumpObjects()
 			{
-				using FEnumProcesses = BOOL WINAPI (DWORD * lpidProcess, DWORD cb, DWORD * cbNeeded);
-				using FGetModuleBaseNameW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpBaseName, DWORD nSize);
-				using FGetModuleFileNameExW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
-				using FGetProcessImageFileNameW = DWORD WINAPI (HANDLE hProcess, LPWSTR lpImageFileName, DWORD nSize);
+				using FEnumProcesses = BOOL WINAPI (DWORD * o_pProcessIDs, DWORD _nBytes, DWORD * o_pBytesNeeded);
+				using FGetModuleBaseNameW = DWORD WINAPI (HANDLE _pProcess, HMODULE _pModule, LPWSTR o_pBaseName, DWORD _nSize);
+				using FGetModuleFileNameExW = DWORD WINAPI (HANDLE _pProcess, HMODULE _pModule, LPWSTR o_pFileName, DWORD _nSize);
+				using FGetProcessImageFileNameW = DWORD WINAPI (HANDLE _pProcess, LPWSTR o_pImageFileName, DWORD _nSize);
 
 				HMODULE hPSAPI = LoadLibrary(str_utf16("psapi.dll"));
 				if (hPSAPI)

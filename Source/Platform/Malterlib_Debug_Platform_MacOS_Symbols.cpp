@@ -26,8 +26,8 @@ namespace NMib
 				return g_SubSystem_Debug_Platform_MacOS_Symbols->m_Symbols;
 			}
 
-			template <typename tf_CCompare, typename t_CFind>
-			aint fg_BinarySearchLowerBound(umint _nItems, tf_CCompare &&_fCompare, t_CFind const &_ToFind)
+			template <typename tf_CCompare, typename tf_CFind>
+			aint fg_BinarySearchLowerBound(umint _nItems, tf_CCompare &&_fCompare, tf_CFind const &_ToFind)
 			{
 				umint Len = _nItems;
 
@@ -178,7 +178,7 @@ namespace NMib
 				return _pTmp;
 			}
 
-			bool CSymbols::f_Lookup(umint _Address, CAddressInfo &_oInfo)
+			bool CSymbols::f_Lookup(umint _Address, CAddressInfo &o_Info)
 			{
 				DMibLock(mp_Lock);
 
@@ -216,10 +216,10 @@ namespace NMib
 
 					if (_Address >= pFunc->m_Address && _Address < (pFunc->m_Address + pFunc->m_Size))
 					{
-						_oInfo.m_Address = _Address;
-						_oInfo.m_Function = fp_ReadString(pFunc->m_NameOffset);
-						_oInfo.m_File = CSymStr();
-						_oInfo.m_Line = 0;
+						o_Info.m_Address = _Address;
+						o_Info.m_Function = fp_ReadString(pFunc->m_NameOffset);
+						o_Info.m_File = CSymStr();
+						o_Info.m_Line = 0;
 
 						// Find line info if present.
 						CLinesHeader LinesHeader;
@@ -253,12 +253,12 @@ namespace NMib
 
 							if (_Address >= Line.m_Address && _Address <= (Line.m_Address + Line.m_Size))
 							{
-								_oInfo.m_Line = Line.m_Line;
+								o_Info.m_Line = Line.m_Line;
 
 								if (Line.m_FileOffset != ~(uint32)0)
-									_oInfo.m_File = fp_ReadString(Line.m_FileOffset);
+									o_Info.m_File = fp_ReadString(Line.m_FileOffset);
 								else
-									_oInfo.m_File = CSymStr("<Unknown>");
+									o_Info.m_File = CSymStr("<Unknown>");
 							}
 						}
 
