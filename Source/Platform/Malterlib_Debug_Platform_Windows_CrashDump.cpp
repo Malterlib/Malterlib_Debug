@@ -45,7 +45,7 @@ namespace NMib
 			{
 				if (!g_bIsDll)
 				{
-					for (umint i = 0; i < EWindowCache; ++i)
+					for (umint i = 0; i < mc_WindowCache; ++i)
 					{
 						if (!m_CacheWindows[i])
 							m_CacheWindows[i] = CreateWindowA("MalterlibCrashDumpWindowCache", "MalterlibCrashDumpWindowCache", 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);

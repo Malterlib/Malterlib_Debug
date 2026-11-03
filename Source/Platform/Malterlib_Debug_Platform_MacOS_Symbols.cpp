@@ -172,7 +172,7 @@ namespace NMib
 
 			CSymbols::CFunction const *CSymbols::fp_ReadFunction(uint32 _FuncIndex, CFunction *_pTmp)
 			{
-				uint32 Offset = mp_Header.m_FunctionsOffset + BytesPerFunction * _FuncIndex;
+				uint32 Offset = mp_Header.m_FunctionsOffset + mc_BytesPerFunction * _FuncIndex;
 				NMib::NSys::NFile::fg_Read(mp_pSymbols, _pTmp, Offset, sizeof(CFunction));
 
 				return _pTmp;
@@ -234,7 +234,7 @@ namespace NMib
 								{
 									CLine Line;
 
-									uint32 Offset = pFunc->m_FirstLine + BytesPerFunctionLines + BytesPerLine * _LineIndex;
+									uint32 Offset = pFunc->m_FirstLine + mc_BytesPerFunctionLines + mc_BytesPerLine * _LineIndex;
 									NMib::NSys::NFile::fg_Read(mp_pSymbols, &Line, Offset, sizeof(Line));
 									Offset += sizeof(Line);
 
@@ -248,7 +248,7 @@ namespace NMib
 						{
 							CLine Line;
 
-							uint32 Offset = pFunc->m_FirstLine + BytesPerFunctionLines + BytesPerLine * iFoundLine;
+							uint32 Offset = pFunc->m_FirstLine + mc_BytesPerFunctionLines + mc_BytesPerLine * iFoundLine;
 							NMib::NSys::NFile::fg_Read(mp_pSymbols, &Line, Offset, sizeof(Line));
 
 							if (_Address >= Line.m_Address && _Address <= (Line.m_Address + Line.m_Size))

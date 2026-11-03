@@ -15,7 +15,7 @@ namespace NMib::NDebug::NRemoteDebugger
 	{
 		using namespace NStream;
 
-		CBinaryStreamMemoryPtr<> Stream;
+		TCBinaryStreamMemoryPtr<> Stream;
 		Stream.f_OpenRead(_Data.f_GetArray(), _Data.f_GetLen());
 
 		bool bStackTrace = mp_Settings.m_Features & EFeature_MemoryStackTrace;

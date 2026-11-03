@@ -537,7 +537,7 @@ DAddinApi HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 		{
 			union
 			{
-				EMStr_Type m_Type;
+				EMStrType m_Type;
 				uint32 m_Type_uint32;
 			};
 		};
@@ -570,22 +570,22 @@ DAddinApi HRESULT WINAPI VSE_CMStr(DWORD dwAddress, DEBUGHELPER *pHelper, int nB
 			fg_StrCopy(pResult, "");
 			switch (String.m_Type)
 			{
-			case EMStr_Type_CStr:
+			case EMStrType_CStr:
 				{
 					return VSE_Str<CStr>(Address + sizeof(uint32) * Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
 				}
 				break;
-			case EMStr_Type_CWStr:
+			case EMStrType_CWStr:
 				{
 					return VSE_Str<CWStr>(Address + sizeof(uint32) * Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
 				}
 				break;
-			case EMStr_Type_CUStr:
+			case EMStrType_CUStr:
 				{
 					return VSE_Str<CUStr>(Address + sizeof(uint32) * Mul64, pHelper, nBase, bUniStrings, pResult, max, reserved, false);
 				}
 				break;
-			case EMStr_Type_None: break;
+			case EMStrType_None: break;
 			default: fg_StrCopy(pResult, "Invalid Type"); break;
 			}
 		}

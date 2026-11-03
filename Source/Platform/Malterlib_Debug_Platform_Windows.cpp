@@ -52,7 +52,7 @@ namespace NMib
 				WndClass.hInstance = g_hDllInstance;
 				RegisterClassA(&WndClass);
 
-				for (umint i = 0; i < EWindowCache; ++i)
+				for (umint i = 0; i < mc_WindowCache; ++i)
 					m_CacheWindows[i] = nullptr;
 
 				auto BuildMetadata = NSys::fg_GetBuildMetadata();
@@ -83,7 +83,7 @@ namespace NMib
 			CSubSystem_Debug_Platform_Windows::~CSubSystem_Debug_Platform_Windows()
 			{
 				f_UninstallExceptionFilterCallback();
-				for (umint i = 0; i < EWindowCache; ++i)
+				for (umint i = 0; i < mc_WindowCache; ++i)
 				{
 					if (m_CacheWindows[i])
 					{
@@ -406,7 +406,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 			UndocumentedPEB *pPeb = fg_GetPEB(fg_GetTEB());
 			if (pPeb->BeingDebugged)
 			{
-				Ret = EDebugContractFailureAction_NotHandled;
+				Ret = EDebugCheckFailureAction_NotHandled;
 				return 0;
 			}
 
@@ -423,22 +423,22 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 			;
 			if (LocalRet == 1)
 			{
-				Ret = EDebugContractFailureAction_Break;
+				Ret = EDebugCheckFailureAction_Break;
 				return 0;
 			}
 
-			Ret = EDebugContractFailureAction_Continue;
+			Ret = EDebugCheckFailureAction_Continue;
 #else
 			UndocumentedPEB *pPeb = fg_GetPEB(fg_GetTEB());
 			if (pPeb->BeingDebugged)
 			{
-				Ret = EDebugContractFailureAction_NotHandled;
+				Ret = EDebugCheckFailureAction_NotHandled;
 				return 0;
 			}
 
 			if (fg_GetSys()->f_GetRunningAsDaemon())
 			{
-				Ret = EDebugContractFailureAction_Break;
+				Ret = EDebugCheckFailureAction_Break;
 				return 0;
 			}
 
@@ -455,13 +455,13 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 			switch (MessageBoxW(nullptr, NMib::NStr::NPlatform::fg_StrToWindows<NMib::NStr::CWStrNonTracked>(MessageText), str_utf16("Assertion failure"), MB_ABORTRETRYIGNORE))
 			{
 			case IDABORT:
-				Ret = EDebugContractFailureAction_Abort;
+				Ret = EDebugCheckFailureAction_Abort;
 				return 0;
 			case IDRETRY:
-				Ret = EDebugContractFailureAction_Break;
+				Ret = EDebugCheckFailureAction_Break;
 				return 0;
 			}
-			Ret = EDebugContractFailureAction_Continue;
+			Ret = EDebugCheckFailureAction_Continue;
 #endif
 
 			return 0;

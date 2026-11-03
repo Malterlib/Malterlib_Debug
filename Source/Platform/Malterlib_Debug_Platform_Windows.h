@@ -79,10 +79,7 @@ namespace NMib
 				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 
 			public:
-				enum
-				{
-					EWindowCache = 10
-				};
+				static constexpr aint mc_WindowCache = 10;
 
 				struct CExceptionFilterPoller : public NMib::NThread::CThread
 				{
@@ -108,7 +105,7 @@ namespace NMib
 				NThread::CMutual m_RandomLock;
 				NMisc::CAutoRandom m_Random;
 
-				HWND m_CacheWindows[EWindowCache];
+				HWND m_CacheWindows[mc_WindowCache];
 
 				LPTOP_LEVEL_EXCEPTION_FILTER m_pPrevExceptionFilter;
 				bool m_bPollCheckExceptionFilter;

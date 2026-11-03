@@ -134,12 +134,9 @@ namespace NMib
 					uint32 m_FirstLine;
 				}; // 32 bytes (in file)
 
-				enum
-				{
-					BytesPerFunction        = 32
-					, BytesPerLine          = 24
-					, BytesPerFunctionLines = 4
-				};
+				static constexpr aint mc_BytesPerFunction = 32;
+				static constexpr aint mc_BytesPerLine = 24;
+				static constexpr aint mc_BytesPerFunctionLines = 4;
 
 			private:
 				umint mp_AddressOffset;

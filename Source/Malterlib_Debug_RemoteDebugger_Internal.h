@@ -180,7 +180,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			{
 				m_Channel = _Channel;
 
-				NStream::CBinaryStreamMemoryRef<NStream::CBinaryStreamDefault, CDataBuffer> Stream(m_Data);
+				NStream::TCBinaryStreamMemoryRef<NStream::CBinaryStreamDefault, CDataBuffer> Stream(m_Data);
 				Stream.f_ResetStream();
 
 				CPacketHeader Header = {(uint8)_Channel, (uint8)0, (uint16)_PacketID, 0};

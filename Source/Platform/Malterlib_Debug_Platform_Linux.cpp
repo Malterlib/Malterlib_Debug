@@ -96,7 +96,7 @@ void NMib::NSys::fg_Debug_GenerateCrashDump(NMib::NStr::CStr const &_Message, NM
 
 NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 const *_pFileName, int32 _Line, void *_pCodePointer, NMib::NStr::CStrNonTracked const &_ErrorMessage)
 {
-	return EDebugContractFailureAction_NotHandled;
+	return EDebugCheckFailureAction_NotHandled;
 }
 
 void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)

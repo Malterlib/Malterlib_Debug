@@ -700,7 +700,7 @@ namespace NMib::NDebug::NRemoteDebugger
 					case EPacket_Sys_ClientConnect:
 						{
 							auto &Data = Packet.f_Data();
-							NStream::CBinaryStreamMemoryPtr<> Stream;
+							NStream::TCBinaryStreamMemoryPtr<> Stream;
 							Stream.f_OpenRead(Data.f_GetArray(), Data.f_GetLen());
 
 							CSysPacket_ClientConnect Packet;

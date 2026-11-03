@@ -65,18 +65,18 @@ namespace NMib
 
 			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::f_DumpObjects()
 			{
-				using fEnumProcesses = BOOL WINAPI (DWORD * lpidProcess, DWORD cb, DWORD * cbNeeded);
-				using fGetModuleBaseNameW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpBaseName, DWORD nSize);
-				using fGetModuleFileNameExW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
-				using fGetProcessImageFileNameW = DWORD WINAPI (HANDLE hProcess, LPWSTR lpImageFileName, DWORD nSize);
+				using FEnumProcesses = BOOL WINAPI (DWORD * lpidProcess, DWORD cb, DWORD * cbNeeded);
+				using FGetModuleBaseNameW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpBaseName, DWORD nSize);
+				using FGetModuleFileNameExW = DWORD WINAPI (HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
+				using FGetProcessImageFileNameW = DWORD WINAPI (HANDLE hProcess, LPWSTR lpImageFileName, DWORD nSize);
 
 				HMODULE hPSAPI = LoadLibrary(str_utf16("psapi.dll"));
 				if (hPSAPI)
 				{
-					fEnumProcesses *pEnumProcesses = (fEnumProcesses *)GetProcAddress(hPSAPI, "EnumProcesses");
-					fGetModuleBaseNameW *pGetModuleBaseName = (fGetModuleBaseNameW *)GetProcAddress(hPSAPI, "GetModuleBaseNameW");
-					fGetModuleFileNameExW *pGetModuleFileNameEx = (fGetModuleFileNameExW *)GetProcAddress(hPSAPI, "GetModuleFileNameExW");
-					fGetProcessImageFileNameW *pGetProcessImageFileName = (fGetProcessImageFileNameW *)GetProcAddress(hPSAPI, "GetProcessImageFileNameW");
+					FEnumProcesses *pEnumProcesses = (FEnumProcesses *)GetProcAddress(hPSAPI, "EnumProcesses");
+					FGetModuleBaseNameW *pGetModuleBaseName = (FGetModuleBaseNameW *)GetProcAddress(hPSAPI, "GetModuleBaseNameW");
+					FGetModuleFileNameExW *pGetModuleFileNameEx = (FGetModuleFileNameExW *)GetProcAddress(hPSAPI, "GetModuleFileNameExW");
+					FGetProcessImageFileNameW *pGetProcessImageFileName = (FGetProcessImageFileNameW *)GetProcAddress(hPSAPI, "GetProcessImageFileNameW");
 
 					if (pEnumProcesses)
 					{
@@ -190,7 +190,7 @@ namespace NMib
 
 				auto fl_GenerateException = [&_Message, &_ExtraLog, _pExceptionInfo, _pGeneratedLogs, _bDisplayGUI](NThread::CThreadObjectNonTracked *_pThread) -> aint
 					{
-						umint nCache = EWindowCache;
+						umint nCache = mc_WindowCache;
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
 
 						NStr::CStrNonTracked CrashDumpPath = NFile::NPlatform::fg_ConvertFromWindowsPath<NStr::CWStrNonTracked, NStr::CWStrNonTracked>

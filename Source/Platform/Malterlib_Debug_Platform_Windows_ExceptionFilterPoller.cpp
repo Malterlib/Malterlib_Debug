@@ -17,6 +17,7 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
+			// NOLINTBEGIN(malterlib-type-naming): the names in the Windows headers
 			typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
 			{
 				ULONG Flags;                  //Reserved.
@@ -42,6 +43,7 @@ namespace NMib
 			} LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
 
 			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context);
+			// NOLINTEND(malterlib-type-naming)
 
 			static VOID NTAPI DllLoadedCallback(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context)
 			{
