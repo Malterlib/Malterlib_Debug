@@ -436,11 +436,11 @@
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Next]" Condition="m_pNextPtr != 0 &amp;&amp; (((umint)((CThis *)(((umint)m_pNextPtr) &amp; ~umint(1)))->m_pNextPtr) &amp; umint(1)) != umint(1)">
-        *((CThis *)(((umint)m_pNextPtr) &amp; ~umint(1)))
+      <Item Name ="[Next]" Condition="m_NextPtr != 0 &amp;&amp; (((umint)((CThis *)(((umint)m_NextPtr) &amp; ~umint(1)))->m_NextPtr) &amp; umint(1)) != umint(1)">
+        *((CThis *)(((umint)m_NextPtr) &amp; ~umint(1)))
       </Item>
-      <Item Name ="[Prev]" Condition="m_pNextPtr != 0 &amp;&amp; (((umint)((CThis *)(((umint)((CThis *)m_pPrevPtr)->m_pNextPtr) &amp; ~umint(1)))->m_pNextPtr) &amp; umint(1)) != umint(1)">
-        *((CThis *)m_pPrevPtr)
+      <Item Name ="[Prev]" Condition="m_NextPtr != 0 &amp;&amp; (((umint)((CThis *)(((umint)((CThis *)m_PrevPtr)->m_NextPtr) &amp; ~umint(1)))->m_NextPtr) &amp; umint(1)) != umint(1)">
+        *((CThis *)m_PrevPtr)
       </Item>
     </Expand>
   </Type>
@@ -464,11 +464,11 @@
       <Item Name ="[Ptr]">
         (void *)this
       </Item>
-      <Item Name ="[Left]" Condition="m_Link.m_pNext[0] != 0">
-        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((umint)m_Link.m_pNext[0]) &amp; ~umint(3)))
+      <Item Name ="[Left]" Condition="m_Link.m_Next[0] != 0">
+        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((umint)m_Link.m_Next[0]) &amp; ~umint(3)))
       </Item>
-      <Item Name ="[Right]" Condition="m_Link.m_pNext[0] != 0">
-        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((umint)m_Link.m_pNext[1]) &amp; ~umint(3)))
+      <Item Name ="[Right]" Condition="m_Link.m_Next[0] != 0">
+        *((NMib::NIntrusive::TCAVLLinkAggregate&lt;$T1,$T2&gt; *)(((umint)m_Link.m_Next[1]) &amp; ~umint(3)))
       </Item>
     </Expand>
   </Type>
@@ -541,14 +541,14 @@
 
   <Type Name="NMib::NIntrusive::TCDLinkListAggregate&lt;*,*,*,*,*,*&gt;">
     <Expand>
-      <LinkedListItems Condition="(umint)m_Link.m_pNextPtr &amp; ~umint(1) != ((umint)(void*)&amp;m_Link)">
-        <HeadPointer>(($T3 *)(((umint)m_Link.m_pNextPtr) &amp; ~umint(1)))</HeadPointer>
+      <LinkedListItems Condition="(umint)m_Link.m_NextPtr &amp; ~umint(1) != ((umint)(void*)&amp;m_Link)">
+        <HeadPointer>(($T3 *)(((umint)m_Link.m_NextPtr) &amp; ~umint(1)))</HeadPointer>
         <NextPointer>
           (
             (CThis *)
             (
               (
-                ((umint)m_pNextPtr)&amp;~umint(1))
+                ((umint)m_NextPtr)&amp;~umint(1))
                 *
                 (
                   umint(1)
@@ -556,10 +556,10 @@
                   (
                     (
                       (umint)
-                      ((CThis *)((umint)m_pNextPtr &amp; ~umint(1)))->m_pNextPtr
+                      ((CThis *)((umint)m_NextPtr &amp; ~umint(1)))->m_NextPtr
                       |
-                      (umint)((CThis *)((umint)m_pNextPtr &amp; ~umint(1))
-                    )->m_pPrevPtr
+                      (umint)((CThis *)((umint)m_NextPtr &amp; ~umint(1))
+                    )->m_PrevPtr
                   )
                   &amp;
                   umint(1)
@@ -623,15 +623,15 @@
 
   <Type Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;">
     <Expand>
-      <LinkedListItems Condition="(umint)mp_Data.m_List.m_Link.m_pNextPtr &amp; umint(1) != ((umint)(void *)&amp;mp_Data.m_List.m_Link)">
-        <HeadPointer>((CLink *)(((umint)mp_Data.m_List.m_Link.m_pNextPtr) &amp; ~umint(1)))</HeadPointer>
+      <LinkedListItems Condition="(umint)mp_Data.m_List.m_Link.m_NextPtr &amp; umint(1) != ((umint)(void *)&amp;mp_Data.m_List.m_Link)">
+        <HeadPointer>((CLink *)(((umint)mp_Data.m_List.m_Link.m_NextPtr) &amp; ~umint(1)))</HeadPointer>
         <NextPointer>
           (
           (CThis *)
           (
           (
           (
-          (umint)m_pNextPtr
+          (umint)m_NextPtr
           )
           &amp;
           ~umint(1)
@@ -646,17 +646,17 @@
           (
           (CThis *)
           (
-          (umint)m_pNextPtr &amp; ~umint(1)
+          (umint)m_NextPtr &amp; ~umint(1)
           )
-          )->m_pNextPtr
+          )->m_NextPtr
           |
           (umint)
           (
           (CThis *)
           (
-          (umint)m_pNextPtr &amp; ~umint(1)
+          (umint)m_NextPtr &amp; ~umint(1)
           )
-          )->m_pPrevPtr
+          )->m_PrevPtr
           )
           &amp;
           umint(1)
@@ -717,7 +717,7 @@
           (
           (
           (
-          (umint)m_pNext[0]
+          (umint)m_Next[0]
           )
           &amp;
           ~umint(3)
@@ -731,7 +731,7 @@
           (
           (
           (
-          (umint)m_pNext[1]
+          (umint)m_Next[1]
           )
           &amp;
           ~umint(3)
@@ -767,7 +767,7 @@
           (
           (
           (
-          (umint)m_pNext[0]
+          (umint)m_Next[0]
           )
           &amp;
           ~umint(3)
@@ -781,7 +781,7 @@
           (
           (
           (
-          (umint)m_pNext[1]
+          (umint)m_Next[1]
           )
           &amp;
           ~umint(3)
@@ -807,7 +807,7 @@
           (
           (
           (
-          (umint)m_pNext[0]
+          (umint)m_Next[0]
           )
           &amp;
           ~umint(3)
@@ -821,7 +821,7 @@
           (
           (
           (
-          (umint)m_pNext[1]
+          (umint)m_Next[1]
           )
           &amp;
           ~umint(3)
@@ -838,28 +838,28 @@
 
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;::TCIterator&lt;*&gt;">
     <DisplayString Condition="mp_iStack >= 0">
-      {*((CNode *)((umint)mp_pStack[mp_iStack] - $T1))}
+      {*((CNode *)((umint)mp_Stack[mp_iStack] - $T1))}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="mp_iStack >= 0">
-        *((CNode *)((umint)mp_pStack[mp_iStack] - $T1))
+        *((CNode *)((umint)mp_Stack[mp_iStack] - $T1))
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
     <DisplayString Condition="mp_Iter.mp_iStack >= 0">
-		{*((CNode *)((umint)mp_Iter.mp_pStack[mp_Iter.mp_iStack]))}
+		{*((CNode *)((umint)mp_Iter.mp_Stack[mp_Iter.mp_iStack]))}
 	</DisplayString>
 	<DisplayString>
 		Invalid
 	</DisplayString>
 	<Expand>
 		<ExpandedItem Condition="mp_Iter.mp_iStack >= 0">
-			*((CNode *)((umint)mp_Iter.mp_pStack[mp_Iter.mp_iStack]))
+			*((CNode *)((umint)mp_Iter.mp_Stack[mp_Iter.mp_iStack]))
 		</ExpandedItem>
     </Expand>
   </Type>

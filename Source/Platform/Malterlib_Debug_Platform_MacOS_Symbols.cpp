@@ -26,8 +26,8 @@ namespace NMib
 				return g_SubSystem_Debug_Platform_MacOS_Symbols->m_Symbols;
 			}
 
-			template <typename tf_CCompare, typename tf_CFind>
-			aint fg_BinarySearchLowerBound(umint _nItems, tf_CCompare &&_fCompare, tf_CFind const &_ToFind)
+			template <typename tf_FCompare, typename tf_CFind>
+			aint fg_BinarySearchLowerBound(umint _nItems, tf_FCompare &&_fCompare, tf_CFind const &_ToFind)
 			{
 				umint Len = _nItems;
 

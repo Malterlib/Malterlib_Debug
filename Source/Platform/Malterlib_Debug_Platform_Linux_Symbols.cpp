@@ -48,7 +48,7 @@ namespace NMib
 
 			CSymbolsIndex::CSymbolsIndex(char const *_pFilename, umint _BaseAddress)
 				: mp_bOK(false)
-				, mp_Dwarf(nullptr)
+				, mp_pDwarf(nullptr)
 				, mp_ModuleFilename(_pFilename)
 				, mp_BaseAddress(_BaseAddress)
 				, mp_pElf(nullptr)
@@ -59,13 +59,13 @@ namespace NMib
 
 				Dwarf_Error Error;
 
-				if (dwarf_init(FD, DW_DLC_READ, nullptr, nullptr, &mp_Dwarf, &Error))
+				if (dwarf_init(FD, DW_DLC_READ, nullptr, nullptr, &mp_pDwarf, &Error))
 				{
 					mp_ErrorMessage = CSymStr::CFormat("dwarf_init: {}") << dwarf_errmsg(Error);
 					return;
 				}
 
-				if (dwarf_get_elf(mp_Dwarf, &mp_pElf, &Error) != DW_DLV_OK)
+				if (dwarf_get_elf(mp_pDwarf, &mp_pElf, &Error) != DW_DLV_OK)
 				{
 					mp_ErrorMessage = CSymStr::CFormat("dwarf_init: {}") << dwarf_errmsg(Error);
 					return;
@@ -78,16 +78,16 @@ namespace NMib
 
 			CSymbolsIndex::~CSymbolsIndex()
 			{
-				if (mp_Dwarf)
+				if (mp_pDwarf)
 				{
-					for (auto UnitIter = mp_Units.f_GetIterator(); UnitIter; ++UnitIter)
+					for (auto iUnit = mp_Units.f_GetIterator(); iUnit; ++iUnit)
 					{
-						dwarf_srclines_dealloc(mp_Dwarf, (*UnitIter).m_pLines, (*UnitIter).m_nLines);
-						dwarf_dealloc(mp_Dwarf, (*UnitIter).m_pDie, DW_DLA_DIE);
+						dwarf_srclines_dealloc(mp_pDwarf, (*iUnit).m_pLines, (*iUnit).m_nLines);
+						dwarf_dealloc(mp_pDwarf, (*iUnit).m_pDie, DW_DLA_DIE);
 					}
 
 					Dwarf_Error Error;
-					dwarf_finish(mp_Dwarf, &Error);
+					dwarf_finish(mp_pDwarf, &Error);
 				}
 
 				if (mp_pElf)
@@ -102,12 +102,12 @@ namespace NMib
 			CLinuxStackTraceInfo *CSymbolsIndex::f_Lookup(umint _Address)
 			{
 				// Dumb interval search for now.
-				for (auto UnitIter = mp_Units.f_GetIterator(); UnitIter; ++UnitIter)
+				for (auto iUnit = mp_Units.f_GetIterator(); iUnit; ++iUnit)
 				{
-					if ((*UnitIter).f_Contains(_Address))
+					if ((*iUnit).f_Contains(_Address))
 					{
 						// Possible match.
-						Dwarf_Signed iLine = fp_LookupLineInUnit(_Address, *UnitIter);
+						Dwarf_Signed iLine = fp_LookupLineInUnit(_Address, *iUnit);
 						if (iLine == -1)
 							continue;
 
@@ -120,19 +120,19 @@ namespace NMib
 							Dwarf_Error Error;
 
 							// Get file line number
-							if (dwarf_lineno((*UnitIter).m_pLines[iLine], &LineNumber, &Error) != DW_DLV_OK)
+							if (dwarf_lineno((*iUnit).m_pLines[iLine], &LineNumber, &Error) != DW_DLV_OK)
 								LineNumber = -1; // ?
 
 							// Search for the filename by examining the containing line entry and
 							// then searching backwards if we don't find a file source entry.
 							{
 								char const *pFileName = "unknown";
-								dwarf_linesrc((*UnitIter).m_pLines[iLine], const_cast<char **>(&pFileName), &Error);
+								dwarf_linesrc((*iUnit).m_pLines[iLine], const_cast<char **>(&pFileName), &Error);
 								/*
 								for (Dwarf_Signed iL = iLine; iL >= 0; --iL)
 								Dwarf_Signed iL = iLine;
 								{
-									if (dwarf_linesrc((*UnitIter).m_pLines[iL], const_cast<char**>(&pFileName), &Error) == DW_DLV_OK)
+									if (dwarf_linesrc((*iUnit).m_pLines[iL], const_cast<char**>(&pFileName), &Error) == DW_DLV_OK)
 									{
 										break;
 									}
@@ -142,7 +142,7 @@ namespace NMib
 							}
 
 							// Find function
-							CFunction const *pFunc = fp_LookupFunctionInUnit(_Address, (*UnitIter));
+							CFunction const *pFunc = fp_LookupFunctionInUnit(_Address, (*iUnit));
 							if (pFunc)
 							{
 								{
@@ -266,19 +266,19 @@ namespace NMib
 				Dwarf_Die pRetDie;
 				Dwarf_Half Tag;
 
-				while ((Result = dwarf_next_cu_header_b(mp_Dwarf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &Error)) == DW_DLV_OK)
+				while ((Result = dwarf_next_cu_header_b(mp_pDwarf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &Error)) == DW_DLV_OK)
 				{
 					pDie = nullptr;
 
-					while (dwarf_siblingof(mp_Dwarf, pDie, &pRetDie, &Error) == DW_DLV_OK)
+					while (dwarf_siblingof(mp_pDwarf, pDie, &pRetDie, &Error) == DW_DLV_OK)
 					{
 						if (pDie)
-							dwarf_dealloc(mp_Dwarf, pDie, DW_DLA_DIE);
+							dwarf_dealloc(mp_pDwarf, pDie, DW_DLA_DIE);
 						pDie = pRetDie;
 
 						if (dwarf_tag(pDie, &Tag, &Error) != DW_DLV_OK)
 						{
-							dwarf_dealloc(mp_Dwarf, pDie, DW_DLA_DIE);
+							dwarf_dealloc(mp_pDwarf, pDie, DW_DLA_DIE);
 
 							mp_ErrorMessage = CSymStr::CFormat("dwarf_tag: {}") << dwarf_errmsg(Error);
 							return false;
@@ -291,7 +291,7 @@ namespace NMib
 					if (pDie == nullptr || Tag != DW_TAG_compile_unit)
 					{
 						if (pDie)
-							dwarf_dealloc(mp_Dwarf, pDie, DW_DLA_DIE);
+							dwarf_dealloc(mp_pDwarf, pDie, DW_DLA_DIE);
 
 						continue;
 					}
@@ -380,7 +380,7 @@ namespace NMib
 							mp_ErrorMessage = CSymStr::CFormat("dwarf_next_cu_header: {}") << dwarf_errmsg(Error);
 							return false;
 						}
-						Result = dwarf_next_cu_header_b(mp_Dwarf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &Error);
+						Result = dwarf_next_cu_header_b(mp_pDwarf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &Error);
 					}
 				}
 				return true;
@@ -389,7 +389,7 @@ namespace NMib
 			bool CSymbolsIndex::fp_IndexUnitFunctions(CUnit &_Unit) const
 			{
 				Dwarf_Error Error;
-				dwarf_set_cu_from_die(mp_Dwarf, _Unit.m_pDie, &Error);
+				dwarf_set_cu_from_die(mp_pDwarf, _Unit.m_pDie, &Error);
 
 				// fp_CollectFunctions(_Unit.m_pDie, _Unit);
 				fp_CollectFunction(_Unit.m_pDie, _Unit);
@@ -434,11 +434,11 @@ namespace NMib
 						NewFunc.m_HighPC = HighPC;
 						NewFunc.m_pName = "unknown";
 
-						Dwarf_Attribute NameAttr, SpecAttr;
+						Dwarf_Attribute pNameAttr, pSpecAttr;
 						char *pFuncName;
 
-						int Ret = dwarf_attr(_pDie, DW_AT_name, &NameAttr, &Error);
-						if (dwarf_attr(_pDie, DW_AT_name, &NameAttr, &Error) == DW_DLV_OK && dwarf_formstring(NameAttr, &pFuncName, &Error) == DW_DLV_OK)
+						int Ret = dwarf_attr(_pDie, DW_AT_name, &pNameAttr, &Error);
+						if (dwarf_attr(_pDie, DW_AT_name, &pNameAttr, &Error) == DW_DLV_OK && dwarf_formstring(pNameAttr, &pFuncName, &Error) == DW_DLV_OK)
 							NewFunc.m_pName = pFuncName;
 						else if (Ret == DW_DLV_ERROR)
 						{
@@ -446,16 +446,16 @@ namespace NMib
 						else
 						{ // Try using spec.
 							Dwarf_Off Ref;
-							Dwarf_Die SpecDie;
+							Dwarf_Die pSpecDie;
 							char const *pFuncName2;
-							if (dwarf_attr(_pDie, DW_AT_specification, &SpecAttr, &Error) == DW_DLV_OK && dwarf_global_formref(SpecAttr, &Ref, &Error) == DW_DLV_OK)
+							if (dwarf_attr(_pDie, DW_AT_specification, &pSpecAttr, &Error) == DW_DLV_OK && dwarf_global_formref(pSpecAttr, &Ref, &Error) == DW_DLV_OK)
 							{
-								if (dwarf_offdie(mp_Dwarf, Ref, &SpecDie, &Error) == DW_DLV_OK)
+								if (dwarf_offdie(mp_pDwarf, Ref, &pSpecDie, &Error) == DW_DLV_OK)
 								{
-									if (dwarf_attrval_string(SpecDie, DW_AT_name, &pFuncName2, &Error) == DW_DLV_OK)
+									if (dwarf_attrval_string(pSpecDie, DW_AT_name, &pFuncName2, &Error) == DW_DLV_OK)
 										NewFunc.m_pName = pFuncName2;
-									dwarf_dealloc(mp_Dwarf, SpecDie, DW_DLA_DIE);
-									SpecDie = nullptr;
+									dwarf_dealloc(mp_pDwarf, pSpecDie, DW_DLA_DIE);
+									pSpecDie = nullptr;
 								}
 							}
 						}
@@ -514,9 +514,9 @@ namespace NMib
 
 				while (_pDie && Ret == DW_DLV_OK)
 				{
-					Ret = dwarf_siblingof(mp_Dwarf, _pDie, &pRetDie, &Error);
+					Ret = dwarf_siblingof(mp_pDwarf, _pDie, &pRetDie, &Error);
 
-					dwarf_dealloc(mp_Dwarf, _pDie, DW_DLA_DIE);
+					dwarf_dealloc(mp_pDwarf, _pDie, DW_DLA_DIE);
 					_pDie = nullptr;
 
 					if (Ret == DW_DLV_ERROR)

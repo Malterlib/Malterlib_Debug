@@ -11,11 +11,11 @@
 // Libunwind may buy us some more info, but the output from that (even Apple's variant) is pretty
 // much the same as from dladdr as far as I can tell.
 
-bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
+bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _pAddress, bool _bCanAllocNonTracked)
 {
 	if (_bCanAllocNonTracked)
 	{
-		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_Address);
+		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_pAddress);
 		if (!pInfo)
 			return false;
 		o_Info = *pInfo;
@@ -26,7 +26,7 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCode
 	o_Info.m_pContext = (void *)1;
 
 	Dl_info DLInfo;
-	int DLResult = dladdr((void const *)_Address, &DLInfo);
+	int DLResult = dladdr((void const *)_pAddress, &DLInfo);
 
 	if (DLResult == 0)
 		return false;
@@ -99,7 +99,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 	return EDebugCheckFailureAction_NotHandled;
 }
 
-void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
+void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_fCrashDumpUserNotify)
 {
 }
 

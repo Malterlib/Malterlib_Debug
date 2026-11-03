@@ -693,11 +693,11 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			fg_TestIntrusive(IntrusiveList);
 
 			TCAtomic<int32> AtomicInt(5);
-			TCAtomic<CTestClass *> AtomicPtr(&Vector[0]);
-			TCAtomic<CTestClass *> AtomicPtrNull(nullptr);
+			TCAtomic<CTestClass *> pAtomicTestClass(&Vector[0]);
+			TCAtomic<CTestClass *> pAtomicTestClassNull(nullptr);
 
 			int32 TestInt = 355;
-			TCAtomic<int32 *> AtomicIntPtr(&TestInt);
+			TCAtomic<int32 *> pAtomicTestInt(&TestInt);
 
 			TCSet<int32> BigSet;
 			TCVector<int32> BigVector;
@@ -781,8 +781,8 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			RegistryPreserveOrder.f_SetValue("Path1/Key4", "Value4");
 
 			NMib::TCAutoClear<int32> AutoClearGeneral;
-			NMib::TCAutoClear<CTest2 *> AutoClearGeneralPointer;
-			AutoClearGeneralPointer = &Test2;
+			NMib::TCAutoClear<CTest2 *> pAutoClearTest2;
+			pAutoClearTest2 = &Test2;
 			NMib::TCAutoClearInt<int32, 556> AutoClearInt;
 
 			zmint AutoClear_zmint = 6;
@@ -913,20 +913,20 @@ struct CDebug_Tests : public NMib::NTest::CTest
 				}
 			};
 
-			NFunction::TCFunction<void ()> Function0 = fTestLambda;
-			NFunction::TCFunctionFastCall<void ()> Function1 = fTestLambda;
-			NFunction::TCFunctionSmall<void ()> Function2 = fTestLambda;
-			NFunction::TCFunctionNoAlloc<void ()> Function3 = fTestLambda;
-			NFunction::TCFunctionNoAlloc<void ()> FunctionFunctor = CTestingFunctor();
-			NFunction::TCFunctionMutable<void ()> FunctionFunctorMutable = CTestingFunctor();
-			NFunction::TCFunctionMovable<void ()> FunctionFunctorMovable = CTestingFunctor();
-			NFunction::TCFunctionMutable<void (TCFunctionConstTemplateParam<int32 const> const &_Param)> FunctionFunctorMutableConstTemplateParam = CTestingFunctorConstTemplateParam();
-			NFunction::TCFunction<void (TCFunctionConstTemplateParam<int32 const> const &_Param)> FunctionFunctorConstThisTagConstTemplateParam = CTestingFunctorConstTemplateParam();
+			NFunction::TCFunction<void ()> fFunction0 = fTestLambda;
+			NFunction::TCFunctionFastCall<void ()> fFunction1 = fTestLambda;
+			NFunction::TCFunctionSmall<void ()> fFunction2 = fTestLambda;
+			NFunction::TCFunctionNoAlloc<void ()> fFunction3 = fTestLambda;
+			NFunction::TCFunctionNoAlloc<void ()> fFunctionFunctor = CTestingFunctor();
+			NFunction::TCFunctionMutable<void ()> fFunctionFunctorMutable = CTestingFunctor();
+			NFunction::TCFunctionMovable<void ()> fFunctionFunctorMovable = CTestingFunctor();
+			NFunction::TCFunctionMutable<void (TCFunctionConstTemplateParam<int32 const> const &_Param)> fFunctionFunctorMutableConstTemplateParam = CTestingFunctorConstTemplateParam();
+			NFunction::TCFunction<void (TCFunctionConstTemplateParam<int32 const> const &_Param)> fFunctionFunctorConstThisTagConstTemplateParam = CTestingFunctorConstTemplateParam();
 
-			NFunction::TCFunction<void ()> FunctionExternalLambda = fs_BigLambda(EnhancedJson);
+			NFunction::TCFunction<void ()> fFunctionExternalLambda = fs_BigLambda(EnhancedJson);
 
-			NFunction::TCFunction<void ()> FunctionBig = fTestLambdaBig;
-			NFunction::TCFunction<void ()> FunctionEmpty;
+			NFunction::TCFunction<void ()> fFunctionBig = fTestLambdaBig;
+			NFunction::TCFunction<void ()> fFunctionEmpty;
 
 			struct CTestActor : public NConcurrency::CActor
 			{
@@ -1000,9 +1000,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto &FloatWhatRef = FloatWhat;
 			auto &StackTraceRef = StackTrace;
 			auto &AtomicIntRef = AtomicInt;
-			auto &AtomicPtrRef = AtomicPtr;
-			auto &AtomicPtrNullRef = AtomicPtrNull;
-			auto &AtomicIntPtrRef = AtomicIntPtr;
+			auto &pAtomicTestClassRef = pAtomicTestClass;
+			auto &pAtomicTestClassNullRef = pAtomicTestClassNull;
+			auto &pAtomicTestIntRef = pAtomicTestInt;
 			auto &BigSetRef = BigSet;
 			auto &BigVectorRef = BigVector;
 			auto &BigLinkedListRef = BigLinkedList;
@@ -1029,7 +1029,7 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto &ReferenceRef = Reference;
 			auto &IndirectionRef = Indirection;
 			auto &AutoClearGeneralRef = AutoClearGeneral;
-			auto &AutoClearGeneralPointerRef = AutoClearGeneralPointer;
+			auto &pAutoClearTest2Ref = pAutoClearTest2;
 			auto &AutoClearIntRef = AutoClearInt;
 			auto &AutoClear_zmint_Ref = AutoClear_zmint;
 			auto &AutoClear_zfp32_Ref = AutoClear_zfp32;
@@ -1092,9 +1092,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto const &FloatWhatConstRef = FloatWhat;
 			auto const &StackTraceConstRef = StackTrace;
 			auto const &AtomicIntConstRef = AtomicInt;
-			auto const &AtomicPtrConstRef = AtomicPtr;
-			auto const &AtomicPtrNullConstRef = AtomicPtrNull;
-			auto const &AtomicIntPtrConstRef = AtomicIntPtr;
+			auto const &pAtomicTestClassConstRef = pAtomicTestClass;
+			auto const &pAtomicTestClassNullConstRef = pAtomicTestClassNull;
+			auto const &pAtomicTestIntConstRef = pAtomicTestInt;
 			auto const &BigSetConstRef = BigSet;
 			auto const &BigVectorConstRef = BigVector;
 			auto const &BigLinkedListConstRef = BigLinkedList;
@@ -1121,7 +1121,7 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto const &ReferenceConstRef = Reference;
 			auto const &IndirectionConstRef = Indirection;
 			auto const &AutoClearGeneralConstRef = AutoClearGeneral;
-			auto const &AutoClearGeneralPointerConstRef = AutoClearGeneralPointer;
+			auto const &pAutoClearTest2ConstRef = pAutoClearTest2;
 			auto const &AutoClearIntConstRef = AutoClearInt;
 			auto const &AutoClear_zmint_ConstRef = AutoClear_zmint;
 			auto const &AutoClear_zfp32_ConstRef = AutoClear_zfp32;
@@ -1184,9 +1184,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto volatile &FloatWhatVolatileRef = FloatWhat;
 			auto volatile &StackTraceVolatileRef = StackTrace;
 			auto volatile &AtomicIntVolatileRef = AtomicInt;
-			auto volatile &AtomicPtrVolatileRef = AtomicPtr;
-			auto volatile &AtomicPtrNullVolatileRef = AtomicPtrNull;
-			auto volatile &AtomicIntPtrVolatileRef = AtomicIntPtr;
+			auto volatile &pAtomicTestClassVolatileRef = pAtomicTestClass;
+			auto volatile &pAtomicTestClassNullVolatileRef = pAtomicTestClassNull;
+			auto volatile &pAtomicTestIntVolatileRef = pAtomicTestInt;
 			auto volatile &BigSetVolatileRef = BigSet;
 			auto volatile &BigVectorVolatileRef = BigVector;
 			auto volatile &BigLinkedListVolatileRef = BigLinkedList;
@@ -1213,14 +1213,14 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto volatile &ReferenceVolatileRef = Reference;
 			auto volatile &IndirectionVolatileRef = Indirection;
 			auto volatile &AutoClearGeneralVolatileRef = AutoClearGeneral;
-			auto volatile &AutoClearGeneralPointerVolatileRef = AutoClearGeneralPointer;
+			auto volatile &pAutoClearTest2VolatileRef = pAutoClearTest2;
 			auto volatile &AutoClearIntVolatileRef = AutoClearInt;
 			auto volatile &AutoClear_zmint_VolatileRef = AutoClear_zmint;
 			auto volatile &AutoClear_zfp32_VolatileRef = AutoClear_zfp32;
 
-			auto *RawStr0Ptr = &RawStr0;
-			auto *RawStr1Ptr = &RawStr1;
-			auto *RawStr2Ptr = &RawStr2;
+			auto *pRawStr0Array = &RawStr0;
+			auto *pRawStr1Array = &RawStr1;
+			auto *pRawStr2Array = &RawStr2;
 			auto *pRawStr0Ptr = &pRawStr0;
 			auto *pRawStr1Ptr = &pRawStr1;
 			auto *pRawStr2Ptr = &pRawStr2;
@@ -1311,9 +1311,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto *pFloatWhat = &FloatWhat;
 			auto *pStackTrace = &StackTrace;
 			auto *pAtomicInt = &AtomicInt;
-			auto *pAtomicPtr = &AtomicPtr;
-			auto *pAtomicPtrNull = &AtomicPtrNull;
-			auto *pAtomicIntPtr = &AtomicIntPtr;
+			auto *pAtomicPtr = &pAtomicTestClass;
+			auto *pAtomicPtrNull = &pAtomicTestClassNull;
+			auto *pAtomicIntPtr = &pAtomicTestInt;
 			auto *pBigSet = &BigSet;
 			auto *pBigVector = &BigVector;
 			auto *pBigLinkedList = &BigLinkedList;
@@ -1340,14 +1340,14 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			auto *pReference = &Reference;
 			auto *pIndirection = &Indirection;
 			auto *pAutoClearGeneral = &AutoClearGeneral;
-			auto *pAutoClearGeneralPointer = &AutoClearGeneralPointer;
+			auto *pAutoClearGeneralPointer = &pAutoClearTest2;
 			auto *pAutoClearInt = &AutoClearInt;
 			auto *pAutoClear_zmint = &AutoClear_zmint;
 			auto *pAutoClear_zfp32 = &AutoClear_zfp32;
 
-			auto **RawStr0PtrPtr = &RawStr0Ptr;
-			auto **RawStr1PtrPtr = &RawStr1Ptr;
-			auto **RawStr2PtrPtr = &RawStr2Ptr;
+			auto **pRawStr0ArrayPtr = &pRawStr0Array;
+			auto **pRawStr1ArrayPtr = &pRawStr1Array;
+			auto **pRawStr2ArrayPtr = &pRawStr2Array;
 			auto **pRawStr0PtrPtr = &pRawStr0Ptr;
 			auto **pRawStr1PtrPtr = &pRawStr1Ptr;
 			auto **pRawStr2PtrPtr = &pRawStr2Ptr;
@@ -1665,10 +1665,10 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(TestLinkedLamba);
 			DKeepDebugVisualizerVariableActive(StackTrace);
 			DKeepDebugVisualizerVariableActive(AtomicInt);
-			DKeepDebugVisualizerVariableActive(AtomicPtr);
-			DKeepDebugVisualizerVariableActive(AtomicPtrNull);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClass);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassNull);
 			DKeepDebugVisualizerVariableActive(TestInt);
-			DKeepDebugVisualizerVariableActive(AtomicIntPtr);
+			DKeepDebugVisualizerVariableActive(pAtomicTestInt);
 			DKeepDebugVisualizerVariableActive(BigSet);
 			DKeepDebugVisualizerVariableActive(BigVector);
 			DKeepDebugVisualizerVariableActive(BigLinkedList);
@@ -1703,7 +1703,7 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(RegistryPreserve);
 			DKeepDebugVisualizerVariableActive(RegistryPreserveOrder);
 			DKeepDebugVisualizerVariableActive(AutoClearGeneral);
-			DKeepDebugVisualizerVariableActive(AutoClearGeneralPointer);
+			DKeepDebugVisualizerVariableActive(pAutoClearTest2);
 			DKeepDebugVisualizerVariableActive(AutoClearInt);
 			DKeepDebugVisualizerVariableActive(AutoClear_zmint);
 			DKeepDebugVisualizerVariableActive(AutoClear_zfp32);
@@ -1718,18 +1718,18 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(EnhancedJsonSortedYaml);
 			DKeepDebugVisualizerVariableActive(fTestLambda);
 			DKeepDebugVisualizerVariableActive(fTestLambdaBig);
-			DKeepDebugVisualizerVariableActive(Function0);
-			DKeepDebugVisualizerVariableActive(Function1);
-			DKeepDebugVisualizerVariableActive(Function2);
-			DKeepDebugVisualizerVariableActive(Function3);
-			DKeepDebugVisualizerVariableActive(FunctionFunctor);
-			DKeepDebugVisualizerVariableActive(FunctionFunctorMutable);
-			DKeepDebugVisualizerVariableActive(FunctionFunctorMovable);
-			DKeepDebugVisualizerVariableActive(FunctionFunctorMutableConstTemplateParam);
-			DKeepDebugVisualizerVariableActive(FunctionFunctorConstThisTagConstTemplateParam);
-			DKeepDebugVisualizerVariableActive(FunctionExternalLambda);
-			DKeepDebugVisualizerVariableActive(FunctionBig);
-			DKeepDebugVisualizerVariableActive(FunctionEmpty);
+			DKeepDebugVisualizerVariableActive(fFunction0);
+			DKeepDebugVisualizerVariableActive(fFunction1);
+			DKeepDebugVisualizerVariableActive(fFunction2);
+			DKeepDebugVisualizerVariableActive(fFunction3);
+			DKeepDebugVisualizerVariableActive(fFunctionFunctor);
+			DKeepDebugVisualizerVariableActive(fFunctionFunctorMutable);
+			DKeepDebugVisualizerVariableActive(fFunctionFunctorMovable);
+			DKeepDebugVisualizerVariableActive(fFunctionFunctorMutableConstTemplateParam);
+			DKeepDebugVisualizerVariableActive(fFunctionFunctorConstThisTagConstTemplateParam);
+			DKeepDebugVisualizerVariableActive(fFunctionExternalLambda);
+			DKeepDebugVisualizerVariableActive(fFunctionBig);
+			DKeepDebugVisualizerVariableActive(fFunctionEmpty);
 			DKeepDebugVisualizerVariableActive(TestActor);
 			DKeepDebugVisualizerVariableActive(TestActorWeak);
 			DKeepDebugVisualizerVariableActive(TestActorEmpty);
@@ -1792,9 +1792,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(FloatWhatRef);
 			DKeepDebugVisualizerVariableActive(StackTraceRef);
 			DKeepDebugVisualizerVariableActive(AtomicIntRef);
-			DKeepDebugVisualizerVariableActive(AtomicPtrRef);
-			DKeepDebugVisualizerVariableActive(AtomicPtrNullRef);
-			DKeepDebugVisualizerVariableActive(AtomicIntPtrRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassNullRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestIntRef);
 			DKeepDebugVisualizerVariableActive(BigSetRef);
 			DKeepDebugVisualizerVariableActive(BigVectorRef);
 			DKeepDebugVisualizerVariableActive(BigLinkedListRef);
@@ -1821,7 +1821,7 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(ReferenceRef);
 			DKeepDebugVisualizerVariableActive(IndirectionRef);
 			DKeepDebugVisualizerVariableActive(AutoClearGeneralRef);
-			DKeepDebugVisualizerVariableActive(AutoClearGeneralPointerRef);
+			DKeepDebugVisualizerVariableActive(pAutoClearTest2Ref);
 			DKeepDebugVisualizerVariableActive(AutoClearIntRef);
 			DKeepDebugVisualizerVariableActive(AutoClear_zmint_Ref);
 			DKeepDebugVisualizerVariableActive(AutoClear_zfp32_Ref);
@@ -1883,9 +1883,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(FloatWhatConstRef);
 			DKeepDebugVisualizerVariableActive(StackTraceConstRef);
 			DKeepDebugVisualizerVariableActive(AtomicIntConstRef);
-			DKeepDebugVisualizerVariableActive(AtomicPtrConstRef);
-			DKeepDebugVisualizerVariableActive(AtomicPtrNullConstRef);
-			DKeepDebugVisualizerVariableActive(AtomicIntPtrConstRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassConstRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassNullConstRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestIntConstRef);
 			DKeepDebugVisualizerVariableActive(BigSetConstRef);
 			DKeepDebugVisualizerVariableActive(BigVectorConstRef);
 			DKeepDebugVisualizerVariableActive(BigLinkedListConstRef);
@@ -1912,7 +1912,7 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(ReferenceConstRef);
 			DKeepDebugVisualizerVariableActive(IndirectionConstRef);
 			DKeepDebugVisualizerVariableActive(AutoClearGeneralConstRef);
-			DKeepDebugVisualizerVariableActive(AutoClearGeneralPointerConstRef);
+			DKeepDebugVisualizerVariableActive(pAutoClearTest2ConstRef);
 			DKeepDebugVisualizerVariableActive(AutoClearIntConstRef);
 			DKeepDebugVisualizerVariableActive(AutoClear_zmint_ConstRef);
 			DKeepDebugVisualizerVariableActive(AutoClear_zfp32_ConstRef);
@@ -1974,9 +1974,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(FloatWhatVolatileRef);
 			DKeepDebugVisualizerVariableActive(StackTraceVolatileRef);
 			DKeepDebugVisualizerVariableActive(AtomicIntVolatileRef);
-			DKeepDebugVisualizerVariableActive(AtomicPtrVolatileRef);
-			DKeepDebugVisualizerVariableActive(AtomicPtrNullVolatileRef);
-			DKeepDebugVisualizerVariableActive(AtomicIntPtrVolatileRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassVolatileRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestClassNullVolatileRef);
+			DKeepDebugVisualizerVariableActive(pAtomicTestIntVolatileRef);
 			DKeepDebugVisualizerVariableActive(BigSetVolatileRef);
 			DKeepDebugVisualizerVariableActive(BigVectorVolatileRef);
 			DKeepDebugVisualizerVariableActive(BigLinkedListVolatileRef);
@@ -2003,13 +2003,13 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(ReferenceVolatileRef);
 			DKeepDebugVisualizerVariableActive(IndirectionVolatileRef);
 			DKeepDebugVisualizerVariableActive(AutoClearGeneralVolatileRef);
-			DKeepDebugVisualizerVariableActive(AutoClearGeneralPointerVolatileRef);
+			DKeepDebugVisualizerVariableActive(pAutoClearTest2VolatileRef);
 			DKeepDebugVisualizerVariableActive(AutoClearIntVolatileRef);
 			DKeepDebugVisualizerVariableActive(AutoClear_zmint_VolatileRef);
 			DKeepDebugVisualizerVariableActive(AutoClear_zfp32_VolatileRef);
-			DKeepDebugVisualizerVariableActive(RawStr0Ptr);
-			DKeepDebugVisualizerVariableActive(RawStr1Ptr);
-			DKeepDebugVisualizerVariableActive(RawStr2Ptr);
+			DKeepDebugVisualizerVariableActive(pRawStr0Array);
+			DKeepDebugVisualizerVariableActive(pRawStr1Array);
+			DKeepDebugVisualizerVariableActive(pRawStr2Array);
 			DKeepDebugVisualizerVariableActive(pRawStr0Ptr);
 			DKeepDebugVisualizerVariableActive(pRawStr1Ptr);
 			DKeepDebugVisualizerVariableActive(pRawStr2Ptr);
@@ -2133,9 +2133,9 @@ struct CDebug_Tests : public NMib::NTest::CTest
 			DKeepDebugVisualizerVariableActive(pAutoClearInt);
 			DKeepDebugVisualizerVariableActive(pAutoClear_zmint);
 			DKeepDebugVisualizerVariableActive(pAutoClear_zfp32);
-			DKeepDebugVisualizerVariableActive(RawStr0PtrPtr);
-			DKeepDebugVisualizerVariableActive(RawStr1PtrPtr);
-			DKeepDebugVisualizerVariableActive(RawStr2PtrPtr);
+			DKeepDebugVisualizerVariableActive(pRawStr0ArrayPtr);
+			DKeepDebugVisualizerVariableActive(pRawStr1ArrayPtr);
+			DKeepDebugVisualizerVariableActive(pRawStr2ArrayPtr);
 			DKeepDebugVisualizerVariableActive(pRawStr0PtrPtr);
 			DKeepDebugVisualizerVariableActive(pRawStr1PtrPtr);
 			DKeepDebugVisualizerVariableActive(pRawStr2PtrPtr);

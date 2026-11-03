@@ -38,7 +38,7 @@ namespace NMib
 					)
 				;
 
-				void f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify);
+				void f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_fCrashDumpUserNotify);
 				void f_SetCrashDumpUserNotifyFormats
 					(
 						NStr::CStrNonTracked const &_CustomMessage
@@ -60,7 +60,7 @@ namespace NMib
 				void f_UndecorateName(ch8 const *_pName, NStr::CStr &_Destination);
 				void f_UndecorateName(ch8 const *_pName, NStr::CStrNonTracked &_Destination);
 				void f_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen);
-				CStackTraceInfo *f_AquireStackTraceInfo(CMibCodeAddress _Address);
+				CStackTraceInfo *f_AquireStackTraceInfo(CMibCodeAddress _pAddress);
 				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 
 			public:
@@ -79,7 +79,7 @@ namespace NMib
 					CSubSystem_Debug_Platform_Windows *m_pSystem;
 				};
 
-				NSys::FCrashDumpUserNotify *m_pCrashDumpUserNotifyFunction;
+				NSys::FCrashDumpUserNotify *m_fCrashDumpUserNotifyFunction;
 
 				NStr::CStrNonTracked m_CrashDumpUserNotifyFormat_CustomMessage;
 				NStr::CStrNonTracked m_CrashDumpUserNotifyFormat_CanContinueMessage;
@@ -92,7 +92,7 @@ namespace NMib
 
 				HWND m_CacheWindows[mc_WindowCache];
 
-				LPTOP_LEVEL_EXCEPTION_FILTER m_pPrevExceptionFilter;
+				LPTOP_LEVEL_EXCEPTION_FILTER m_fPrevExceptionFilter;
 				bool m_bPollCheckExceptionFilter;
 				aint m_bPollCheckExceptionFilterTimes;
 				void *m_pDllNotificationCookie;

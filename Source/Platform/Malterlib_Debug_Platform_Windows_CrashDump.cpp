@@ -104,9 +104,9 @@ namespace NMib
 				NMib::NPlatform::fg_GenerateExcetionHandler(&Data, &fsp_ExceptionGenerateHandlerMemory);
 			}
 
-			void CSubSystem_Debug_Platform_Windows::f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
+			void CSubSystem_Debug_Platform_Windows::f_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_fCrashDumpUserNotify)
 			{
-				m_pCrashDumpUserNotifyFunction = _pCrashDumpUserNotify;
+				m_fCrashDumpUserNotifyFunction = _fCrashDumpUserNotify;
 			}
 
 			void CSubSystem_Debug_Platform_Windows::f_SetCrashDumpUserNotifyFormats
@@ -236,7 +236,7 @@ namespace NMib
 										(
 											!SubSystem.m_StackTrace.m_fMiniDumpWriteDump
 											(
-												SubSystem.m_StackTrace.m_Process
+												SubSystem.m_StackTrace.m_pProcess
 												, GetCurrentProcessId()
 												, File.f_GetOSFile()
 												, DumpType

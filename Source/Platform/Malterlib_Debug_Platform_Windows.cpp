@@ -20,23 +20,23 @@ namespace NMib
 {
 	namespace NSys
 	{
-		void fg_Windows_ExpectedFilter(LPTOP_LEVEL_EXCEPTION_FILTER _pFilter);
+		void fg_Windows_ExpectedFilter(LPTOP_LEVEL_EXCEPTION_FILTER _fFilter);
 	}
 
 	namespace NDebug
 	{
 		namespace NPlatform
 		{
-			static LRESULT WINAPI fsg_WindowCacheProc(HWND _Window, UINT _Message, WPARAM _WParam, LPARAM _LParam)
+			static LRESULT WINAPI fsg_WindowCacheProc(HWND _pWindow, UINT _Message, WPARAM _WParam, LPARAM _LParam)
 			{
 				if (_Message == WM_ENDSESSION || _Message == WM_QUERYENDSESSION)
 					NMib::NPlatform::fg_ReportIsShuttingDown();
 
-				return DefWindowProc(_Window, _Message, _WParam, _LParam);
+				return DefWindowProc(_pWindow, _Message, _WParam, _LParam);
 			}
 
 			CSubSystem_Debug_Platform_Windows::CSubSystem_Debug_Platform_Windows()
-				: m_pCrashDumpUserNotifyFunction(nullptr)
+				: m_fCrashDumpUserNotifyFunction(nullptr)
 				, m_bPollCheckExceptionFilter(true)
 				, m_pDllNotificationCookie(nullptr)
 			{
@@ -49,7 +49,7 @@ namespace NMib
 				memset(&WndClass, 0, sizeof(WndClass));
 				WndClass.lpszClassName = "MalterlibCrashDumpWindowCache";
 				WndClass.lpfnWndProc = fsg_WindowCacheProc;
-				WndClass.hInstance = g_DllInstance;
+				WndClass.hInstance = g_pDllInstanceHandle;
 				RegisterClassA(&WndClass);
 
 				for (umint iWindow = 0; iWindow < mc_WindowCache; ++iWindow)
@@ -91,7 +91,7 @@ namespace NMib
 						m_CacheWindows[iWindow] = nullptr;
 					}
 				}
-				UnregisterClassA("MalterlibCrashDumpWindowCache", g_DllInstance);
+				UnregisterClassA("MalterlibCrashDumpWindowCache", g_pDllInstanceHandle);
 
 				m_CrashDumpUserNotifyFormat_CustomMessage.f_Clear();
 				m_CrashDumpUserNotifyFormat_CanContinueMessage.f_Clear();
@@ -108,7 +108,7 @@ namespace NMib
 #if !defined(DMibSanitizerEnabled_Address)
 				if (!g_bIsDll)
 				{
-					m_pPrevExceptionFilter = SetUnhandledExceptionFilter(&fsp_UnhandledException);
+					m_fPrevExceptionFilter = SetUnhandledExceptionFilter(&fsp_UnhandledException);
 					NSys::fg_Windows_ExpectedFilter(&fsp_UnhandledException);
 					f_InstallExceptionFilterCallback(true);
 				}
@@ -185,9 +185,9 @@ namespace NMib
 				return m_StackTrace.f_UndecorateName(_pName, _pDestination, _MaxLen);
 			}
 
-			CStackTraceInfo *CSubSystem_Debug_Platform_Windows::f_AquireStackTraceInfo(CMibCodeAddress _Address)
+			CStackTraceInfo *CSubSystem_Debug_Platform_Windows::f_AquireStackTraceInfo(CMibCodeAddress _pAddress)
 			{
-				return m_StackTrace.f_AquireStackTraceInfo((umint)_Address);
+				return m_StackTrace.f_AquireStackTraceInfo((umint)_pAddress);
 			}
 
 			void CSubSystem_Debug_Platform_Windows::f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
@@ -364,11 +364,11 @@ void NMib::NSys::fg_Debug_GenerateMemoryDump
 	SubSystem.f_GenerateMemoryDump(_Locations, _Sizes);
 }
 
-bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
+bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _pAddress, bool _bCanAllocNonTracked)
 {
 	if (_bCanAllocNonTracked)
 	{
-		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_Address);
+		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_pAddress);
 		if (!pInfo)
 			return false;
 		o_Info = *pInfo;
@@ -379,10 +379,10 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCode
 	return false;
 }
 
-NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _Address)
+NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _pAddress)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
-	return SubSystem.f_AquireStackTraceInfo(_Address);
+	return SubSystem.f_AquireStackTraceInfo(_pAddress);
 }
 
 void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
@@ -483,10 +483,10 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 	return Ret;
 }
 
-void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
+void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NSys::FCrashDumpUserNotify *_fCrashDumpUserNotify)
 {
 	auto &SubSystem = *NMib::NDebug::NPlatform::g_SubSystem_Debug_Platform_Windows;
-	return SubSystem.f_SetCrashDumpUserNotifyFunction(_pCrashDumpUserNotify);
+	return SubSystem.f_SetCrashDumpUserNotifyFunction(_fCrashDumpUserNotify);
 }
 
 void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFormats

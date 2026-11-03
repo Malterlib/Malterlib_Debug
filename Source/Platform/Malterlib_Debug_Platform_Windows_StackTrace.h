@@ -85,10 +85,10 @@ namespace NMib
 				FMiniDumpWriteDump *m_fMiniDumpWriteDump;
 				FUnDecorateSymbolName *m_fUnDecorateSymbolName;
 
-				HMODULE m_DbgHelp;
-				HMODULE m_SymSrv;
+				HMODULE m_pDbgHelp;
+				HMODULE m_pSymSrv;
 				IMAGEHLP_SYMBOL64 *m_pSymbolInfo;
-				HANDLE m_Process;
+				HANDLE m_pProcess;
 
 				bool m_bInitialized;
 				bool m_bInitializedDll;

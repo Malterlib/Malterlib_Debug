@@ -70,15 +70,15 @@ namespace NMib
 				using FGetModuleFileNameExW = DWORD WINAPI (HANDLE _pProcess, HMODULE _pModule, LPWSTR o_pFileName, DWORD _nSize);
 				using FGetProcessImageFileNameW = DWORD WINAPI (HANDLE _pProcess, LPWSTR o_pImageFileName, DWORD _nSize);
 
-				HMODULE Psapi = LoadLibrary(str_utf16("psapi.dll"));
-				if (Psapi)
+				HMODULE pPsapi = LoadLibrary(str_utf16("psapi.dll"));
+				if (pPsapi)
 				{
-					FEnumProcesses *pEnumProcesses = (FEnumProcesses *)GetProcAddress(Psapi, "EnumProcesses");
-					FGetModuleBaseNameW *pGetModuleBaseName = (FGetModuleBaseNameW *)GetProcAddress(Psapi, "GetModuleBaseNameW");
-					FGetModuleFileNameExW *pGetModuleFileNameEx = (FGetModuleFileNameExW *)GetProcAddress(Psapi, "GetModuleFileNameExW");
-					FGetProcessImageFileNameW *pGetProcessImageFileName = (FGetProcessImageFileNameW *)GetProcAddress(Psapi, "GetProcessImageFileNameW");
+					FEnumProcesses *fEnumProcesses = (FEnumProcesses *)GetProcAddress(pPsapi, "EnumProcesses");
+					FGetModuleBaseNameW *fGetModuleBaseName = (FGetModuleBaseNameW *)GetProcAddress(pPsapi, "GetModuleBaseNameW");
+					FGetModuleFileNameExW *fGetModuleFileNameEx = (FGetModuleFileNameExW *)GetProcAddress(pPsapi, "GetModuleFileNameExW");
+					FGetProcessImageFileNameW *fGetProcessImageFileName = (FGetProcessImageFileNameW *)GetProcAddress(pPsapi, "GetProcessImageFileNameW");
 
-					if (pEnumProcesses)
+					if (fEnumProcesses)
 					{
 						NStr::CStrNonTracked Ret = "\r\n\r\nDump of GDI and User Objects\r\n\r\n";
 						ch8 const *pFormatStr = "{sj128,a-}{sj18,a-}{sj18,a-}\r\n";
@@ -91,43 +91,43 @@ namespace NMib
 						uint32 nTotalUser = 0;
 
 						DWORD nEnum;
-						if (pEnumProcesses(ProcessIDs.f_GetArray(), 65536, &nEnum))
+						if (fEnumProcesses(ProcessIDs.f_GetArray(), 65536, &nEnum))
 						{
 							for (umint iProcess = 0; iProcess < nEnum; ++iProcess)
 							{
-								HANDLE Process = OpenProcess(PROCESS_ALL_ACCESS, false, ProcessIDs[iProcess]);
-								if (Process)
+								HANDLE pProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ProcessIDs[iProcess]);
+								if (pProcess)
 								{
-									uint32 nGDI = GetGuiResources(Process, GR_GDIOBJECTS);
-									uint32 nUser = GetGuiResources(Process, GR_USEROBJECTS);
+									uint32 nGDI = GetGuiResources(pProcess, GR_GDIOBJECTS);
+									uint32 nUser = GetGuiResources(pProcess, GR_USEROBJECTS);
 
 									nTotalGDI += nGDI;
 									nTotalUser += nUser;
 
 									NStr::CWStrNonTracked BaseName;
 #if 1
-									if (pGetProcessImageFileName)
-										pGetProcessImageFileName(Process, BaseName.f_GetStr(1024), 1024);
+									if (fGetProcessImageFileName)
+										fGetProcessImageFileName(pProcess, BaseName.f_GetStr(1024), 1024);
 									else
 #endif
-										if (pGetModuleFileNameEx)
-											pGetModuleFileNameEx(Process, nullptr, BaseName.f_GetStr(1024), 1024);
-										else if (pGetModuleBaseName)
-											pGetModuleBaseName(Process, nullptr, BaseName.f_GetStr(1024), 1024);
+										if (fGetModuleFileNameEx)
+											fGetModuleFileNameEx(pProcess, nullptr, BaseName.f_GetStr(1024), 1024);
+										else if (fGetModuleBaseName)
+											fGetModuleBaseName(pProcess, nullptr, BaseName.f_GetStr(1024), 1024);
 
 									Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << BaseName << nGDI << nUser;
 
-									CloseHandle(Process);
+									CloseHandle(pProcess);
 								}
 							}
 						}
-						FreeLibrary(Psapi);
+						FreeLibrary(pPsapi);
 						Ret += "\r\n";
 						Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Total" << nTotalGDI << nTotalUser;
 						Ret += "\r\n";
 						return Ret;
 					}
-					FreeLibrary(Psapi);
+					FreeLibrary(pPsapi);
 				}
 
 				return "";
@@ -135,29 +135,29 @@ namespace NMib
 
 			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::f_DumpModules()
 			{
-				HANDLE Process = GetCurrentProcess();
+				HANDLE pProcess = GetCurrentProcess();
 				NContainer::TCVector<HMODULE, NMemory::CAllocator_NonTrackedHeap> Modules;
 				DWORD NeededBytes = 0;
-				EnumProcessModules(Process, 0, 0, &NeededBytes);
+				EnumProcessModules(pProcess, 0, 0, &NeededBytes);
 				Modules.f_SetLen((NeededBytes * 2) / sizeof(HMODULE));
 				NStr::CStrNonTracked Ret = "\r\n\r\nDump of Process modules\r\n\r\n";
 				ch8 const *pFormatStr = "{sj128,a-}{sj19,a-}{sj19,a-}{sj19,a-}\r\n";
 				Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Module" << "Start" << "End" << "Size";
-				if (EnumProcessModules(Process, Modules.f_GetArray(), Modules.f_GetLen() * sizeof(HMODULE), &NeededBytes))
+				if (EnumProcessModules(pProcess, Modules.f_GetArray(), Modules.f_GetLen() * sizeof(HMODULE), &NeededBytes))
 				{
 					umint nModules = NeededBytes / sizeof(HMODULE);
 					for (umint iModule = 0; iModule < nModules; ++iModule)
 					{
-						HMODULE Module = Modules[iModule];
+						HMODULE pModule = Modules[iModule];
 						NStr::CWStrNonTracked ModuleName;
-						if (GetModuleFileNameEx(Process, Module, ModuleName.f_GetStr(1024), 1024))
+						if (GetModuleFileNameEx(pProcess, pModule, ModuleName.f_GetStr(1024), 1024))
 							ModuleName.f_SetModified();
 						else
 							ModuleName.f_Clear();
 
 						MODULEINFO ModuleInfo;
 
-						if (GetModuleInformation(Process, Module, &ModuleInfo, sizeof(ModuleInfo)))
+						if (GetModuleInformation(pProcess, pModule, &ModuleInfo, sizeof(ModuleInfo)))
 						{
 							Ret
 								+= NStr::CStrNonTracked::CFormat(pFormatStr)
@@ -299,7 +299,7 @@ namespace NMib
 											(
 												!SubSystem.m_StackTrace.m_fMiniDumpWriteDump
 												(
-													SubSystem.m_StackTrace.m_Process
+													SubSystem.m_StackTrace.m_pProcess
 													, GetCurrentProcessId()
 													, File.f_GetOSFile()
 													, DumpType
@@ -341,7 +341,7 @@ namespace NMib
 											(
 												!SubSystem.m_StackTrace.m_fMiniDumpWriteDump
 												(
-													SubSystem.m_StackTrace.m_Process
+													SubSystem.m_StackTrace.m_pProcess
 													, GetCurrentProcessId()
 													, File.f_GetOSFile()
 													, DumpType
@@ -707,6 +707,7 @@ namespace NMib
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
 						{
+							// NOLINTNEXTLINE(malterlib-conceptual-prefix): FLOATING_SAVE_AREA is a struct, which the check takes for a function type by its name
 							FLOATING_SAVE_AREA &FloatSaveArea = _pExceptionInfo->ContextRecord->FloatSave;
 
 							ExceptionInfo += NStr::CStrNonTracked::CFormat
@@ -1090,8 +1091,8 @@ namespace NMib
 
 							if (_bDisplayGUI)
 							{
-								if (SubSystem.m_pCrashDumpUserNotifyFunction && !NMib::NSys::fg_ConsoleErrorOutputValid())
-									bContinue = (*(SubSystem.m_pCrashDumpUserNotifyFunction))(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, bCanContinue);
+								if (SubSystem.m_fCrashDumpUserNotifyFunction && !NMib::NSys::fg_ConsoleErrorOutputValid())
+									bContinue = (*(SubSystem.m_fCrashDumpUserNotifyFunction))(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, bCanContinue);
 								else
 									bContinue = fg_DefaultCrashDumpUserNotify(_Message, ProgramName, SupportEmail, FileName, FileNameDumpMini, FileNameDump, FileNameMetadata, bCanContinue);
 							}

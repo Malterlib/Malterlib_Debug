@@ -117,7 +117,7 @@ namespace NMib
 				mutable CSymStr mp_ErrorMessage;
 
 				Elf *mp_pElf;
-				Dwarf_Debug mp_Dwarf;
+				Dwarf_Debug mp_pDwarf;
 
 				NContainer::TCVector<CUnit, NMemory::CAllocator_NonTrackedHeap> mp_Units;
 

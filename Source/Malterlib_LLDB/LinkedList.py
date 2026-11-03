@@ -154,7 +154,12 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 			if not self.fp_ExtractType():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Link.m_pNextPtr')
+			# CDLinkAggregate names its next pointer m_pNextPtr, CDLinkAggregateListNoPrevPtr stores it as an integer named m_NextPtr.
+			self.m_NextName = 'm_pNextPtr'
+			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Link.' + self.m_NextName)
+			if not fg_IsValidSBValue(self.m_ListLink):
+				self.m_NextName = 'm_NextPtr'
+				self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Link.' + self.m_NextName)
 			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
@@ -214,7 +219,7 @@ class CSynthProvider_TCDLinkListAggregate(CSynthProvider_Container):
 		return fg_CreateDynamicValue(self.m_ValueObject, _Name, _pNodePointer - self.m_Offset, self.m_DataType)
 
 	def fp_GetNext(self, _pNode):
-		pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr')
+		pNext = _pNode.GetValueForExpressionPath('.' + self.m_NextName)
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
 
@@ -341,7 +346,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 			if not self.fp_ExtractType2():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_List.m_Link.m_pNextPtr')
+			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_List.m_Link.m_NextPtr')
 			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
@@ -418,7 +423,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 		return fg_CreateDynamicValue(self.m_ValueObject, _Name, MemberAddress, self.m_ValueType)
 
 	def fp_GetNext(self, _pNode):
-		pNext = _pNode.GetValueForExpressionPath('.m_pNextPtr')
+		pNext = _pNode.GetValueForExpressionPath('.m_NextPtr')
 		pNextPointer = self.fp_GetNodePointer(pNext)
 		return self.fp_GetNode(pNextPointer)
 

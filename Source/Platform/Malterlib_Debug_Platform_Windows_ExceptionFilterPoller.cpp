@@ -19,6 +19,7 @@ namespace NMib
 		{
 			// NOLINTBEGIN(malterlib-type-naming): the names in the Windows headers
 			// NOLINTBEGIN(malterlib-variable-naming): the declarations of the Windows SDK, with their names
+			// NOLINTBEGIN(malterlib-conceptual-prefix): the declarations of the Windows SDK, with their names
 			typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
 			{
 				ULONG Flags;                  //Reserved.
@@ -44,6 +45,7 @@ namespace NMib
 			} LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
 
 			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG _NotificationReason, PLDR_DLL_NOTIFICATION_DATA const _pNotificationData, PVOID _pContext);
+			// NOLINTEND(malterlib-conceptual-prefix)
 			// NOLINTEND(malterlib-variable-naming)
 			// NOLINTEND(malterlib-type-naming)
 
@@ -84,18 +86,18 @@ namespace NMib
 					//DMibDTrace("Checking Exception Filter {} {}\r\n", m_pSystem->m_bPollCheckExceptionFilterTimes, Timer);
 					if (m_pSystem->m_bPollCheckExceptionFilterTimes)
 						--m_pSystem->m_bPollCheckExceptionFilterTimes;
-					LPTOP_LEVEL_EXCEPTION_FILTER pTop = SetUnhandledExceptionFilter(&CSubSystem_Debug_Platform_Windows::fsp_UnhandledException);
-					if (pTop != &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException)
+					LPTOP_LEVEL_EXCEPTION_FILTER fTop = SetUnhandledExceptionFilter(&CSubSystem_Debug_Platform_Windows::fsp_UnhandledException);
+					if (fTop != &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException)
 					{
 						DMibDTrace
 							(
 								"ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: ATTENTION: Unhandled exception filter was lost({} != {}): {}\n"
-								, pTop
+								, fTop
 								, &CSubSystem_Debug_Platform_Windows::fsp_UnhandledException
 								, Timer
 							)
 						;
-						//m_pSystem->m_pPrevExceptionFilter = pTop;
+						//m_pSystem->m_fPrevExceptionFilter = fTop;
 					}
 				}
 			}
@@ -124,17 +126,17 @@ namespace NMib
 				m_pDllNotificationCookie = nullptr;
 				if (_bDoInstall)
 				{
-					HMODULE pNTDll = NLocal::g_NtDll;
+					HMODULE pNTDll = NLocal::g_pNtDll;
 					if (pNTDll)
 					{
-						NTSTATUS (NTAPI *pLdrRegisterDllNotification)(ULONG _Flags, PLDR_DLL_NOTIFICATION_FUNCTION _fNotification, PVOID _pContext, PVOID *o_pCookie);
+						NTSTATUS (NTAPI *fLdrRegisterDllNotification)(ULONG _Flags, PLDR_DLL_NOTIFICATION_FUNCTION _fNotification, PVOID _pContext, PVOID *o_pCookie);
 
-						(FARPROC &)pLdrRegisterDllNotification = GetProcAddress(pNTDll, "LdrRegisterDllNotification");
+						(FARPROC &)fLdrRegisterDllNotification = GetProcAddress(pNTDll, "LdrRegisterDllNotification");
 
-						if (pLdrRegisterDllNotification)
+						if (fLdrRegisterDllNotification)
 						{
 							m_bPollCheckExceptionFilter = false;
-							pLdrRegisterDllNotification(0, fsg_DllLoadedCallback, this, &m_pDllNotificationCookie);
+							fLdrRegisterDllNotification(0, fsg_DllLoadedCallback, this, &m_pDllNotificationCookie);
 						}
 					}
 
@@ -151,16 +153,16 @@ namespace NMib
 				m_ExceptionFilterPoller.f_Stop();
 				if (m_pDllNotificationCookie)
 				{
-					HMODULE pNTDll = NLocal::g_NtDll;
+					HMODULE pNTDll = NLocal::g_pNtDll;
 					if (pNTDll)
 					{
-						NTSTATUS (NTAPI *pLdrUnregisterDllNotification)(PVOID _pCookie);
+						NTSTATUS (NTAPI *fLdrUnregisterDllNotification)(PVOID _pCookie);
 
-						(FARPROC &)pLdrUnregisterDllNotification = GetProcAddress(pNTDll, "LdrUnregisterDllNotification");
+						(FARPROC &)fLdrUnregisterDllNotification = GetProcAddress(pNTDll, "LdrUnregisterDllNotification");
 
-						if (pLdrUnregisterDllNotification)
+						if (fLdrUnregisterDllNotification)
 						{
-							pLdrUnregisterDllNotification(m_pDllNotificationCookie);
+							fLdrUnregisterDllNotification(m_pDllNotificationCookie);
 							m_pDllNotificationCookie = nullptr;
 						}
 					}

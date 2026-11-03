@@ -91,11 +91,11 @@ void NMib::NSys::fg_Debug_GenerateMemoryDump
 // Libunwind may buy us some more info, but the output from that (even Apple's variant) is pretty
 // much the same as from dladdr as far as I can tell.
 
-bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _Address, bool _bCanAllocNonTracked)
+bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCodeAddress _pAddress, bool _bCanAllocNonTracked)
 {
 	if (_bCanAllocNonTracked)
 	{
-		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_Address);
+		auto pInfo = NSys::fg_Debug_AquireStackTraceInfo(_pAddress);
 		if (!pInfo)
 			return false;
 		o_Info = *pInfo;
@@ -106,7 +106,7 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCode
 	o_Info.m_pContext = (void *)1;
 
 	Dl_info DLInfo;
-	int DLResult = dladdr((void const *)_Address, &DLInfo);
+	int DLResult = dladdr((void const *)_pAddress, &DLInfo);
 
 	if (DLResult == 0)
 		return false;
@@ -143,11 +143,11 @@ extern "C"
 }
 #endif
 
-NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _Address)
+NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress _pAddress)
 {
 	auto &Symbols = NMib::NDebug::NPlatform::fg_GetSymbols();
 
-	auto &Cache = Symbols.f_GetCache((umint)_Address);
+	auto &Cache = Symbols.f_GetCache((umint)_pAddress);
 
 	if (Cache.m_bValidCache)
 	{
@@ -169,11 +169,11 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 	Cache.m_bValidCache = true;
 
 	Dl_info DLInfo;
-	int DLResult = dladdr((void const *)_Address, &DLInfo);
+	int DLResult = dladdr((void const *)_pAddress, &DLInfo);
 
 	NMib::NDebug::NPlatform::CAddressInfo AddrInfo;
 
-	if (Symbols.f_Lookup((umint)_Address, AddrInfo))
+	if (Symbols.f_Lookup((umint)_pAddress, AddrInfo))
 	{
 		if (DLResult)
 		{
@@ -258,7 +258,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 	return EDebugCheckFailureAction_NotHandled;
 }
 
-void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_pCrashDumpUserNotify)
+void NMib::NSys::fg_Debug_SetCrashDumpUserNotifyFunction(NMib::NSys::FCrashDumpUserNotify *_fCrashDumpUserNotify)
 {
 }
 

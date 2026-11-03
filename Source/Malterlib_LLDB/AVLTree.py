@@ -135,11 +135,11 @@ def fg_GetAVLTreeOffset(_TreeType, _DataType, _NodeType):
 
 class CSynthProvider_TCAVLTreeAggregate_Node:
 	def fp_Left(self):
-		Child = self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(0).GetValueAsUnsigned(0)
+		Child = self.m_Node.GetChildMemberWithName('m_Next').GetChildAtIndex(0).GetValueAsUnsigned(0)
 		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((Child >> 2) << 2).AddressOf(), self.m_NodeType)
 
 	def fp_Right(self):
-		Child = self.m_Node.GetChildMemberWithName('m_pNext').GetChildAtIndex(1).GetValueAsUnsigned(0)
+		Child = self.m_Node.GetChildMemberWithName('m_Next').GetChildAtIndex(1).GetValueAsUnsigned(0)
 		return CSynthProvider_TCAVLTreeAggregate_Node(self.fp_GetNode((Child >> 2) << 2).AddressOf(), self.m_NodeType)
 
 	def fp_GetNode(self, _pNodePointer):
@@ -298,7 +298,7 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_pStack = self.m_ValueObject.GetChildMemberWithName('mp_pStack')
+			self.m_pStack = self.m_ValueObject.GetChildMemberWithName('mp_Stack')
 			self.m_iStack = self.m_ValueObject.GetChildMemberWithName('mp_iStack')
 			if not fg_IsValidSBValue(self.m_iStack):
 				return
@@ -458,7 +458,7 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_Iter = self.m_ValueObject.GetChildMemberWithName('mp_Iter')
-			self.m_pStack = self.m_Iter.GetChildMemberWithName('mp_pStack')
+			self.m_pStack = self.m_Iter.GetChildMemberWithName('mp_Stack')
 			self.m_iStack = self.m_Iter.GetChildMemberWithName('mp_iStack')
 			if not fg_IsValidSBValue(self.m_iStack):
 				return
