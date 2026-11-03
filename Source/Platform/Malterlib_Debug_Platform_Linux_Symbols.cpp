@@ -462,7 +462,7 @@ namespace NMib
 					(
 						[](CFunction const &_Left, CFunction const &_Right)
 						{
-							return _Left.m_LowPC <=> _Right.m_HighPC;
+							return _Left.m_LowPC <=> _Right.m_LowPC;
 						}
 					)
 				;
