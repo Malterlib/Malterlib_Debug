@@ -20,7 +20,7 @@ class CSynthProvider_TCRegistry(CSynthProvider_Common):
 			self.m_Data = None
 			self.m_Name = None
 			self.m_NumExtraChildren = 0
-			self.m_Name = fg_ChildPath(self.m_ValueObject, 'mp_Key.m_Name')
+			self.m_Name = fg_ChildPath(self.m_ValueObject, 'mp_Key.mp_Name')
 			if not fg_IsValidSBValue(self.m_Name):
 				return
 			self.m_Data = fg_ChildPath(self.m_ValueObject, 'mp_Data')
@@ -72,7 +72,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
 
-		ValueName = fg_ChildPath(_Value, 'mp_Key.m_Name')
+		ValueName = fg_ChildPath(_Value, 'mp_Key.mp_Name')
 		if not fg_IsValidSBValue(ValueName):
 			return None
 		ValueData = fg_ChildPath(_Value, 'mp_Data')

@@ -18,6 +18,7 @@ namespace NMib
 		namespace NPlatform
 		{
 			// NOLINTBEGIN(malterlib-type-naming): the names in the Windows headers
+			// NOLINTBEGIN(malterlib-variable-naming): the declarations of the Windows SDK, with their names
 			typedef struct _LDR_DLL_LOADED_NOTIFICATION_DATA
 			{
 				ULONG Flags;                  //Reserved.
@@ -43,6 +44,7 @@ namespace NMib
 			} LDR_DLL_NOTIFICATION_DATA, *PLDR_DLL_NOTIFICATION_DATA;
 
 			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG _NotificationReason, PLDR_DLL_NOTIFICATION_DATA const _pNotificationData, PVOID _pContext);
+			// NOLINTEND(malterlib-variable-naming)
 			// NOLINTEND(malterlib-type-naming)
 
 			static VOID NTAPI fsg_DllLoadedCallback(ULONG _Reason, PLDR_DLL_NOTIFICATION_DATA const _pNotificationData, PVOID _pContext)
@@ -122,7 +124,7 @@ namespace NMib
 				m_pDllNotificationCookie = nullptr;
 				if (_bDoInstall)
 				{
-					HMODULE pNTDll = NLocal::g_hNtDll;
+					HMODULE pNTDll = NLocal::g_NtDll;
 					if (pNTDll)
 					{
 						NTSTATUS (NTAPI *pLdrRegisterDllNotification)(ULONG _Flags, PLDR_DLL_NOTIFICATION_FUNCTION _fNotification, PVOID _pContext, PVOID *o_pCookie);
@@ -149,7 +151,7 @@ namespace NMib
 				m_ExceptionFilterPoller.f_Stop();
 				if (m_pDllNotificationCookie)
 				{
-					HMODULE pNTDll = NLocal::g_hNtDll;
+					HMODULE pNTDll = NLocal::g_NtDll;
 					if (pNTDll)
 					{
 						NTSTATUS (NTAPI *pLdrUnregisterDllNotification)(PVOID _pCookie);

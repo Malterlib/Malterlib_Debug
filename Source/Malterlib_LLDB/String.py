@@ -254,7 +254,7 @@ def fg_SummaryProvider_Str_Fixed_ch8(_Value, dict):
 
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value)
-		lData = _Value.GetChildMemberWithName('m_lData')
+		lData = _Value.GetChildMemberWithName('m_Data')
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch8_Raw(lData.GetData(), Len, Type)
 		if ValueType.IsPointerType():
@@ -272,7 +272,7 @@ def fg_SummaryProvider_Str_Fixed_ch16(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned())
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value)
-		lData = _Value.GetChildMemberWithName('m_lData')
+		lData = _Value.GetChildMemberWithName('m_Data')
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch16_Raw(lData.GetData(), Len, Type)
 		if ValueType.IsPointerType():
@@ -290,7 +290,7 @@ def fg_SummaryProvider_Str_Fixed_ch32(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned())
 		Len = fg_BoundStrLen(_Value.GetChildMemberWithName('m_Len').GetValueAsUnsigned())
 		Type = fg_GetStringType(_Value, 1)
-		lData = _Value.GetChildMemberWithName('m_lData')
+		lData = _Value.GetChildMemberWithName('m_Data')
 		if fg_RawSummary():
 			return fg_MakeStringFromData_ch32_Raw(lData.GetData(), Len, Type)
 		if ValueType.IsPointerType():

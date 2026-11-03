@@ -298,8 +298,8 @@ class CSynthProvider_TCAVLTreeAggregate_CIterator(CSynthProvider_Common):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_pStack = self.m_ValueObject.GetChildMemberWithName('m_pStack')
-			self.m_iStack = self.m_ValueObject.GetChildMemberWithName('m_iStack')
+			self.m_pStack = self.m_ValueObject.GetChildMemberWithName('mp_pStack')
+			self.m_iStack = self.m_ValueObject.GetChildMemberWithName('mp_iStack')
 			if not fg_IsValidSBValue(self.m_iStack):
 				return
 			if not self.fp_ExtractType():
@@ -458,8 +458,8 @@ class CSynthProvider_TCMap_CIterator(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_Iter = self.m_ValueObject.GetChildMemberWithName('mp_Iter')
-			self.m_pStack = self.m_Iter.GetChildMemberWithName('m_pStack')
-			self.m_iStack = self.m_Iter.GetChildMemberWithName('m_iStack')
+			self.m_pStack = self.m_Iter.GetChildMemberWithName('mp_pStack')
+			self.m_iStack = self.m_Iter.GetChildMemberWithName('mp_iStack')
 			if not fg_IsValidSBValue(self.m_iStack):
 				return
 			if not self.fp_ExtractType():

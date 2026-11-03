@@ -6,14 +6,14 @@ from .Common import *
 from .StringHelpers import *
 
 def fg_ActorGetInternalActorHolder(_Value):
-	InternalActor = _Value.GetNonSyntheticValue().GetChildMemberWithName('m_pInternalActor')
+	InternalActor = _Value.GetNonSyntheticValue().GetChildMemberWithName('mp_pInternalActor')
 	if not fg_IsValidSBValue(InternalActor):
 		return None
 
 	if InternalActor.GetType().IsPointerType():
 		return InternalActor
 
-	InternalActorHolder = fg_ChildPath(InternalActor, 'm_Data.m_pPointTo')
+	InternalActorHolder = fg_ChildPath(InternalActor, 'mp_Data.m_pPointTo')
 	if fg_IsValidSBValue(InternalActorHolder):
 		return InternalActorHolder
 

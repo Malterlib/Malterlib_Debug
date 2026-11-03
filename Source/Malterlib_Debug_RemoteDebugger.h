@@ -8,7 +8,7 @@ namespace NMib::NDebug::NRemoteDebugger
 #	define DMibRemoteDebugger_Enabled 0
 #endif
 
-	static uint64 const gc_nStackLevels = 64;
+	static constexpr uint64 gc_nStackLevels = 64;
 
 #if DMibRemoteDebugger_Enabled
 	enum EFeature

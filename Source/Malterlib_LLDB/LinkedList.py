@@ -341,7 +341,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 			if not self.fp_ExtractType2():
 				return
 			self.m_DataSize = self.m_DataType.GetByteSize()
-			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'm_Data.m_List.m_Link.m_pNextPtr')
+			self.m_ListLink = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_List.m_Link.m_pNextPtr')
 			self.m_pThisLink = fg_GetAddressOf(self.m_ListLink)
 			self.m_First = self.fp_GetNodePointer(self.m_ListLink)
 			self.m_pFirst = self.fp_GetNode(self.m_First)
@@ -368,7 +368,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 
 	def fp_ExtractType(self):
 
-		ContainerType = fg_ChildPath(self.m_ValueObject, 'm_Data.m_List').GetType()
+		ContainerType = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_List').GetType()
 		ContainerType = fg_GetInheritedType(ContainerType, "NMib::NIntrusive::TCDLinkListAggregate")
 		if not ContainerType.IsValid():
 			return False
@@ -414,7 +414,7 @@ class CSynthProvider_TCLinkedList(CSynthProvider_Container):
 		if _pNodePointer < self.m_Offset:
 			return None
 		Data = self.m_ValueObject.CreateValueFromAddress('[TempData]', _pNodePointer - self.m_Offset, self.m_DataType)
-		MemberAddress = fg_GetAddressOf(Data.GetChildMemberWithName('m_Object'))
+		MemberAddress = fg_GetAddressOf(Data.GetChildMemberWithName('mp_Object'))
 		return fg_CreateDynamicValue(self.m_ValueObject, _Name, MemberAddress, self.m_ValueType)
 
 	def fp_GetNext(self, _pNode):
@@ -481,13 +481,13 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 				return
 			if not self.fp_ExtractType2():
 				return
-			self.m_Current = fg_ChildPath(self.m_ValueObject, 'm_Iter.m_pCurrent')
+			self.m_Current = fg_ChildPath(self.m_ValueObject, 'mp_Iter.m_pCurrent')
 			CurrentValue = self.m_Current.GetValueAsUnsigned()
 			self.m_bEmpty = True
 			if CurrentValue != 0 and CurrentValue >= self.m_Offset:
 				self.m_bEmpty = False
 				Data = self.m_ValueObject.CreateValueFromAddress('[TempData]', self.m_Current.GetValueAsUnsigned() - self.m_Offset, self.m_DataType)
-				MemberAddress = fg_GetAddressOf(Data.GetChildMemberWithName('m_Object'))
+				MemberAddress = fg_GetAddressOf(Data.GetChildMemberWithName('mp_Object'))
 				self.m_Value = fg_CreateDynamicValue(self.m_ValueObject, '[Value]', MemberAddress, self.m_ValueType)
 				self.m_NumExtraChildren = self.m_Value.GetNumChildren();
 			self.m_bValid = True
@@ -501,9 +501,9 @@ class CSynthProvider_TCLinkedList_CIterator(CSynthProvider_Common):
 
 		ValueType = fg_GetValueType(self.m_ValueObjectDeref)
 
-		Iter = fg_FindRawChild(self.m_ValueObject, 'm_Iter')
+		Iter = fg_FindRawChild(self.m_ValueObject, 'mp_Iter')
 		if not fg_IsValidSBValue(Iter):
-			Iter = self.m_ValueObject.GetChildMemberWithName('m_Iter')
+			Iter = self.m_ValueObject.GetChildMemberWithName('mp_Iter')
 		ListTypes = fg_GetDLinkListTypes(fg_GetValueType(Iter))
 		if ListTypes is None:
 			return False

@@ -129,7 +129,7 @@ def fg_SummaryProvider_TCFloat(_Value, dict):
 			return hex(_Value.GetValueAsUnsigned())
 
 		ValueObject = fg_GetDisplayValue(_Value)
-		ImplicitData = ValueObject.GetChildMemberWithName("m_DataStorage")
+		ImplicitData = ValueObject.GetChildMemberWithName("mp_DataStorage")
 		if not fg_IsValidSBValue(ImplicitData):
 			return None
 

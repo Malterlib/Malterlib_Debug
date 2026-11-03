@@ -76,19 +76,19 @@ namespace NMib
 
 				NThread::CMutual m_Lock;
 
-				FSymInitialize *SymInitialize;
-				FSymCleanup *SymCleanup;
-				FSymRefreshModuleList *SymRefreshModuleList;
-				FSymGetSymFromAddr64 *SymGetSymFromAddr64;
-				FSymGetLineFromAddr64 *SymGetLineFromAddr64;
-				FSymGetModuleInfo64 *SymGetModuleInfo64;
-				FMiniDumpWriteDump *MiniDumpWriteDump;
-				FUnDecorateSymbolName *UnDecorateSymbolName;
+				FSymInitialize *m_fSymInitialize;
+				FSymCleanup *m_fSymCleanup;
+				FSymRefreshModuleList *m_fSymRefreshModuleList;
+				FSymGetSymFromAddr64 *m_fSymGetSymFromAddr64;
+				FSymGetLineFromAddr64 *m_fSymGetLineFromAddr64;
+				FSymGetModuleInfo64 *m_fSymGetModuleInfo64;
+				FMiniDumpWriteDump *m_fMiniDumpWriteDump;
+				FUnDecorateSymbolName *m_fUnDecorateSymbolName;
 
-				HMODULE m_hDbgHelp;
-				HMODULE m_hSymSrv;
+				HMODULE m_DbgHelp;
+				HMODULE m_SymSrv;
 				IMAGEHLP_SYMBOL64 *m_pSymbolInfo;
-				HANDLE m_hProcess;
+				HANDLE m_Process;
 
 				bool m_bInitialized;
 				bool m_bInitializedDll;

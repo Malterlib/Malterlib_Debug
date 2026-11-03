@@ -70,13 +70,13 @@ namespace NMib
 				using FGetModuleFileNameExW = DWORD WINAPI (HANDLE _pProcess, HMODULE _pModule, LPWSTR o_pFileName, DWORD _nSize);
 				using FGetProcessImageFileNameW = DWORD WINAPI (HANDLE _pProcess, LPWSTR o_pImageFileName, DWORD _nSize);
 
-				HMODULE hPSAPI = LoadLibrary(str_utf16("psapi.dll"));
-				if (hPSAPI)
+				HMODULE Psapi = LoadLibrary(str_utf16("psapi.dll"));
+				if (Psapi)
 				{
-					FEnumProcesses *pEnumProcesses = (FEnumProcesses *)GetProcAddress(hPSAPI, "EnumProcesses");
-					FGetModuleBaseNameW *pGetModuleBaseName = (FGetModuleBaseNameW *)GetProcAddress(hPSAPI, "GetModuleBaseNameW");
-					FGetModuleFileNameExW *pGetModuleFileNameEx = (FGetModuleFileNameExW *)GetProcAddress(hPSAPI, "GetModuleFileNameExW");
-					FGetProcessImageFileNameW *pGetProcessImageFileName = (FGetProcessImageFileNameW *)GetProcAddress(hPSAPI, "GetProcessImageFileNameW");
+					FEnumProcesses *pEnumProcesses = (FEnumProcesses *)GetProcAddress(Psapi, "EnumProcesses");
+					FGetModuleBaseNameW *pGetModuleBaseName = (FGetModuleBaseNameW *)GetProcAddress(Psapi, "GetModuleBaseNameW");
+					FGetModuleFileNameExW *pGetModuleFileNameEx = (FGetModuleFileNameExW *)GetProcAddress(Psapi, "GetModuleFileNameExW");
+					FGetProcessImageFileNameW *pGetProcessImageFileName = (FGetProcessImageFileNameW *)GetProcAddress(Psapi, "GetProcessImageFileNameW");
 
 					if (pEnumProcesses)
 					{
@@ -93,13 +93,13 @@ namespace NMib
 						DWORD nEnum;
 						if (pEnumProcesses(ProcessIDs.f_GetArray(), 65536, &nEnum))
 						{
-							for (umint i = 0; i < nEnum; ++i)
+							for (umint iProcess = 0; iProcess < nEnum; ++iProcess)
 							{
-								HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ProcessIDs[i]);
-								if (hProcess)
+								HANDLE Process = OpenProcess(PROCESS_ALL_ACCESS, false, ProcessIDs[iProcess]);
+								if (Process)
 								{
-									uint32 nGDI = GetGuiResources(hProcess, GR_GDIOBJECTS);
-									uint32 nUser = GetGuiResources(hProcess, GR_USEROBJECTS);
+									uint32 nGDI = GetGuiResources(Process, GR_GDIOBJECTS);
+									uint32 nUser = GetGuiResources(Process, GR_USEROBJECTS);
 
 									nTotalGDI += nGDI;
 									nTotalUser += nUser;
@@ -107,27 +107,27 @@ namespace NMib
 									NStr::CWStrNonTracked BaseName;
 #if 1
 									if (pGetProcessImageFileName)
-										pGetProcessImageFileName(hProcess, BaseName.f_GetStr(1024), 1024);
+										pGetProcessImageFileName(Process, BaseName.f_GetStr(1024), 1024);
 									else
 #endif
 										if (pGetModuleFileNameEx)
-											pGetModuleFileNameEx(hProcess, nullptr, BaseName.f_GetStr(1024), 1024);
+											pGetModuleFileNameEx(Process, nullptr, BaseName.f_GetStr(1024), 1024);
 										else if (pGetModuleBaseName)
-											pGetModuleBaseName(hProcess, nullptr, BaseName.f_GetStr(1024), 1024);
+											pGetModuleBaseName(Process, nullptr, BaseName.f_GetStr(1024), 1024);
 
 									Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << BaseName << nGDI << nUser;
 
-									CloseHandle(hProcess);
+									CloseHandle(Process);
 								}
 							}
 						}
-						FreeLibrary(hPSAPI);
+						FreeLibrary(Psapi);
 						Ret += "\r\n";
 						Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Total" << nTotalGDI << nTotalUser;
 						Ret += "\r\n";
 						return Ret;
 					}
-					FreeLibrary(hPSAPI);
+					FreeLibrary(Psapi);
 				}
 
 				return "";
@@ -135,29 +135,29 @@ namespace NMib
 
 			NStr::CStrNonTracked CSubSystem_Debug_Platform_Windows::f_DumpModules()
 			{
-				HANDLE hProcess = GetCurrentProcess();
+				HANDLE Process = GetCurrentProcess();
 				NContainer::TCVector<HMODULE, NMemory::CAllocator_NonTrackedHeap> Modules;
 				DWORD NeededBytes = 0;
-				EnumProcessModules(hProcess, 0, 0, &NeededBytes);
+				EnumProcessModules(Process, 0, 0, &NeededBytes);
 				Modules.f_SetLen((NeededBytes * 2) / sizeof(HMODULE));
 				NStr::CStrNonTracked Ret = "\r\n\r\nDump of Process modules\r\n\r\n";
 				ch8 const *pFormatStr = "{sj128,a-}{sj19,a-}{sj19,a-}{sj19,a-}\r\n";
 				Ret += NStr::CStrNonTracked::CFormat(pFormatStr) << "Module" << "Start" << "End" << "Size";
-				if (EnumProcessModules(hProcess, Modules.f_GetArray(), Modules.f_GetLen() * sizeof(HMODULE), &NeededBytes))
+				if (EnumProcessModules(Process, Modules.f_GetArray(), Modules.f_GetLen() * sizeof(HMODULE), &NeededBytes))
 				{
 					umint nModules = NeededBytes / sizeof(HMODULE);
-					for (umint i = 0; i < nModules; ++i)
+					for (umint iModule = 0; iModule < nModules; ++iModule)
 					{
-						HMODULE hModule = Modules[i];
+						HMODULE Module = Modules[iModule];
 						NStr::CWStrNonTracked ModuleName;
-						if (GetModuleFileNameEx(hProcess, hModule, ModuleName.f_GetStr(1024), 1024))
+						if (GetModuleFileNameEx(Process, Module, ModuleName.f_GetStr(1024), 1024))
 							ModuleName.f_SetModified();
 						else
 							ModuleName.f_Clear();
 
 						MODULEINFO ModuleInfo;
 
-						if (GetModuleInformation(hProcess, hModule, &ModuleInfo, sizeof(ModuleInfo)))
+						if (GetModuleInformation(Process, Module, &ModuleInfo, sizeof(ModuleInfo)))
 						{
 							Ret
 								+= NStr::CStrNonTracked::CFormat(pFormatStr)
@@ -188,7 +188,7 @@ namespace NMib
 				auto &SubSystem = fg_Debug_Platfrom_Windows();
 				DMibLock(SubSystem.m_DumpExceptionInfoLock);
 
-				auto fl_GenerateException = [&_Message, &_ExtraLog, _pExceptionInfo, _pGeneratedLogs, _bDisplayGUI](NThread::CThreadObjectNonTracked *_pThread) -> aint
+				auto fGenerateException = [&_Message, &_ExtraLog, _pExceptionInfo, _pGeneratedLogs, _bDisplayGUI](NThread::CThreadObjectNonTracked *_pThread) -> aint
 					{
 						umint nCache = mc_WindowCache;
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
@@ -283,7 +283,7 @@ namespace NMib
 
 							if (bRet)
 							{
-								if (SubSystem.m_StackTrace.MiniDumpWriteDump)
+								if (SubSystem.m_StackTrace.m_fMiniDumpWriteDump)
 								{
 									MINIDUMP_EXCEPTION_INFORMATION Info;
 									Info.ClientPointers = false;
@@ -297,9 +297,9 @@ namespace NMib
 											MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE)(MiniDumpWithHandleData | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData);
 											if
 											(
-												!SubSystem.m_StackTrace.MiniDumpWriteDump
+												!SubSystem.m_StackTrace.m_fMiniDumpWriteDump
 												(
-													SubSystem.m_StackTrace.m_hProcess
+													SubSystem.m_StackTrace.m_Process
 													, GetCurrentProcessId()
 													, File.f_GetOSFile()
 													, DumpType
@@ -339,9 +339,9 @@ namespace NMib
 
 											if
 											(
-												!SubSystem.m_StackTrace.MiniDumpWriteDump
+												!SubSystem.m_StackTrace.m_fMiniDumpWriteDump
 												(
-													SubSystem.m_StackTrace.m_hProcess
+													SubSystem.m_StackTrace.m_Process
 													, GetCurrentProcessId()
 													, File.f_GetOSFile()
 													, DumpType
@@ -1079,12 +1079,12 @@ namespace NMib
 						[[maybe_unused]] bool bContinue = (!_Message.f_IsEmpty() || _pGeneratedLogs != nullptr);
 						if (!bDaemon)
 						{
-							for (umint i = 0; i < nCache; ++i)
+							for (umint iWindow = 0; iWindow < nCache; ++iWindow)
 							{
-								if (SubSystem.m_CacheWindows[i])
+								if (SubSystem.m_CacheWindows[iWindow])
 								{
-									DestroyWindow(SubSystem.m_CacheWindows[i]);
-									SubSystem.m_CacheWindows[i] = nullptr;
+									DestroyWindow(SubSystem.m_CacheWindows[iWindow]);
+									SubSystem.m_CacheWindows[iWindow] = nullptr;
 								}
 							}
 
@@ -1126,13 +1126,13 @@ namespace NMib
 				if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				{
 					// If Dll lock is held we will get a deadlock here
-					return fl_GenerateException(nullptr);
+					return fGenerateException(nullptr);
 				}
 				else
 				{
 					NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread
 						(
-							fl_GenerateException
+							fGenerateException
 							, "DumpExceptionsThread"
 						)
 					;

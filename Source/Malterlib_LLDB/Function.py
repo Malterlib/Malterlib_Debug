@@ -127,6 +127,10 @@ def fg_FunctionVTablePointer(_ValueObject):
 			return fg_FunctionFindChild(Imp.Dereference(), "m_pVTable", 2)
 		return None
 
+	VTablePointer = fg_FunctionFindChild(_ValueObject, "mp_pVTable")
+	if fg_IsValidSBValue(VTablePointer):
+		return VTablePointer
+
 	return fg_FunctionFindChild(_ValueObject, "m_pVTable")
 
 def fg_FunctionVTable(_ValueObject):
@@ -153,7 +157,7 @@ def fg_FunctionVTableAddress(_ValueObject):
 
 def fg_FunctionSmallImp(_ValueObject):
 	ValueObject = _ValueObject.GetNonSyntheticValue()
-	Imp = ValueObject.GetValueForExpressionPath(".m_Data.m_pImp")
+	Imp = ValueObject.GetValueForExpressionPath(".mp_Data.m_pImp")
 	if fg_IsValidSBValue(Imp):
 		return Imp
 
@@ -239,6 +243,8 @@ def fg_FunctionCallAddressFromVTableAddress(_ValueObject, _VTableAddress):
 
 def fg_FunctionCallAddress(_ValueObject):
 	Call = fg_FunctionFindChild(_ValueObject, "m_pCall")
+	if not fg_IsValidSBValue(Call):
+		Call = fg_FunctionFindChild(_ValueObject, "mp_pCall")
 	if fg_IsValidSBValue(Call):
 		AddressValue = fg_GetValueAsUnsigned(Call)
 		if AddressValue != 0:
@@ -661,6 +667,9 @@ def fg_FunctionStorage(_ValueObject, _TypeName):
 		return fg_FunctionFindChild(_ValueObject, "m_pImpl")
 	if _TypeName.startswith("NMib::NFunction::TCFunctionSmall<"):
 		return fg_FunctionSmallImp(_ValueObject)
+	Storage = fg_FunctionFindChild(_ValueObject, "mp_Storage")
+	if fg_IsValidSBValue(Storage):
+		return Storage
 	return fg_FunctionFindChild(_ValueObject, "m_Storage")
 
 def fg_SummaryProvider_TCFunction(_Value, dict):

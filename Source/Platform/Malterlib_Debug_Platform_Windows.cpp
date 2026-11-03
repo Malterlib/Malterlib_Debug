@@ -49,11 +49,11 @@ namespace NMib
 				memset(&WndClass, 0, sizeof(WndClass));
 				WndClass.lpszClassName = "MalterlibCrashDumpWindowCache";
 				WndClass.lpfnWndProc = fsg_WindowCacheProc;
-				WndClass.hInstance = g_hDllInstance;
+				WndClass.hInstance = g_DllInstance;
 				RegisterClassA(&WndClass);
 
-				for (umint i = 0; i < mc_WindowCache; ++i)
-					m_CacheWindows[i] = nullptr;
+				for (umint iWindow = 0; iWindow < mc_WindowCache; ++iWindow)
+					m_CacheWindows[iWindow] = nullptr;
 
 				auto BuildMetadata = NSys::fg_GetBuildMetadata();
 
@@ -83,15 +83,15 @@ namespace NMib
 			CSubSystem_Debug_Platform_Windows::~CSubSystem_Debug_Platform_Windows()
 			{
 				f_UninstallExceptionFilterCallback();
-				for (umint i = 0; i < mc_WindowCache; ++i)
+				for (umint iWindow = 0; iWindow < mc_WindowCache; ++iWindow)
 				{
-					if (m_CacheWindows[i])
+					if (m_CacheWindows[iWindow])
 					{
-						DestroyWindow(m_CacheWindows[i]);
-						m_CacheWindows[i] = nullptr;
+						DestroyWindow(m_CacheWindows[iWindow]);
+						m_CacheWindows[iWindow] = nullptr;
 					}
 				}
-				UnregisterClassA("MalterlibCrashDumpWindowCache", g_hDllInstance);
+				UnregisterClassA("MalterlibCrashDumpWindowCache", g_DllInstance);
 
 				m_CrashDumpUserNotifyFormat_CustomMessage.f_Clear();
 				m_CrashDumpUserNotifyFormat_CanContinueMessage.f_Clear();
@@ -399,7 +399,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 	DMibDeadlockDetectorPause;
 
 	NMib::EDebugCheckFailureAction Ret;
-	auto fl_DisplayMessage = [&](NThread::CThreadObjectNonTracked *_pThread) -> aint
+	auto fDisplayMessage = [&](NThread::CThreadObjectNonTracked *_pThread) -> aint
 		{
 #if defined(DDebug) && 0
 			// _CrtDbgReportW uses memory manager so it's not optimal to use this
@@ -469,12 +469,12 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 	;
 
 	if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
-		fl_DisplayMessage(nullptr);
+		fDisplayMessage(nullptr);
 	else
 	{
 		NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMib::NMemory::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread
 			(
-				fl_DisplayMessage
+				fDisplayMessage
 				, "Report assert display message thread"
 			)
 		;

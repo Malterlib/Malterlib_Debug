@@ -30,7 +30,7 @@ class CSynthProvider_Pointer(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_NumExtraChildren = 0
-			self.m_Value = self.m_ValueObject.GetChildMemberWithName('m_pPointTo')
+			self.m_Value = self.m_ValueObject.GetChildMemberWithName('mp_pPointTo')
 			self.m_DataType = self.m_Value.GetType()
 			fg_PrecacheType(self.m_DataType)
 			if self.m_Value.GetValueAsUnsigned() != 0:
@@ -67,7 +67,7 @@ class CSynthProvider_TCUniquePointer(CSynthProvider_Common):
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
 			self.m_NumExtraChildren = 0
-			self.m_Value = fg_ChildPath(self.m_ValueObject, 'm_Data.m_pPointTo')
+			self.m_Value = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_pPointTo')
 			self.m_DataType = self.m_Value.GetType()
 			fg_PrecacheType(self.m_DataType)
 			if self.m_Value.GetValueAsUnsigned() != 0:
@@ -166,7 +166,7 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 			self.m_WeakRefCount = None
 			self.m_bHasRefCount = False
 			self.m_bHasWeakRefCount = False
-			self.m_Value = fg_ChildPath(self.m_ValueObject, 'm_Data.m_pPointTo')
+			self.m_Value = fg_ChildPath(self.m_ValueObject, 'mp_Data.m_pPointTo')
 			self.m_DataType = fg_GetPointerValueType(self.m_Value)
 			fg_PrecacheType(self.m_DataType)
 			if self.m_Value.GetValueAsUnsigned() != 0:
@@ -175,7 +175,7 @@ class CSynthProvider_TCSharedPointer(CSynthProvider_Common):
 				self.m_bHasRefCount = fg_IsValidSBValue(self.m_RefCount) and fg_GetAtomicIntValue(self.m_RefCount) is not None
 				self.m_bHasWeakRefCount = fg_IsValidSBValue(self.m_WeakRefCount) and fg_GetAtomicIntValue(self.m_WeakRefCount) is not None
 				if fg_GetValidCanonicalType(self.m_DataType).GetName().startswith('NMib::NStorage::NPrivate::TCSharedPointerCounter'):
-					Data = self.m_Value.GetChildMemberWithName('m_Data')
+					Data = self.m_Value.GetChildMemberWithName('mp_Data')
 					self.m_DataType = fg_GetValueType(Data)
 					fg_PrecacheType(self.m_DataType)
 					self.m_Value = Data
@@ -257,7 +257,7 @@ def fg_SummaryProvider_TCSharedPointer(_Value, dict):
 		if ValueType.GetPointeeType().IsPointerType():
 			return hex(_Value.GetValueAsUnsigned())
 		Current = _Value.GetChildMemberWithName('[Value]')
-		pValue = fg_ChildPath(_Value, 'm_Data.m_pPointTo')
+		pValue = fg_ChildPath(_Value, 'mp_Data.m_pPointTo')
 		PointerValue = pValue.GetValueAsUnsigned()
 		if PointerValue == 0:
 			Value = "nullptr";

@@ -159,37 +159,37 @@
 
   <Type Name="NMib::NStr::TCStr&lt;NMib::NStr::TCTCStrTraits&lt;*,NMib::NStr::TCStrImp_Fixed&lt;*,*&gt; &gt; &gt;">
     <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
-      {m_lData,s8}
+      {m_Data,s8}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 1)">
-      {m_lData,s}
+      {m_Data,s}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 1">
-      {m_lData,s}
+      {m_Data,s}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
-      {m_lData,su}
+      {m_Data,su}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
-      {m_lData,su}
+      {m_Data,su}
     </DisplayString>
     <DisplayString Condition="EDebug_CharSize == 4">
-      {m_lData,s32}
+      {m_Data,s32}
     </DisplayString>
     <StringView Condition="EDebug_CharSize == 1 &amp;&amp; (EDebug_Type == 2)">
-      m_lData,s8
+      m_Data,s8
     </StringView>
     <StringView Condition="EDebug_CharSize == 1 &amp;&amp; !(EDebug_Type == 2)">
-      m_lData,s
+      m_Data,s
     </StringView>
     <StringView Condition="EDebug_CharSize == 2 &amp;&amp; (EDebug_Type == 2)">
-      m_lData,su
+      m_Data,su
     </StringView>
     <StringView Condition="EDebug_CharSize == 2 &amp;&amp; !(EDebug_Type == 2)">
-      m_lData,su
+      m_Data,su
     </StringView>
     <StringView Condition="EDebug_CharSize == 4">
-      m_lData,s32
+      m_Data,s32
     </StringView>
     <Expand>
       <Synthetic Name="Type">
@@ -239,26 +239,26 @@
 
   <Type Name="NMib::NNumeric::TCFloat&lt;*,*,*,float,*,*&gt;">
     <DisplayString>
-      {m_DataStorage}
+      {mp_DataStorage}
     </DisplayString>
   </Type>
 
   <Type Name="NMib::NNumeric::TCFloat&lt;*,*,*,double,*,*&gt;">
     <DisplayString>
-      {m_DataStorage}
+      {mp_DataStorage}
     </DisplayString>
   </Type>
 
   <Type Name="NMib::NStorage::TCUniquePointer&lt;*&gt;">
-    <DisplayString Condition="m_Data.m_pPointTo != 0">
-      {*m_Data.m_pPointTo}
+    <DisplayString Condition="mp_Data.m_pPointTo != 0">
+      {*mp_Data.m_pPointTo}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_Data.m_pPointTo != 0">
-        *m_Data.m_pPointTo
+      <ExpandedItem Condition="mp_Data.m_pPointTo != 0">
+        *mp_Data.m_pPointTo
       </ExpandedItem>
       <Item Name ="[Raw View]">
         *this,!
@@ -270,15 +270,15 @@
     <AlternativeType Name="NMib::NStorage::TCDebugPointer&lt;*&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStorage::TCAutoClearPtr&lt;*&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStorage::TCAutoClearPtrDebug&lt;*&gt;"></AlternativeType>
-    <DisplayString Condition="m_pPointTo != 0">
-      {*m_pPointTo}
+    <DisplayString Condition="mp_pPointTo != 0">
+      {*mp_pPointTo}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_pPointTo != 0">
-        *m_pPointTo
+      <ExpandedItem Condition="mp_pPointTo != 0">
+        *mp_pPointTo
       </ExpandedItem>
       <Item Name ="[Raw View]">
         *this,!
@@ -345,15 +345,15 @@
   </Type>
 
     <Type Name="NMib::NStorage::TCSharedPointer&lt;*&gt;">
-    <DisplayString Condition="m_Data.m_pPointTo != 0">
-      {*m_Data.m_pPointTo}
+    <DisplayString Condition="mp_Data.m_pPointTo != 0">
+      {*mp_Data.m_pPointTo}
     </DisplayString>
     <DisplayString>
       nullptr
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_Data.m_pPointTo != 0">
-        *m_Data.m_pPointTo
+      <ExpandedItem Condition="mp_Data.m_pPointTo != 0">
+        *mp_Data.m_pPointTo
       </ExpandedItem>
       <Item Name ="[Raw View]">
         *this,!
@@ -364,11 +364,11 @@
 
   <Type Name="NMib::NConcurrency::TCActor&lt;*&gt;">
     <DisplayString>
-      {m_pInternalActor}
+      {mp_pInternalActor}
     </DisplayString>
     <Expand>
       <ExpandedItem>
-        m_pInternalActor
+        mp_pInternalActor
       </ExpandedItem>
     </Expand>
   </Type>
@@ -477,11 +477,11 @@
   <!-- NMib::NIntrusive::TCDLink<*> -->
   <Type Name="NMib::NIntrusive::TCDLink&lt;*&gt;">
     <DisplayString>
-      {m_Link}
+      {mp_Link}
     </DisplayString>
     <Expand>
       <ExpandedItem>
-        m_Link
+        mp_Link
       </ExpandedItem>
       <Item Name="[Link Raw View]">
         *this,!
@@ -608,23 +608,23 @@
 
   <Type Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;::CIterator">
     <AlternativeType Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;::CIteratorConst"></AlternativeType>
-    <DisplayString Condition="m_Iter.m_pCurrent != 0">
-      {((CMember *)((umint)m_Iter.m_pCurrent - COffset::mc_Offset))->m_Object}
+    <DisplayString Condition="mp_Iter.m_pCurrent != 0">
+      {((CMember *)((umint)mp_Iter.m_pCurrent - COffset::mc_Offset))->mp_Object}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_Iter.m_pCurrent != 0">
-        ((CMember *)((umint)m_Iter.m_pCurrent - COffset::mc_Offset))->m_Object
+      <ExpandedItem Condition="mp_Iter.m_pCurrent != 0">
+        ((CMember *)((umint)mp_Iter.m_pCurrent - COffset::mc_Offset))->mp_Object
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="NMib::NContainer::TCLinkedList&lt;*,*&gt;">
     <Expand>
-      <LinkedListItems Condition="(umint)m_Data.m_List.m_Link.m_pNextPtr &amp; umint(1) != ((umint)(void *)&amp;m_Data.m_List.m_Link)">
-        <HeadPointer>((CLink *)(((umint)m_Data.m_List.m_Link.m_pNextPtr) &amp; ~umint(1)))</HeadPointer>
+      <LinkedListItems Condition="(umint)mp_Data.m_List.m_Link.m_pNextPtr &amp; umint(1) != ((umint)(void *)&amp;mp_Data.m_List.m_Link)">
+        <HeadPointer>((CLink *)(((umint)mp_Data.m_List.m_Link.m_pNextPtr) &amp; ~umint(1)))</HeadPointer>
         <NextPointer>
           (
           (CThis *)
@@ -666,7 +666,7 @@
           )
         </NextPointer>
         <ValueNode>
-          ((NMib::NContainer::TCLinkedList&lt;$T1,$T2&gt;::CMember *)((umint)this - NMib::NContainer::TCLinkedList&lt;$T1,$T2&gt;::COffset::mc_Offset))->m_Object
+          ((NMib::NContainer::TCLinkedList&lt;$T1,$T2&gt;::CMember *)((umint)this - NMib::NContainer::TCLinkedList&lt;$T1,$T2&gt;::COffset::mc_Offset))->mp_Object
         </ValueNode>
       </LinkedListItems>
       <Item Name ="[Raw View]">
@@ -691,17 +691,17 @@
   </Type>
 
   <Type Name="NMib::NContainer::TCVectorIterator&lt;*&gt;">
-    <DisplayString Condition="m_pBegin != m_pEnd">
-      {(*m_pBegin)}
+    <DisplayString Condition="mp_pBegin != mp_pEnd">
+      {(*mp_pBegin)}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
-    <StringView Condition="m_pBegin != m_pEnd">
-      (*m_pBegin)
+    <StringView Condition="mp_pBegin != mp_pEnd">
+      (*mp_pBegin)
     </StringView>
     <Expand>
-      <ExpandedItem Condition="m_pBegin != m_pEnd">*m_pBegin</ExpandedItem>
+      <ExpandedItem Condition="mp_pBegin != mp_pEnd">*mp_pBegin</ExpandedItem>
     </Expand>
   </Type>
 
@@ -837,29 +837,29 @@
   </Type>
 
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;::TCIterator&lt;*&gt;">
-    <DisplayString Condition="m_iStack >= 0">
-      {*((CNode *)((umint)m_pStack[m_iStack] - $T1))}
+    <DisplayString Condition="mp_iStack >= 0">
+      {*((CNode *)((umint)mp_pStack[mp_iStack] - $T1))}
     </DisplayString>
     <DisplayString>
       Invalid
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_iStack >= 0">
-        *((CNode *)((umint)m_pStack[m_iStack] - $T1))
+      <ExpandedItem Condition="mp_iStack >= 0">
+        *((CNode *)((umint)mp_pStack[mp_iStack] - $T1))
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;::TCIterator&lt;*,*,*&gt;">
-    <DisplayString Condition="mp_Iter.m_iStack >= 0">
-		{*((CNode *)((umint)mp_Iter.m_pStack[mp_Iter.m_iStack]))}
+    <DisplayString Condition="mp_Iter.mp_iStack >= 0">
+		{*((CNode *)((umint)mp_Iter.mp_pStack[mp_Iter.mp_iStack]))}
 	</DisplayString>
 	<DisplayString>
 		Invalid
 	</DisplayString>
 	<Expand>
-		<ExpandedItem Condition="mp_Iter.m_iStack >= 0">
-			*((CNode *)((umint)mp_Iter.m_pStack[mp_Iter.m_iStack]))
+		<ExpandedItem Condition="mp_Iter.mp_iStack >= 0">
+			*((CNode *)((umint)mp_Iter.mp_pStack[mp_Iter.mp_iStack]))
 		</ExpandedItem>
     </Expand>
   </Type>
@@ -895,10 +895,10 @@
 
   <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
     <DisplayString Condition="(((umint)mp_Children.m_Tree.m_Root) &amp; ~umint(3)) != 0">
-      + {mp_Key.m_Name}   {mp_Data}
+      + {mp_Key.mp_Name}   {mp_Data}
     </DisplayString>
     <DisplayString>
-      {mp_Key.m_Name}   {mp_Data}
+      {mp_Key.mp_Name}   {mp_Data}
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="(((umint)mp_Children.m_Tree.m_Root) &amp; ~umint(3)) != 0">
@@ -924,12 +924,12 @@
   <Type Name="NMib::NStorage::NReference::TCReference&lt;*&gt;">
     <AlternativeType Name="NMib::NStorage::NReference::TCUndefinedReference&lt;*,*&gt;"></AlternativeType>
     <AlternativeType Name="NMib::NStorage::NIndirection::TCIndirection&lt;*,*,*&gt;"></AlternativeType>
-    <DisplayString Condition="m_Data.m_pPointTo != 0">
-      {*(($T1 *)m_Data.m_pPointTo)}
+    <DisplayString Condition="mp_Data.m_pPointTo != 0">
+      {*(($T1 *)mp_Data.m_pPointTo)}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="m_Data.m_pPointTo != 0">
-        *(($T1 *)m_Data.m_pPointTo)
+      <ExpandedItem Condition="mp_Data.m_pPointTo != 0">
+        *(($T1 *)mp_Data.m_pPointTo)
       </ExpandedItem>
     </Expand>
   </Type>
@@ -945,12 +945,12 @@
 
   <Type Name="_EXCEPTION_RECORD">
     <DisplayString Condition="ExceptionInformation[1] != 0 &amp;&amp; (ExceptionInformation[0] &amp; 0xFFFFFFFFu) == 0x19930520
-      &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->m_Magic == 0xE538CB10">
+      &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->mp_Magic == 0xE538CB10">
       {*((NMib::NException::CExceptionBase *)ExceptionInformation[1])}
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="ExceptionInformation[1] != 0 &amp;&amp; (ExceptionInformation[0] &amp; 0xFFFFFFFFu) == 0x19930520
-        &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->m_Magic == 0xE538CB10">
+        &amp;&amp; ((NMib::NException::CExceptionBase *)ExceptionInformation[1])->mp_Magic == 0xE538CB10">
         *((NMib::NException::CExceptionBase *)ExceptionInformation[1])
       </ExpandedItem>
     </Expand>
@@ -958,60 +958,60 @@
 
   <Type Name="EHExceptionRecord">
     <DisplayString Condition="params.pExceptionObject != 0 &amp;&amp; params.magicNumber == 0x19930520
-      &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->m_Magic == 0xE538CB10">
+      &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->mp_Magic == 0xE538CB10">
       {*((NMib::NException::CExceptionBase *)params.pExceptionObject)}
     </DisplayString>
     <Expand>
       <ExpandedItem Condition="params.pExceptionObject != 0 &amp;&amp; params.magicNumber == 0x19930520
-        &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->m_Magic == 0xE538CB10">
+        &amp;&amp; ((NMib::NException::CExceptionBase *)params.pExceptionObject)->mp_Magic == 0xE538CB10">
         *((NMib::NException::CExceptionBase *)params.pExceptionObject)
       </ExpandedItem>
     </Expand>
   </Type>
 
   <Type Name="NMib::NException::CExceptionBase">
-    <DisplayString Condition="m_Magic != 0xE538CB10">
+    <DisplayString Condition="mp_Magic != 0xE538CB10">
       Invalid
     </DisplayString>
-    <DisplayString Condition="m_pErrorAlloc.m_Data.m_pPointTo != 0">
-      {*m_pErrorAlloc.m_Data.m_pPointTo}
+    <DisplayString Condition="mp_pErrorAlloc.mp_Data.m_pPointTo != 0">
+      {*mp_pErrorAlloc.mp_Data.m_pPointTo}
     </DisplayString>
-    <DisplayString Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo != 0">
-      {*m_pErrorAllocNonTracked.m_Data.m_pPointTo}
+    <DisplayString Condition="mp_pErrorAllocNonTracked.mp_Data.m_pPointTo != 0">
+      {*mp_pErrorAllocNonTracked.mp_Data.m_pPointTo}
     </DisplayString>
     <DisplayString>
-      {m_ErrorNoAlloc}
+      {mp_ErrorNoAlloc}
     </DisplayString>
     <Expand>
-      <Item Name ="Message" Condition="m_Magic != 0xE538CB10">
+      <Item Name ="Message" Condition="mp_Magic != 0xE538CB10">
         "Invalid"
       </Item>
-      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo != 0 &amp;&amp; m_Magic == 0xE538CB10">
-        *m_pErrorAlloc.m_Data.m_pPointTo
+      <Item Name ="Message" Condition="mp_pErrorAlloc.mp_Data.m_pPointTo != 0 &amp;&amp; mp_Magic == 0xE538CB10">
+        *mp_pErrorAlloc.mp_Data.m_pPointTo
       </Item>
-      <Item Name ="Message" Condition="m_pErrorAllocNonTracked.m_Data.m_pPointTo != 0 &amp;&amp; m_Magic == 0xE538CB10">
-        *m_pErrorAllocNonTracked.m_Data.m_pPointTo
+      <Item Name ="Message" Condition="mp_pErrorAllocNonTracked.mp_Data.m_pPointTo != 0 &amp;&amp; mp_Magic == 0xE538CB10">
+        *mp_pErrorAllocNonTracked.mp_Data.m_pPointTo
       </Item>
-      <Item Name ="Message" Condition="m_pErrorAlloc.m_Data.m_pPointTo == 0 &amp;&amp; m_pErrorAllocNonTracked.m_Data.m_pPointTo == 0 &amp;&amp; m_Magic == 0xE538CB10">
-        m_ErrorNoAlloc
+      <Item Name ="Message" Condition="mp_pErrorAlloc.mp_Data.m_pPointTo == 0 &amp;&amp; mp_pErrorAllocNonTracked.mp_Data.m_pPointTo == 0 &amp;&amp; mp_Magic == 0xE538CB10">
+        mp_ErrorNoAlloc
       </Item>
-      <Item Name ="Class" Condition="m_pClass != 0">
-        m_pClass
+      <Item Name ="Class" Condition="mp_pClass != 0">
+        mp_pClass
       </Item>
-      <Item Name ="Function" Condition="m_pFunction != 0">
-        m_pFunction
+      <Item Name ="Function" Condition="mp_pFunction != 0">
+        mp_pFunction
       </Item>
-      <Item Name ="File" Condition="m_pFile != 0">
-        m_pFile
+      <Item Name ="File" Condition="mp_pFile != 0">
+        mp_pFile
       </Item>
-      <Item Name ="Line" Condition="m_pFile != 0">
-        m_Line
+      <Item Name ="Line" Condition="mp_pFile != 0">
+        mp_Line
       </Item>
-      <Item Name ="Callstack" Condition="m_pCallstack.m_Data.m_pPointTo != 0">
-        m_pCallstack.m_Data.m_pPointTo->m_Callstack,[m_pCallstack.m_Data.m_pPointTo->m_CallstackLen]
+      <Item Name ="Callstack" Condition="mp_pCallstack.mp_Data.m_pPointTo != 0">
+        mp_pCallstack.mp_Data.m_pPointTo->m_Callstack,[mp_pCallstack.mp_Data.m_pPointTo->m_CallstackLen]
       </Item>
-      <Item Name ="Callstack" Condition="m_pCallstackNonTracked.m_Data.m_pPointTo != 0">
-        m_pCallstackNonTracked.m_Data.m_pPointTo->m_Callstack,[m_pCallstackNonTracked.m_Data.m_pPointTo->m_CallstackLen]
+      <Item Name ="Callstack" Condition="mp_pCallstackNonTracked.mp_Data.m_pPointTo != 0">
+        mp_pCallstackNonTracked.mp_Data.m_pPointTo->m_Callstack,[mp_pCallstackNonTracked.mp_Data.m_pPointTo->m_CallstackLen]
       </Item>
       <Item Name ="[Raw View]">
         *this,!

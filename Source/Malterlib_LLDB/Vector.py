@@ -70,8 +70,8 @@ class CSynthProvider_TCVector_CIterator(CSynthProvider_Common):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_Current = self.m_ValueObject.GetChildMemberWithName('m_pBegin')
-			self.m_End = self.m_ValueObject.GetChildMemberWithName('m_pEnd')
+			self.m_Current = self.m_ValueObject.GetChildMemberWithName('mp_pBegin')
+			self.m_End = self.m_ValueObject.GetChildMemberWithName('mp_pEnd')
 			self.m_NumExtraChildren = 0
 			self.m_Value = None
 			self.m_bEmpty = True

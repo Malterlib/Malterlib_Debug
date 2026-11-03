@@ -82,8 +82,8 @@ namespace NMib
 					, m_Flags(_ToCopy.m_Flags)
 					, m_pDie(_ToCopy.m_pDie)
 					, m_nLines(_ToCopy.m_nLines)
-					, m_lLines(_ToCopy.m_lLines)
-					, m_lSortedLines(_ToCopy.m_lSortedLines)
+					, m_pLines(_ToCopy.m_pLines)
+					, m_SortedLines(_ToCopy.m_SortedLines)
 				{
 				}
 
@@ -92,17 +92,17 @@ namespace NMib
 					, m_Flags(_ToMove.m_Flags)
 					, m_pDie(_ToMove.m_pDie)
 					, m_nLines(_ToMove.m_nLines)
-					, m_lLines(_ToMove.m_lLines)
-					, m_lSortedLines(std::move(_ToMove.m_lSortedLines))
+					, m_pLines(_ToMove.m_pLines)
+					, m_SortedLines(std::move(_ToMove.m_SortedLines))
 				{
 				}
 
 				EFlag m_Flags;
 				Dwarf_Die m_pDie;
 				Dwarf_Signed m_nLines;
-				Dwarf_Line *m_lLines;
-				NContainer::TCVector<CLineEntry, NMemory::CAllocator_NonTrackedHeap> m_lSortedLines;
-				NContainer::TCVector<CFunction, NMemory::CAllocator_NonTrackedHeap> m_lSortedFunctions;
+				Dwarf_Line *m_pLines;
+				NContainer::TCVector<CLineEntry, NMemory::CAllocator_NonTrackedHeap> m_SortedLines;
+				NContainer::TCVector<CFunction, NMemory::CAllocator_NonTrackedHeap> m_SortedFunctions;
 			};
 
 			struct CSymbolsIndex
@@ -119,7 +119,7 @@ namespace NMib
 				Elf *mp_pElf;
 				Dwarf_Debug mp_Dwarf;
 
-				NContainer::TCVector<CUnit, NMemory::CAllocator_NonTrackedHeap> mp_lUnits;
+				NContainer::TCVector<CUnit, NMemory::CAllocator_NonTrackedHeap> mp_Units;
 
 				CSymStr mp_ModuleFilename;
 				umint mp_BaseAddress;

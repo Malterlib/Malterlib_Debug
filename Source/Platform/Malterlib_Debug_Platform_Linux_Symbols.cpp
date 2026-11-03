@@ -80,9 +80,9 @@ namespace NMib
 			{
 				if (mp_Dwarf)
 				{
-					for (auto UnitIter = mp_lUnits.f_GetIterator(); UnitIter; ++UnitIter)
+					for (auto UnitIter = mp_Units.f_GetIterator(); UnitIter; ++UnitIter)
 					{
-						dwarf_srclines_dealloc(mp_Dwarf, (*UnitIter).m_lLines, (*UnitIter).m_nLines);
+						dwarf_srclines_dealloc(mp_Dwarf, (*UnitIter).m_pLines, (*UnitIter).m_nLines);
 						dwarf_dealloc(mp_Dwarf, (*UnitIter).m_pDie, DW_DLA_DIE);
 					}
 
@@ -102,7 +102,7 @@ namespace NMib
 			CLinuxStackTraceInfo *CSymbolsIndex::f_Lookup(umint _Address)
 			{
 				// Dumb interval search for now.
-				for (auto UnitIter = mp_lUnits.f_GetIterator(); UnitIter; ++UnitIter)
+				for (auto UnitIter = mp_Units.f_GetIterator(); UnitIter; ++UnitIter)
 				{
 					if ((*UnitIter).f_Contains(_Address))
 					{
@@ -120,19 +120,19 @@ namespace NMib
 							Dwarf_Error Error;
 
 							// Get file line number
-							if (dwarf_lineno((*UnitIter).m_lLines[iLine], &LineNumber, &Error) != DW_DLV_OK)
+							if (dwarf_lineno((*UnitIter).m_pLines[iLine], &LineNumber, &Error) != DW_DLV_OK)
 								LineNumber = -1; // ?
 
 							// Search for the filename by examining the containing line entry and
 							// then searching backwards if we don't find a file source entry.
 							{
 								char const *pFileName = "unknown";
-								dwarf_linesrc((*UnitIter).m_lLines[iLine], const_cast<char **>(&pFileName), &Error);
+								dwarf_linesrc((*UnitIter).m_pLines[iLine], const_cast<char **>(&pFileName), &Error);
 								/*
 								for (Dwarf_Signed iL = iLine; iL >= 0; --iL)
 								Dwarf_Signed iL = iLine;
 								{
-									if (dwarf_linesrc((*UnitIter).m_lLines[iL], const_cast<char**>(&pFileName), &Error) == DW_DLV_OK)
+									if (dwarf_linesrc((*UnitIter).m_pLines[iL], const_cast<char**>(&pFileName), &Error) == DW_DLV_OK)
 									{
 										break;
 									}
@@ -194,7 +194,7 @@ namespace NMib
 
 			Dwarf_Signed CSymbolsIndex::fp_LookupLineInUnit(umint _Address, CUnit const &_Unit) const
 			{
-				aint iLowerBound = _Unit.m_lSortedLines.f_BinarySearchLowerBound
+				aint iLowerBound = _Unit.m_SortedLines.f_BinarySearchLowerBound
 					(
 						[&](CLineEntry const &_Entry, umint _ToFind)
 						{
@@ -204,11 +204,11 @@ namespace NMib
 					)
 				;
 
-				if (iLowerBound >= 0 && iLowerBound < _Unit.m_lSortedLines.f_GetLen())
+				if (iLowerBound >= 0 && iLowerBound < _Unit.m_SortedLines.f_GetLen())
 				{
 					aint iLine = iLowerBound;
 
-					if (_Address < _Unit.m_lSortedLines[iLine].m_PC)
+					if (_Address < _Unit.m_SortedLines[iLine].m_PC)
 					{
 						if (iLine == 0)
 							return -1;
@@ -216,7 +216,7 @@ namespace NMib
 						--iLine;
 					}
 
-					return _Unit.m_lSortedLines[iLine].m_iLine;
+					return _Unit.m_SortedLines[iLine].m_iLine;
 				}
 				else
 					return -1;
@@ -231,7 +231,7 @@ namespace NMib
 					Unit.m_Flags |= CUnit::EFlag_ReadFunctions;
 				}
 
-				aint iFunc = _Unit.m_lSortedFunctions.f_BinarySearchLowerBound
+				aint iFunc = _Unit.m_SortedFunctions.f_BinarySearchLowerBound
 					(
 						[&](CFunction const &_Func, umint _Address)
 						{
@@ -241,9 +241,9 @@ namespace NMib
 					)
 				;
 
-				if (iFunc < _Unit.m_lSortedFunctions.f_GetLen() && iFunc >= 0)
+				if (iFunc < _Unit.m_SortedFunctions.f_GetLen() && iFunc >= 0)
 				{
-					if (_Address < _Unit.m_lSortedFunctions[iFunc].m_LowPC)
+					if (_Address < _Unit.m_SortedFunctions[iFunc].m_LowPC)
 					{
 						if (iFunc == 0)
 							return nullptr;
@@ -251,8 +251,8 @@ namespace NMib
 						--iFunc;
 					}
 
-					if (_Unit.m_lSortedFunctions[iFunc].m_HighPC > _Address)
-						return &_Unit.m_lSortedFunctions[iFunc];
+					if (_Unit.m_SortedFunctions[iFunc].m_HighPC > _Address)
+						return &_Unit.m_SortedFunctions[iFunc];
 				}
 
 				return nullptr;
@@ -326,27 +326,27 @@ namespace NMib
 						}
 					*/
 
-					if (dwarf_srclines(pDie, &CurUnit.m_lLines, &CurUnit.m_nLines, &Error) == DW_DLV_OK)
+					if (dwarf_srclines(pDie, &CurUnit.m_pLines, &CurUnit.m_nLines, &Error) == DW_DLV_OK)
 					{
 						// Examine all lines to find address space range and also build sorted list of lines.
 
-						CurUnit.m_lSortedLines.f_SetLen(CurUnit.m_nLines);
+						CurUnit.m_SortedLines.f_SetLen(CurUnit.m_nLines);
 
 						Dwarf_Addr LineAddr;
 						umint nValidLines = 0;
 
-						for (Dwarf_Signed iL = 0; iL < CurUnit.m_nLines; ++iL)
+						for (Dwarf_Signed iLine = 0; iLine < CurUnit.m_nLines; ++iLine)
 						{
-							if (dwarf_lineaddr(CurUnit.m_lLines[iL], &LineAddr, &Error) == DW_DLV_OK)
+							if (dwarf_lineaddr(CurUnit.m_pLines[iLine], &LineAddr, &Error) == DW_DLV_OK)
 							{
-								CurUnit.m_lSortedLines[nValidLines] = {(umint)LineAddr, (umint)iL};
+								CurUnit.m_SortedLines[nValidLines] = {(umint)LineAddr, (umint)iLine};
 								++nValidLines;
 							}
 						}
 
-						CurUnit.m_lSortedLines.f_SetLen(nValidLines);
+						CurUnit.m_SortedLines.f_SetLen(nValidLines);
 
-						CurUnit.m_lSortedLines.f_Sort
+						CurUnit.m_SortedLines.f_Sort
 							(
 								[](CLineEntry const &_Left, CLineEntry const &_Right)
 								{
@@ -355,10 +355,10 @@ namespace NMib
 							)
 						;
 
-						if (!CurUnit.m_lSortedLines.f_IsEmpty())
+						if (!CurUnit.m_SortedLines.f_IsEmpty())
 						{
-							CurUnit.m_LowPC = CurUnit.m_lSortedLines[0].m_PC;
-							CurUnit.m_HighPC = CurUnit.m_lSortedLines[CurUnit.m_lSortedLines.f_GetLen() - 1].m_PC;
+							CurUnit.m_LowPC = CurUnit.m_SortedLines[0].m_PC;
+							CurUnit.m_HighPC = CurUnit.m_SortedLines[CurUnit.m_SortedLines.f_GetLen() - 1].m_PC;
 						}
 
 						CurUnit.m_Flags |= CUnit::EFlag_ReadLines;
@@ -368,7 +368,7 @@ namespace NMib
 						// No line info
 					}
 
-					mp_lUnits.f_Insert(std::move(CurUnit));
+					mp_Units.f_Insert(std::move(CurUnit));
 				}
 
 				// Reset internal CU pointer. (Not actually required by us atm)
@@ -394,7 +394,7 @@ namespace NMib
 				// fp_CollectFunctions(_Unit.m_pDie, _Unit);
 				fp_CollectFunction(_Unit.m_pDie, _Unit);
 
-				_Unit.m_lSortedFunctions.f_Sort
+				_Unit.m_SortedFunctions.f_Sort
 					(
 						[](CFunction const &_Left, CFunction const &_Right)
 						{
@@ -460,7 +460,7 @@ namespace NMib
 							}
 						}
 
-						_Unit.m_lSortedFunctions.f_Insert(std::move(NewFunc));
+						_Unit.m_SortedFunctions.f_Insert(std::move(NewFunc));
 					}
 					/* clang does not generate ranges for subprograms atm
 					else if ( Tag == DW_TAG_subprogram)

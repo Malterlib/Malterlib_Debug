@@ -45,10 +45,10 @@ namespace NMib
 			{
 				if (!g_bIsDll)
 				{
-					for (umint i = 0; i < mc_WindowCache; ++i)
+					for (umint iWindow = 0; iWindow < mc_WindowCache; ++iWindow)
 					{
-						if (!m_CacheWindows[i])
-							m_CacheWindows[i] = CreateWindowA("MalterlibCrashDumpWindowCache", "MalterlibCrashDumpWindowCache", 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);
+						if (!m_CacheWindows[iWindow])
+							m_CacheWindows[iWindow] = CreateWindowA("MalterlibCrashDumpWindowCache", "MalterlibCrashDumpWindowCache", 0, 0, 0, 0, 0, HWND_MESSAGE, 0, 0, 0);
 					}
 				}
 			}
@@ -148,7 +148,7 @@ namespace NMib
 				auto &SubSystem = fg_Debug_Platfrom_Windows();
 				DMibLock(SubSystem.m_DumpExceptionInfoLock);
 
-				auto fl_GenerateException = [&_pExceptionMemoryData, _pExceptionInfo](NThread::CThreadObjectNonTracked *_pThread) -> aint
+				auto fGenerateException = [&_pExceptionMemoryData, _pExceptionInfo](NThread::CThreadObjectNonTracked *_pThread) -> aint
 					{
 						auto &SubSystem = fg_Debug_Platfrom_Windows();
 
@@ -216,7 +216,7 @@ namespace NMib
 
 							if (bRet)
 							{
-								if (SubSystem.m_StackTrace.MiniDumpWriteDump)
+								if (SubSystem.m_StackTrace.m_fMiniDumpWriteDump)
 								{
 									MINIDUMP_EXCEPTION_INFORMATION Info;
 									Info.ClientPointers = false;
@@ -234,9 +234,9 @@ namespace NMib
 										MINIDUMP_TYPE DumpType = (MINIDUMP_TYPE)(MiniDumpWithHandleData | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData);
 										if
 										(
-											!SubSystem.m_StackTrace.MiniDumpWriteDump
+											!SubSystem.m_StackTrace.m_fMiniDumpWriteDump
 											(
-												SubSystem.m_StackTrace.m_hProcess
+												SubSystem.m_StackTrace.m_Process
 												, GetCurrentProcessId()
 												, File.f_GetOSFile()
 												, DumpType
@@ -263,13 +263,13 @@ namespace NMib
 				if (NMib::NPlatform::fg_ThisThreadOwnsDllLock() || g_bDoneMalterlibInitAll.f_Load() < 3)
 				{
 					// If Dll lock is held we will get a deadlock here
-					return fl_GenerateException(nullptr);
+					return fGenerateException(nullptr);
 				}
 				else
 				{
 					NStorage::TCUniquePointer<NThread::CThreadObjectNonTracked, NMemory::CAllocator_NonTrackedHeap> pThread = NThread::CThreadObjectNonTracked::fs_StartThread
 						(
-							fl_GenerateException
+							fGenerateException
 							, "DumpExceptionsThread"
 						)
 					;
