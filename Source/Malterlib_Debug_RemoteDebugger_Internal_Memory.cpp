@@ -21,7 +21,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		bool bStackTrace = mp_Settings.m_Features & EFeature_MemoryStackTrace;
 		TCStackTrace<uint64> StackTrace;
 
-		auto fl_ReadStackTrace = [&]()
+		auto fReadStackTrace = [&]()
 			{
 				if (bStackTrace)
 				{
@@ -31,7 +31,7 @@ namespace NMib::NDebug::NRemoteDebugger
 					umint nLevelsSubOne = nLevels - 1;
 					umint Half = nLevels >> 1;
 					for (umint iL = 0; iL < Half; ++iL)
-						fg_Swap(StackTrace.m_lStack[iL], StackTrace.m_lStack[nLevelsSubOne - iL]);
+						fg_Swap(StackTrace.m_Stack[iL], StackTrace.m_Stack[nLevelsSubOne - iL]);
 				}
 			}
 		;
@@ -43,7 +43,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_AllocatorName Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -60,7 +60,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_AllocatorDelete Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -77,7 +77,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_ScopeEnter Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -94,7 +94,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_ScopeExit Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -111,7 +111,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Alloc Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -139,7 +139,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Resize Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -168,7 +168,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Realloc Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -197,7 +197,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Free Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -214,7 +214,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_GetSize Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -231,7 +231,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Protect Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -248,7 +248,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Commit Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(
@@ -265,7 +265,7 @@ namespace NMib::NDebug::NRemoteDebugger
 				CMemPacket_Decommit Packet;
 
 				Packet.f_Read(Stream);
-				fl_ReadStackTrace();
+				fReadStackTrace();
 
 				mp_Settings.m_MemoryDispatcher
 					(

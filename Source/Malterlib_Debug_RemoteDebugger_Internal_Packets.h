@@ -44,17 +44,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint16 m_PacketID;
 		uint32 m_nBytes;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_Channel >> m_Padding >> m_PacketID >> m_nBytes;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_Channel << m_Padding << m_PacketID << m_nBytes;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	// Sys Packets
@@ -63,34 +57,22 @@ namespace NMib::NDebug::NRemoteDebugger
 	{
 		uint32 m_Features;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_Features;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_Features;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CSysPacket_ClientConnect
 	{
 		uint64 m_PID;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_PID;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_PID;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	// Mem Packets
@@ -101,17 +83,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_MemoryAllocator;
 		NStr::CStrNonTracked m_Name;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Name;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Name;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_AllocatorDelete
@@ -119,17 +95,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ThreadID;
 		uint64 m_MemoryAllocator;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_ScopeEnter
@@ -137,17 +107,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ThreadID;
 		uint64 m_MemoryAllocator;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_ScopeExit
@@ -155,17 +119,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ThreadID;
 		uint64 m_MemoryAllocator;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Alloc
@@ -178,17 +136,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ReturnedSize;
 		fp32 m_nBytesOverhead;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_RequestedSize >> m_RequestedSize >> m_ReturnedSize >> m_nBytesOverhead;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_RequestedSize << m_RequestedSize << m_ReturnedSize << m_nBytesOverhead;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Resize
@@ -202,17 +154,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ReturnedSize;
 		fp32 m_nBytesOverhead;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_OldAddress >> m_Address >> m_RequestedAlignment >> m_RequestedSize >> m_ReturnedSize >> m_nBytesOverhead;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_OldAddress << m_Address << m_RequestedAlignment << m_RequestedSize << m_ReturnedSize << m_nBytesOverhead;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Realloc
@@ -226,17 +172,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_ReturnedSize;
 		fp32 m_nBytesOverhead;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_OldAddress >> m_Address >> m_RequestedAlignment >> m_RequestedSize >> m_ReturnedSize >> m_nBytesOverhead;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_OldAddress << m_Address << m_RequestedAlignment << m_RequestedSize << m_ReturnedSize << m_nBytesOverhead;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Free
@@ -245,17 +185,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_MemoryAllocator;
 		uint64 m_Address;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Address;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_GetSize
@@ -265,17 +199,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Address;
 		uint64 m_Size;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Protect
@@ -286,17 +214,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Size;
 		uint64 m_Protect;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size >> m_Protect;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size << m_Protect;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Commit
@@ -306,17 +228,11 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Address;
 		uint64 m_Size;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 
 	struct CMemPacket_Decommit
@@ -326,16 +242,12 @@ namespace NMib::NDebug::NRemoteDebugger
 		uint64 m_Address;
 		uint64 m_Size;
 
-		template <typename t_CStream>
-		void f_Read(t_CStream &_Stream)
-		{
-			_Stream >> m_ThreadID >> m_MemoryAllocator >> m_Address >> m_Size;
-		}
+		template <typename tf_CStream>
+		void f_Read(tf_CStream &_Stream);
 
-		template <typename t_CStream>
-		void f_Write(t_CStream &_Stream) const
-		{
-			_Stream << m_ThreadID << m_MemoryAllocator << m_Address << m_Size;
-		}
+		template <typename tf_CStream>
+		void f_Write(tf_CStream &_Stream) const;
 	};
 }
+
+#include "Malterlib_Debug_RemoteDebugger_Internal_Packets.hpp"

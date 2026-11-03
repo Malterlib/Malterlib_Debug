@@ -1,6 +1,8 @@
 // Copyright © Unbroken AB
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
+#pragma once
+
 #include <Mib/Core/Core>
 #include <Mib/Debug/RemoteDebugger>
 #include "Malterlib_Debug_RemoteDebugger_Internal_Packets.h"
@@ -53,19 +55,9 @@ namespace NMib::NDebug::NRemoteDebugger
 	struct TCRemoteDebuggerPool
 	{
 		template <typename ...tfp_CParams>
-		static t_CType *fs_New(tfp_CParams && ...p_Params)
-		{
-			auto Memory = NMemory::CAllocator_NonTrackedHeap::f_AllocSafe(sizeof(t_CType), alignof(t_CType));
-			auto pReturn = new(Memory.m_pMemory) t_CType(fg_Forward<tfp_CParams>(p_Params)...);
-			Memory.f_Claim();
-			return pReturn;
-		}
+		static t_CType *fs_New(tfp_CParams && ...p_Params);
 
-		static void fs_Delete(t_CType *_pObject)
-		{
-			_pObject->~t_CType();
-			NMemory::CAllocator_NonTrackedHeap::f_Free(_pObject, sizeof(t_CType));
-		}
+		static void fs_Delete(t_CType *_pObject);
 
 	private:
 		using CSuper = NMemory::TCStaticPool<t_CType, t_GrowSize, NMib::NMemory::CAllocator_VirtualNoTracking>;
@@ -75,16 +67,8 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	struct CPacket
 	{
-		CPacket()
-		{
-		}
-
-		CPacket(CPacket &&_ToMove)
-			: m_Channel(_ToMove.m_Channel)
-			, m_PacketID(_ToMove.m_PacketID)
-			, m_Data(fg_Move(_ToMove.m_Data))
-		{
-		}
+		CPacket();
+		CPacket(CPacket &&_ToMove);
 
 		EChannel m_Channel;
 		EPacket m_PacketID;
@@ -93,55 +77,22 @@ namespace NMib::NDebug::NRemoteDebugger
 		DMibListLinkDS_Link(CPacket, m_Link);
 
 	private:
-		CPacket(CPacket const &)
-		{
-		}
+		CPacket(CPacket const &_Other);
 	};
 
 	struct CConnection;
 	struct CPacketReference
 	{
-		CPacketReference(CPacket *_pPacket, CConnection *_pConnection)
-			: mp_pPacket(_pPacket)
-			, mp_pConnection(_pConnection)
-		{
-		}
-
-		CPacketReference()
-			: mp_pPacket(nullptr)
-			, mp_pConnection(nullptr)
-		{
-		}
-
-		CPacketReference(CPacketReference &&_Other)
-			: mp_pPacket(_Other.mp_pPacket)
-			, mp_pConnection(_Other.mp_pConnection)
-		{
-			_Other.mp_pPacket = nullptr;
-			_Other.mp_pConnection = nullptr;
-		}
-
+		CPacketReference(CPacket *_pPacket, CConnection *_pConnection);
+		CPacketReference();
+		CPacketReference(CPacketReference &&_Other);
 		~CPacketReference();
 
-		operator bool ()
-		{
-			return mp_pPacket != nullptr;
-		}
+		operator bool ();
 
-		EChannel f_Channel() const
-		{
-			return mp_pPacket->m_Channel;
-		}
-
-		EPacket f_PacketID() const
-		{
-			return mp_pPacket->m_PacketID;
-		}
-
-		CDataBuffer const &f_Data()
-		{
-			return mp_pPacket->m_Data;
-		}
+		EChannel f_Channel() const;
+		EPacket f_PacketID() const;
+		CDataBuffer const &f_Data();
 
 	private:
 		CPacket *mp_pPacket;
@@ -175,36 +126,8 @@ namespace NMib::NDebug::NRemoteDebugger
 
 			DMibListLinkDS_Link(CConnection::CDataBlock, m_Link);
 
-			template <typename t_CPacket>
-			void f_Fill(EChannel _Channel, EPacket _PacketID, t_CPacket const &_Packet, TCStackTrace<umint> const *_pTrace)
-			{
-				m_Channel = _Channel;
-
-				NStream::TCBinaryStreamMemoryRef<NStream::CBinaryStreamDefault, CDataBuffer> Stream(m_Data);
-				Stream.f_ResetStream();
-
-				CPacketHeader Header = {(uint8)_Channel, (uint8)0, (uint16)_PacketID, 0};
-
-				Header.f_Write(Stream);
-
-				umint nHeaderBytes = Stream.f_GetPosition();
-
-				_Packet.f_Write(Stream);
-				if (_pTrace)
-					_pTrace->f_Write(Stream);
-
-				Header.m_nBytes = Stream.f_GetPosition() - nHeaderBytes;
-
-				Stream.f_SetPosition(0);
-				Header.f_Write(Stream);
-				/*
-				DMibLogCat(RD);
-				DMibLog(Debug, "Filling block. PcktID: {}, Hdr: {}, Payload: {}"
-					, (uint32)_PacketID
-					, sizeof(CPacketHeader)
-					, Header.m_nBytes);
-				*/
-			}
+			template <typename tf_CPacket>
+			void f_Fill(EChannel _Channel, EPacket _PacketID, tf_CPacket const &_Packet, TCStackTrace<umint> const *_pTrace);
 		};
 
 	private:
@@ -260,13 +183,8 @@ namespace NMib::NDebug::NRemoteDebugger
 		void f_ReturnDataBlock(CDataBlock *_pBlock);
 		void f_SendDataBlock(CDataBlock *_pBlock);
 
-		template <typename t_CPacket>
-		void f_SendPacket(EChannel _Channel, EPacket _PacketID, t_CPacket const &_Packet, TCStackTrace<umint> const *_pTrace = nullptr)
-		{
-			CDataBlock *pBlock = f_GetDataBlock();
-			pBlock->f_Fill(_Channel, _PacketID, _Packet, _pTrace);
-			f_SendDataBlock(pBlock);
-		}
+		template <typename tf_CPacket>
+		void f_SendPacket(EChannel _Channel, EPacket _PacketID, tf_CPacket const &_Packet, TCStackTrace<umint> const *_pTrace = nullptr);
 
 		// Can fail. Wait on _pReportTo for when packets are available.
 		CPacketReference f_ReceivePacket();
@@ -291,10 +209,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		bool f_Connect();
 
-		CConnection *f_GetConnection()
-		{
-			return mp_pConnection.f_Get();
-		}
+		CConnection *f_GetConnection();
 
 	private:
 		// The dispatcher will make an appearence later.
@@ -327,10 +242,7 @@ namespace NMib::NDebug::NRemoteDebugger
 		bool f_IsRunning();
 		void f_Stop();
 
-		uint64 f_GetClientPID() const
-		{
-			return mp_ClientPID;
-		}
+		uint64 f_GetClientPID() const;
 
 	private:
 		CServerSettings mp_Settings;
@@ -404,3 +316,5 @@ namespace NMib::NDebug::NRemoteDebugger
 		NAtomic::TCAtomic<uint32> mp_SequenceNum;
 	};
 }
+
+#include "Malterlib_Debug_RemoteDebugger_Internal.hpp"

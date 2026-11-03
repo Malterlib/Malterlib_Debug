@@ -17,6 +17,32 @@ using namespace NMib::NNetwork;
 
 namespace NMib::NDebug::NRemoteDebugger
 {
+	CReportMemoryFromRemote::~CReportMemoryFromRemote()
+	{
+	}
+
+	CServerSettings::CServerSettings()
+		: m_Address("127.0.0.1")
+		, m_Port(gc_RemoteDebuggerPort)
+		, m_Features(EFeature_None)
+		, m_pMemoryReporter(nullptr)
+	{
+	}
+
+	CServerSettings::CServerSettings(CServerSettings &&_ToMove)
+		: m_Address(fg_Move(_ToMove.m_Address))
+		, m_Port(_ToMove.m_Port)
+		, m_Features(_ToMove.m_Features)
+		, m_Dispatcher(fg_Move(_ToMove.m_Dispatcher))
+		, m_EventCallback(fg_Move(_ToMove.m_EventCallback))
+		, m_MemoryDispatcher(fg_Move(_ToMove.m_MemoryDispatcher))
+		, m_pMemoryReporter(_ToMove.m_pMemoryReporter)
+	{
+		_ToMove.m_Port = 0;
+		_ToMove.m_Features = EFeature_None;
+		_ToMove.m_pMemoryReporter = nullptr;
+	}
+
 	CPacketReference::~CPacketReference()
 	{
 		if (mp_pPacket)
@@ -269,7 +295,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 		bool bSendStuffed = false;
 
-		auto fl_SendDisconnect = [&]()
+		auto fSendDisconnect = [&]()
 			{
 				CPacket *pNewPacket = TCRemoteDebuggerPool<CPacket>::fs_New();
 				pNewPacket->m_Channel = EChannel_System;
@@ -294,7 +320,7 @@ namespace NMib::NDebug::NRemoteDebugger
 
 			if (SocketState & (ENetTCPState_Closed | ENetTCPState_RemoteClosed))
 			{
-				fl_SendDisconnect();
+				fSendDisconnect();
 				break;
 			}
 
@@ -416,7 +442,7 @@ namespace NMib::NDebug::NRemoteDebugger
 			}
 			catch (CExceptionNet const &)
 			{
-				fl_SendDisconnect();
+				fSendDisconnect();
 				break;
 			}
 
@@ -520,12 +546,12 @@ namespace NMib::NDebug::NRemoteDebugger
 		return true;
 	}
 
-	template <typename t_CPacket>
-	bool fg_ExtractPacket(t_CPacket &_ToHere, TCVector<uint8, NMemory::CAllocator_NonTrackedHeap> const &_FromHere)
+	template <typename tf_CPacket>
+	bool fg_ExtractPacket(tf_CPacket &_ToHere, TCVector<uint8, NMemory::CAllocator_NonTrackedHeap> const &_FromHere)
 	{
-		if (_FromHere.f_GetLen() < sizeof(t_CPacket))
+		if (_FromHere.f_GetLen() < sizeof(tf_CPacket))
 			return false;
-		fg_MemCopy(&_ToHere, _FromHere.f_GetArray(), sizeof(t_CPacket));
+		fg_MemCopy(&_ToHere, _FromHere.f_GetArray(), sizeof(tf_CPacket));
 		return true;
 	}
 
@@ -743,20 +769,20 @@ namespace NMib::NDebug::NRemoteDebugger
 	constinit NStorage::TCAggregateSimple<CClient> g_RDClient = {DAggregateInit};
 	constinit NStorage::TCAggregateSimple<CServer> g_RDServer = {DAggregateInit};
 
-	static CClient *g_pRDClient = nullptr;
-	static CServer *g_pRDServer = nullptr;
+	static CClient *gs_pRDClient = nullptr;
+	static CServer *gs_pRDServer = nullptr;
 
 	bool fg_RD_InitializeServer(CServerSettings &&_Settings)
 	{
-		if (g_pRDServer)
+		if (gs_pRDServer)
 			return true;
 
 		g_RDServer.f_Construct(fg_Move(_Settings));
-		g_pRDServer = &*g_RDServer;
-		if (!g_pRDServer->f_Start())
+		gs_pRDServer = &*g_RDServer;
+		if (!gs_pRDServer->f_Start())
 		{
 			g_RDServer.f_Destruct();
-			g_pRDServer = nullptr;
+			gs_pRDServer = nullptr;
 			return false;
 		}
 
@@ -765,49 +791,49 @@ namespace NMib::NDebug::NRemoteDebugger
 
 	uint64 fg_RD_ServerGetClientPID()
 	{
-		if (!g_pRDServer)
+		if (!gs_pRDServer)
 			return 0;
 
-		return g_pRDServer->f_GetClientPID();
+		return gs_pRDServer->f_GetClientPID();
 	}
 
 	void fg_RD_DeinitializeServer()
 	{
-		if (g_pRDServer)
+		if (gs_pRDServer)
 		{
 			g_RDServer.f_Destruct();
-			g_pRDServer = nullptr;
+			gs_pRDServer = nullptr;
 		}
 	}
 
 	bool fg_RD_InitializeClient()
 	{
-		if (g_pRDClient)
+		if (gs_pRDClient)
 			return true;
 
 		g_RDClient.f_Construct();
-		g_pRDClient = &*g_RDClient;
+		gs_pRDClient = &*g_RDClient;
 
 		return true;
 	}
 
 	bool fg_RD_NetworkAvailableForClient()
 	{
-		if (!g_pRDClient)
+		if (!gs_pRDClient)
 			return false;
 
-		if (g_pRDClient->f_IsEnabled())
-			return g_pRDClient->f_Connect();
+		if (gs_pRDClient->f_IsEnabled())
+			return gs_pRDClient->f_Connect();
 		else
 			return true;
 	}
 
 	void fg_RD_DeinitializeClient()
 	{
-		if (g_pRDClient)
+		if (gs_pRDClient)
 		{
 			g_RDClient.f_Destruct();
-			g_pRDClient = nullptr;
+			gs_pRDClient = nullptr;
 		}
 	}
 }
