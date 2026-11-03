@@ -42,9 +42,73 @@ namespace NMib
 				return g_SubSystem_Debug_Platform_Linux_Symbols->m_Symbols;
 			}
 
+			CLinuxStackTraceInfo::CLinuxStackTraceInfo(CSymStr &&_FuncName, CSymStr &&_ModuleName, CSymStr &&_FileName, int _iLine)
+				: m_FunctionName(std::move(_FuncName))
+				, m_ModuleName(std::move(_ModuleName))
+				, m_FileName(std::move(_FileName))
+			{
+				this->m_pContext = nullptr;
+				m_pFunctionName = m_FunctionName.f_GetStr();
+				m_pModuleName = m_ModuleName.f_GetStr();
+				m_pSourceFileName = m_FileName.f_GetStr();
+				m_SourceLine = _iLine;
+			}
+
 			//
 			// CSymbolsIndex Imp
 			//
+
+			CRange::CRange()
+			{
+			}
+
+			CRange::CRange(CRange const &_ToCopy)
+				: m_LowPC(_ToCopy.m_LowPC)
+				, m_HighPC(_ToCopy.m_HighPC)
+			{
+			}
+
+			CRange::CRange(CRange &&_ToMove)
+				: m_LowPC(_ToMove.m_LowPC)
+				, m_HighPC(_ToMove.m_HighPC)
+			{
+			}
+
+			CRange::CRange(umint _Low, umint _High)
+				: m_LowPC(_Low)
+				, m_HighPC(_High)
+			{
+			}
+
+			bool CRange::f_Contains(umint _Value) const
+			{
+				return (_Value >= m_LowPC) && (_Value < m_HighPC);
+			}
+
+			CUnit::CUnit()
+				: m_Flags(EFlag_None)
+			{
+			}
+
+			CUnit::CUnit(CUnit const &_ToCopy)
+				: CRange(_ToCopy)
+				, m_Flags(_ToCopy.m_Flags)
+				, m_pDie(_ToCopy.m_pDie)
+				, m_nLines(_ToCopy.m_nLines)
+				, m_pLines(_ToCopy.m_pLines)
+				, m_SortedLines(_ToCopy.m_SortedLines)
+			{
+			}
+
+			CUnit::CUnit(CUnit &&_ToMove)
+				: CRange(std::move(_ToMove))
+				, m_Flags(_ToMove.m_Flags)
+				, m_pDie(_ToMove.m_pDie)
+				, m_nLines(_ToMove.m_nLines)
+				, m_pLines(_ToMove.m_pLines)
+				, m_SortedLines(std::move(_ToMove.m_SortedLines))
+			{
+			}
 
 			CSymbolsIndex::CSymbolsIndex(char const *_pFilename, umint _BaseAddress)
 				: mp_bOK(false)

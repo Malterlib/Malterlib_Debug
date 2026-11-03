@@ -34,10 +34,7 @@ namespace NMib
 
 				struct CAVLCompare_CLocalStackTraceInfo
 				{
-					inline_small umint const &operator () (CLocalStackTraceInfo const &_Node) const
-					{
-						return _Node.m_Address;
-					}
+					inline_small umint const &operator () (CLocalStackTraceInfo const &_Node) const;
 				};
 
 				bool f_InitDll(NStr::CFStr256 &_Error);
@@ -99,3 +96,4 @@ namespace NMib
 	}
 }
 
+#include "Malterlib_Debug_Platform_Windows_StackTrace.hpp"

@@ -51,6 +51,21 @@ inline_never umint fg_AcquireStackTraceFromHere(CMibCodeAddress *_pStack, umint 
 #include <Mib/Numeric/ufp64>
 #include <Mib/Numeric/FloatImp>
 
+CTestClass::CTestClass(umint _Value)
+	: m_Value(_Value)
+{
+}
+
+CTestClassManyValue::CTestClassManyValue(umint _Value)
+	: m_Value(_Value)
+{
+}
+
+CTest2::CTest2(int _Value)
+	: m_Value(_Value)
+{
+}
+
 struct CDebug_Tests : public NMib::NTest::CTest
 {
 	template <typename t_CValue>

@@ -46,6 +46,11 @@ namespace NMib
 				return Low;
 			}
 
+			CMacOSStackTraceInfo::CMacOSStackTraceInfo()
+			{
+				this->m_pContext = nullptr;
+			}
+
 			CSymbols::CSymbols()
 				: mp_AddressOffset(0)
 				, mp_pSymbols(nullptr)
@@ -271,6 +276,12 @@ namespace NMib
 				{
 					return false;
 				}
+			}
+
+			CAddressInfoCache &CSymbols::f_GetCache(umint _Address)
+			{
+				DMibLock(mp_CacheLock);
+				return mp_Cache[_Address];
 			}
 
 			extern NMib::NStorage::TCAggregateSimple<CSymbols> g_Symbols;

@@ -22,32 +22,12 @@ namespace NMib
 				umint m_LowPC;
 				umint m_HighPC;
 
-				CRange()
-				{
-				}
+				CRange();
+				CRange(CRange const &_ToCopy);
+				CRange(CRange &&_ToMove);
+				CRange(umint _Low, umint _High);
 
-				CRange(CRange const &_ToCopy)
-					: m_LowPC(_ToCopy.m_LowPC)
-					, m_HighPC(_ToCopy.m_HighPC)
-				{
-				}
-
-				CRange(CRange &&_ToMove)
-					: m_LowPC(_ToMove.m_LowPC)
-					, m_HighPC(_ToMove.m_HighPC)
-				{
-				}
-
-				CRange(umint _Low, umint _High)
-					: m_LowPC(_Low)
-					, m_HighPC(_High)
-				{
-				}
-
-				bool f_Contains(umint _Value) const
-				{
-					return (_Value >= m_LowPC) && (_Value < m_HighPC);
-				}
+				bool f_Contains(umint _Value) const;
 			};
 
 			struct CLineEntry
@@ -72,30 +52,9 @@ namespace NMib
 					, EFlag_ReadLines     = DMibBit(1)
 				};
 
-				CUnit()
-					: m_Flags(EFlag_None)
-				{
-				}
-
-				CUnit(CUnit const &_ToCopy)
-					: CRange(_ToCopy)
-					, m_Flags(_ToCopy.m_Flags)
-					, m_pDie(_ToCopy.m_pDie)
-					, m_nLines(_ToCopy.m_nLines)
-					, m_pLines(_ToCopy.m_pLines)
-					, m_SortedLines(_ToCopy.m_SortedLines)
-				{
-				}
-
-				CUnit(CUnit &&_ToMove)
-					: CRange(std::move(_ToMove))
-					, m_Flags(_ToMove.m_Flags)
-					, m_pDie(_ToMove.m_pDie)
-					, m_nLines(_ToMove.m_nLines)
-					, m_pLines(_ToMove.m_pLines)
-					, m_SortedLines(std::move(_ToMove.m_SortedLines))
-				{
-				}
+				CUnit();
+				CUnit(CUnit const &_ToCopy);
+				CUnit(CUnit &&_ToMove);
 
 				EFlag m_Flags;
 				Dwarf_Die m_pDie;

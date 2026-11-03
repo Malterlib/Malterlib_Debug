@@ -21,17 +21,7 @@ namespace NMib
 				CSymStr m_ModuleName;
 				CSymStr m_FileName;
 
-				CLinuxStackTraceInfo(CSymStr &&_FuncName, CSymStr &&_ModuleName, CSymStr &&_FileName, int _iLine)
-					: m_FunctionName(std::move(_FuncName))
-					, m_ModuleName(std::move(_ModuleName))
-					, m_FileName(std::move(_FileName))
-				{
-					this->m_pContext = nullptr;
-					m_pFunctionName = m_FunctionName.f_GetStr();
-					m_pModuleName = m_ModuleName.f_GetStr();
-					m_pSourceFileName = m_FileName.f_GetStr();
-					m_SourceLine = _iLine;
-				}
+				CLinuxStackTraceInfo(CSymStr &&_FuncName, CSymStr &&_ModuleName, CSymStr &&_FileName, int _iLine);
 			};
 
 			//

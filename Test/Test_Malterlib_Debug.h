@@ -3,10 +3,7 @@
 
 struct CTestClass
 {
-	CTestClass(umint _Value)
-		: m_Value(_Value)
-	{
-	}
+	CTestClass(umint _Value);
 
 	umint m_Value;
 
@@ -15,10 +12,7 @@ struct CTestClass
 
 struct CTestClassManyValue
 {
-	CTestClassManyValue(umint _Value)
-		: m_Value(_Value)
-	{
-	}
+	CTestClassManyValue(umint _Value);
 
 	umint m_Value;
 	fp32 m_Value0 = 55.55f;
@@ -37,17 +31,11 @@ struct CTestRecursiveLinked
 
 struct CTest2
 {
-	CTest2(int _Value)
-		: m_Value(_Value)
-	{
-	}
+	CTest2(int _Value);
 
 	struct CCompare
 	{
-		inline_small umint const &operator () (CTest2 const &_Node) const
-		{
-			return _Node.m_Value;
-		}
+		inline_small umint const &operator () (CTest2 const &_Node) const;
 	};
 
 	NMib::NStorage::CIntrusiveRefCount m_RefCount;
@@ -59,3 +47,5 @@ struct CTest2
 };
 
 void fg_TestIntrusive(DMibListLinkDS_List(CTestClass, m_Link) &_List);
+
+#include "Test_Malterlib_Debug.hpp"

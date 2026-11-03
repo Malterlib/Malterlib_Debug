@@ -53,10 +53,7 @@ namespace NMib
 
 			struct CMacOSStackTraceInfo : public CStackTraceInfo
 			{
-				CMacOSStackTraceInfo()
-				{
-					this->m_pContext = nullptr;
-				}
+				CMacOSStackTraceInfo();
 
 				CSymStr m_FunctionName;
 				CSymStr m_ModuleName;
@@ -84,11 +81,7 @@ namespace NMib
 
 				bool f_Lookup(umint _Address, CAddressInfo &o_Info);
 
-				CAddressInfoCache &f_GetCache(umint _Address)
-				{
-					DMibLock(mp_CacheLock);
-					return mp_Cache[_Address];
-				}
+				CAddressInfoCache &f_GetCache(umint _Address);
 
 			private:
 				struct CHeader
