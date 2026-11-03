@@ -121,7 +121,7 @@ namespace NMib
 				m_CrashDumpUserNotifyFormat_NoContinueMessage = _NoContinueMessage;
 			}
 
-			BOOL CALLBACK CSubSystem_Debug_Platform_Windows::fp_DumpExceptionMemoryCallback(PVOID _pParam, PMINIDUMP_CALLBACK_INPUT const _pInput, PMINIDUMP_CALLBACK_OUTPUT _pOutput)
+			BOOL CALLBACK CSubSystem_Debug_Platform_Windows::fsp_DumpExceptionMemoryCallback(PVOID _pParam, PMINIDUMP_CALLBACK_INPUT const _pInput, PMINIDUMP_CALLBACK_OUTPUT _pOutput)
 			{
 				if (_pInput->CallbackType == MemoryCallback)
 				{
@@ -224,7 +224,7 @@ namespace NMib
 									Info.ThreadId = GetCurrentThreadId();
 
 									MINIDUMP_CALLBACK_INFORMATION CallbackInfo;
-									CallbackInfo.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)&fp_DumpExceptionMemoryCallback;
+									CallbackInfo.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)&fsp_DumpExceptionMemoryCallback;
 									CallbackInfo.CallbackParam = (void *)_pExceptionMemoryData;
 
 									NFile::CFile File;

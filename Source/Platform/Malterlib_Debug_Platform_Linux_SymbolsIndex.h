@@ -44,7 +44,7 @@ namespace NMib
 				{
 				}
 
-				bool Contains(umint _Value) const
+				bool f_Contains(umint _Value) const
 				{
 					return (_Value >= m_LowPC) && (_Value < m_HighPC);
 				}

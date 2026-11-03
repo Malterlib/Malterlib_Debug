@@ -104,7 +104,7 @@ namespace NMib
 				// Dumb interval search for now.
 				for (auto UnitIter = mp_lUnits.f_GetIterator(); UnitIter; ++UnitIter)
 				{
-					if ((*UnitIter).Contains(_Address))
+					if ((*UnitIter).f_Contains(_Address))
 					{
 						// Possible match.
 						Dwarf_Signed iLine = fp_LookupLineInUnit(_Address, *UnitIter);

@@ -27,7 +27,7 @@ namespace NMib
 	{
 		namespace NPlatform
 		{
-			static LRESULT WINAPI fs_WindowCacheProc(HWND _hWnd, UINT _Message, WPARAM _wParam, LPARAM _lParam)
+			static LRESULT WINAPI fsg_WindowCacheProc(HWND _hWnd, UINT _Message, WPARAM _wParam, LPARAM _lParam)
 			{
 				if (_Message == WM_ENDSESSION || _Message == WM_QUERYENDSESSION)
 					NMib::NPlatform::fg_ReportIsShuttingDown();
@@ -48,7 +48,7 @@ namespace NMib
 				WNDCLASSA WndClass;
 				memset(&WndClass, 0, sizeof(WndClass));
 				WndClass.lpszClassName = "MalterlibCrashDumpWindowCache";
-				WndClass.lpfnWndProc = fs_WindowCacheProc;
+				WndClass.lpfnWndProc = fsg_WindowCacheProc;
 				WndClass.hInstance = g_hDllInstance;
 				RegisterClassA(&WndClass);
 

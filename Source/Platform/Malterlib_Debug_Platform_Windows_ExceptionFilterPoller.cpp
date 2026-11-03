@@ -45,7 +45,7 @@ namespace NMib
 			typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context);
 			// NOLINTEND(malterlib-type-naming)
 
-			static VOID NTAPI DllLoadedCallback(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context)
+			static VOID NTAPI fsg_DllLoadedCallback(ULONG NotificationReason, PLDR_DLL_NOTIFICATION_DATA const NotificationData, PVOID Context)
 			{
 				CSubSystem_Debug_Platform_Windows *pThis = (CSubSystem_Debug_Platform_Windows *)Context;
 				pThis->m_bPollCheckExceptionFilterTimes = 1000 / 25;
@@ -132,7 +132,7 @@ namespace NMib
 						if (pLdrRegisterDllNotification)
 						{
 							m_bPollCheckExceptionFilter = false;
-							pLdrRegisterDllNotification(0, DllLoadedCallback, this, &m_pDllNotificationCookie);
+							pLdrRegisterDllNotification(0, fsg_DllLoadedCallback, this, &m_pDllNotificationCookie);
 						}
 					}
 

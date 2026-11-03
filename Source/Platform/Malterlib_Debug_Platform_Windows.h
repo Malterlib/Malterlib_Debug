@@ -29,10 +29,8 @@ namespace NMib
 				void f_DestroyThreadSpecific() override;
 				void f_EnableCrashDumps();
 
-				static LONG fsp_ExceptionGenerateHandler(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_EnableCrashDumpCaches();
 				void f_GenerateCrashDump(NStr::CStr const &_Message, NStr::CStr const &_ExtraLog, NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI);
-				static LONG fsp_ExceptionGenerateHandlerMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
 				void f_GenerateMemoryDump
 					(
 						NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &_Locations
@@ -49,7 +47,6 @@ namespace NMib
 					)
 				;
 
-				static LONG WINAPI fsp_UnhandledException(struct _EXCEPTION_POINTERS *_pExceptionInfo);
 				static NStr::CStr fs_FixLineEndings(NStr::CStr const &_In);
 				NStr::CStrNonTracked f_DumpObjects();
 				NStr::CStrNonTracked f_DumpModules();
@@ -57,18 +54,6 @@ namespace NMib
 
 				static NStr::CStrNonTracked fs_FormatTimeFileName(NTime::CTime const &_Time);
 				static bool fs_CheckAccessRights(NStr::CStrNonTracked &_Path);
-
-				static LONG WINAPI fsp_DumpExceptionInformation
-					(
-						struct _EXCEPTION_POINTERS *_pExceptionInfo
-						, NStr::CStr const &_Message
-						, NStr::CStr const &_ExtraLog
-						, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs
-						, bool _bDisplayGUI
-					)
-				;
-				static BOOL CALLBACK fp_DumpExceptionMemoryCallback(PVOID _pParam, PMINIDUMP_CALLBACK_INPUT const _pInput, PMINIDUMP_CALLBACK_OUTPUT _pOutput);
-				static LONG WINAPI fsp_DumpExceptionMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, CExceptionMemoryData *_pExceptionMemoryData);
 
 				void f_InstallExceptionFilterCallback(bool _bDoInstall);
 				void f_UninstallExceptionFilterCallback();
@@ -114,6 +99,24 @@ namespace NMib
 				CExceptionFilterPoller m_ExceptionFilterPoller;
 				NAtomic::TCAtomic<smint> m_bExceptionFilterPollerInstalled;
 				CStackTraceContext m_StackTrace;
+
+			private:
+				static LONG fsp_ExceptionGenerateHandler(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
+				static LONG fsp_ExceptionGenerateHandlerMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData);
+
+				static LONG WINAPI fsp_UnhandledException(struct _EXCEPTION_POINTERS *_pExceptionInfo);
+
+				static LONG WINAPI fsp_DumpExceptionInformation
+					(
+						struct _EXCEPTION_POINTERS *_pExceptionInfo
+						, NStr::CStr const &_Message
+						, NStr::CStr const &_ExtraLog
+						, NContainer::TCVector<NMib::NStr::CStr> *_pGeneratedLogs
+						, bool _bDisplayGUI
+					)
+				;
+				static BOOL CALLBACK fsp_DumpExceptionMemoryCallback(PVOID _pParam, PMINIDUMP_CALLBACK_INPUT const _pInput, PMINIDUMP_CALLBACK_OUTPUT _pOutput);
+				static LONG WINAPI fsp_DumpExceptionMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, CExceptionMemoryData *_pExceptionMemoryData);
 			};
 
 			CSubSystem_Debug_Platform_Windows &fg_Debug_Platfrom_Windows();
