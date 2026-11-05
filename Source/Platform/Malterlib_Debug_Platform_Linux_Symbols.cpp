@@ -29,11 +29,14 @@ namespace NMib
 		{
 			struct CSubSystem_Debug_Platform_Linux_Symbols : public CSubSystem
 			{
+				~CSubSystem_Debug_Platform_Linux_Symbols();
+
 				CSymbols m_Symbols;
-				~CSubSystem_Debug_Platform_Linux_Symbols()
-				{
-				}
 			};
+
+			CSubSystem_Debug_Platform_Linux_Symbols::~CSubSystem_Debug_Platform_Linux_Symbols()
+			{
+			}
 
 			constinit TCSubSystem<CSubSystem_Debug_Platform_Linux_Symbols, ESubSystemDestruction_BeforeNonTrackedMemoryManager> g_SubSystem_Debug_Platform_Linux_Symbols = {DAggregateInit};
 

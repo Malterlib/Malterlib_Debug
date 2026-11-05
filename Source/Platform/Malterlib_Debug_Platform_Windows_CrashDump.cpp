@@ -21,17 +21,19 @@ namespace NMib
 		{
 			struct CExceptionData
 			{
+				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI);
+
 				bool m_bDisplayGUI;
 				NMib::NContainer::TCVector<NMib::NStr::CStr> &m_GeneratedLogs;
-				CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
-					: m_GeneratedLogs(_GeneratedLogs)
-					, m_bDisplayGUI(_bDisplayGUI)
-				{
-				}
-
 				NStr::CStr m_Message;
 				NStr::CStr m_ExtraLog;
 			};
+
+			CExceptionData::CExceptionData(NContainer::TCVector<NMib::NStr::CStr> &_GeneratedLogs, bool _bDisplayGUI)
+				: m_GeneratedLogs(_GeneratedLogs)
+				, m_bDisplayGUI(_bDisplayGUI)
+			{
+			}
 
 			LONG CSubSystem_Debug_Platform_Windows::fsp_ExceptionGenerateHandler(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData)
 			{
@@ -70,21 +72,28 @@ namespace NMib
 
 			struct CSubSystem_Debug_Platform_Windows::CExceptionMemoryData
 			{
-				NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &m_Locations;
-				NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &m_Sizes;
-				umint m_iCurrentLocation;
-
 				CExceptionMemoryData
 					(
 						NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &_Locations
 						, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
 					)
-					: m_Locations(_Locations)
-					, m_Sizes(_Sizes)
-					, m_iCurrentLocation(0)
-				{
-				}
+				;
+
+				NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &m_Locations;
+				NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &m_Sizes;
+				umint m_iCurrentLocation;
 			};
+
+			CSubSystem_Debug_Platform_Windows::CExceptionMemoryData::CExceptionMemoryData
+				(
+					NMib::NContainer::TCVector<void *, NMemory::CAllocator_NonTrackedHeap> const &_Locations
+					, NMib::NContainer::TCVector<umint, NMib::NMemory::CAllocator_NonTrackedHeap> const &_Sizes
+				)
+				: m_Locations(_Locations)
+				, m_Sizes(_Sizes)
+				, m_iCurrentLocation(0)
+			{
+			}
 
 			LONG CSubSystem_Debug_Platform_Windows::fsp_ExceptionGenerateHandlerMemory(struct _EXCEPTION_POINTERS *_pExceptionInfo, void *_pData)
 			{

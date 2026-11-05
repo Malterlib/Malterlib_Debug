@@ -17,9 +17,6 @@ namespace NMib
 		{
 			struct CStackTraceContext
 			{
-				CStackTraceContext();
-				~CStackTraceContext();
-
 				struct CAVLCompare_CLocalStackTraceInfo;
 
 				struct CLocalStackTraceInfo : public CStackTraceInfo
@@ -36,16 +33,6 @@ namespace NMib
 				{
 					inline_small umint const &operator () (CLocalStackTraceInfo const &_Node) const;
 				};
-
-				bool f_InitDll(NStr::CFStr256 &_Error);
-				bool f_Init(NStr::CStrNonTracked &_Error);
-
-				void f_UndecorateName(ch8 const *_pName, NStr::CStr &_Destination);
-				void f_UndecorateName(ch8 const *_pName, NStr::CStrNonTracked &_Destination);
-				void f_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen);
-				CLocalStackTraceInfo *f_AquireStackTraceInfo(umint _Address);
-				void f_RemoveUnused();
-				void f_ReleaseStackTraceInfo(CLocalStackTraceInfo *_pInfo);
 
 				using FSymInitialize = BOOL __stdcall (IN HANDLE _pProcess, IN PWSTR _pUserSearchPath, IN BOOL _bInvadeProcess);
 				using FSymCleanup = BOOL __stdcall (IN HANDLE _pProcess);
@@ -65,6 +52,19 @@ namespace NMib
 					)
 				;
 				using FUnDecorateSymbolName = DWORD __stdcall (PCSTR _pDecoratedName, PSTR o_pUndecoratedName, DWORD _UndecoratedLength, DWORD _Flags);
+
+				CStackTraceContext();
+				~CStackTraceContext();
+
+				bool f_InitDll(NStr::CFStr256 &_Error);
+				bool f_Init(NStr::CStrNonTracked &_Error);
+
+				void f_UndecorateName(ch8 const *_pName, NStr::CStr &_Destination);
+				void f_UndecorateName(ch8 const *_pName, NStr::CStrNonTracked &_Destination);
+				void f_UndecorateName(ch8 const *_pName, ch8 *_pDestination, umint _MaxLen);
+				CLocalStackTraceInfo *f_AquireStackTraceInfo(umint _Address);
+				void f_RemoveUnused();
+				void f_ReleaseStackTraceInfo(CLocalStackTraceInfo *_pInfo);
 
 				NTime::CStopwatch m_Stopwatch;
 

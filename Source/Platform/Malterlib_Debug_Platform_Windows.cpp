@@ -219,11 +219,6 @@ void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib
 			return "Malterlib_MessageBoxThread";
 		}
 
-		NMib::NStr::CStrNonTracked m_MessageBoxText;
-		NMib::NStr::CStrNonTracked m_MessageBoxHeading;
-		uint32 m_MessageBoxFlags;
-		uint32 m_bRet;
-
 		aint f_Main()
 		{
 			m_bRet = ::MessageBoxW
@@ -247,6 +242,11 @@ void NMib::NSys::fg_Debug_BlockingMessage(NMib::NStr::CStr const &_Heading, NMib
 				f_Stop();
 			}
 		}
+
+		NMib::NStr::CStrNonTracked m_MessageBoxText;
+		NMib::NStr::CStrNonTracked m_MessageBoxHeading;
+		uint32 m_MessageBoxFlags;
+		uint32 m_bRet;
 	};
 
 	CMessageBoxThread MessageBox;
