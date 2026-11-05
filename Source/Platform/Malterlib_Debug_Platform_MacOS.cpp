@@ -139,7 +139,7 @@ bool NMib::NSys::fg_Debug_AquireStackTraceInfo(CStackTraceInfo &o_Info, CMibCode
 #ifdef _LIBCPP_BUILD_STATIC
 extern "C"
 {
-	void nontracked_free(void *__ptr);
+	void nontracked_free(void *_pMemory);
 }
 #endif
 

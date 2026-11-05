@@ -18,7 +18,7 @@
 
 extern "C"
 {
-	module_export void nontracked_free(void *__ptr) __THROW;
+	module_export void nontracked_free(void *_pMemory) __THROW;
 }
 
 namespace NMib
@@ -117,13 +117,13 @@ namespace NMib
 				, mp_BaseAddress(_BaseAddress)
 				, mp_pElf(nullptr)
 			{
-				int FD = open(_pFilename, O_RDONLY);
-				if (FD < 0)
+				int FileDescriptor = open(_pFilename, O_RDONLY);
+				if (FileDescriptor < 0)
 					return;
 
 				Dwarf_Error Error;
 
-				if (dwarf_init(FD, DW_DLC_READ, nullptr, nullptr, &mp_pDwarf, &Error))
+				if (dwarf_init(FileDescriptor, DW_DLC_READ, nullptr, nullptr, &mp_pDwarf, &Error))
 				{
 					mp_ErrorMessage = CSymStr::CFormat("dwarf_init: {}") << dwarf_errmsg(Error);
 					return;

@@ -57,7 +57,7 @@ NMib::CStackTraceInfo *NMib::NSys::fg_Debug_AquireStackTraceInfo(CMibCodeAddress
 
 extern "C"
 {
-	module_export void nontracked_free(void *__ptr) __THROW;
+	module_export void nontracked_free(void *_pMemory) __THROW;
 }
 
 void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
