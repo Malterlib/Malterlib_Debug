@@ -707,7 +707,6 @@ namespace NMib
 
 						if (_pExceptionInfo->ContextRecord->ContextFlags & CONTEXT_FLOATING_POINT)
 						{
-							// NOLINTNEXTLINE(malterlib-conceptual-prefix): FLOATING_SAVE_AREA is a struct, which the check takes for a function type by its name
 							FLOATING_SAVE_AREA &FloatSaveArea = _pExceptionInfo->ContextRecord->FloatSave;
 
 							ExceptionInfo += NStr::CStrNonTracked::CFormat
