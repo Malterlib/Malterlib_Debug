@@ -1295,11 +1295,6 @@ namespace NMib
 							return "Malterlib_MessageBoxThread";
 						}
 
-						NStr::CStrNonTracked m_MessageBoxText;
-						NStr::CStrNonTracked m_MessageBoxHeading;
-						uint32 m_MessageBoxFlags;
-						uint32 m_bRet;
-
 						aint f_Main()
 						{
 							m_bRet = MessageBoxW
@@ -1323,6 +1318,11 @@ namespace NMib
 								f_Stop();
 							}
 						}
+
+						NStr::CStrNonTracked m_MessageBoxText;
+						NStr::CStrNonTracked m_MessageBoxHeading;
+						uint32 m_MessageBoxFlags;
+						uint32 m_bRet;
 					};
 
 					if (_CustomMessage.f_IsEmpty())

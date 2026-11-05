@@ -31,12 +31,12 @@ struct CTestRecursiveLinked
 
 struct CTest2
 {
-	CTest2(int _Value);
-
 	struct CCompare
 	{
 		inline_small umint const &operator () (CTest2 const &_Node) const;
 	};
+
+	CTest2(int _Value);
 
 	NMib::NStorage::CIntrusiveRefCount m_RefCount;
 	umint m_Value;

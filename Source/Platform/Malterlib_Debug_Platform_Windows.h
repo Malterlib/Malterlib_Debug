@@ -23,6 +23,18 @@ namespace NMib
 			{
 				struct CExceptionMemoryData;
 
+				struct CExceptionFilterPoller : public NMib::NThread::CThread
+				{
+					CExceptionFilterPoller();
+					~CExceptionFilterPoller();
+
+					virtual NStr::CStr f_GetThreadName();
+					inline_never void f_PollFilter();
+					aint f_Main();
+
+					CSubSystem_Debug_Platform_Windows *m_pSystem;
+				};
+
 				CSubSystem_Debug_Platform_Windows();
 				~CSubSystem_Debug_Platform_Windows();
 
@@ -63,21 +75,7 @@ namespace NMib
 				CStackTraceInfo *f_AquireStackTraceInfo(CMibCodeAddress _pAddress);
 				void f_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo);
 
-			public:
 				static constexpr aint mc_WindowCache = 10;
-
-				struct CExceptionFilterPoller : public NMib::NThread::CThread
-				{
-					CExceptionFilterPoller();
-					~CExceptionFilterPoller();
-
-					virtual NStr::CStr f_GetThreadName();
-					inline_never void f_PollFilter();
-					aint f_Main();
-
-				public:
-					CSubSystem_Debug_Platform_Windows *m_pSystem;
-				};
 
 				NSys::FCrashDumpUserNotify *m_fCrashDumpUserNotifyFunction;
 

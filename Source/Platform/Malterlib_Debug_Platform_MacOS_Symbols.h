@@ -127,22 +127,6 @@ namespace NMib
 					uint32 m_FirstLine;
 				}; // 32 bytes (in file)
 
-				static constexpr aint mcp_BytesPerFunction = 32;
-				static constexpr aint mcp_BytesPerLine = 24;
-				static constexpr aint mcp_BytesPerFunctionLines = 4;
-
-			private:
-				umint mp_AddressOffset;
-
-				NMib::NThread::CLowLevelLock mp_Lock;
-				CSymStr mp_SymbolsFilename;
-				CHeader mp_Header;
-				void *mp_pSymbols;
-
-				NThread::CLowLevelLock mp_CacheLock;
-				NContainer::TCMap<umint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
-
-			private:
 				// All private methods assume mp_Lock is taken.
 
 				bool fp_EnsureLoaded();
@@ -152,6 +136,20 @@ namespace NMib
 
 				void fp_LoadFunctionCache();
 				CFunction const *fp_ReadFunction(uint32 _FuncIndex, CFunction *_pTmp);
+
+				static constexpr aint mcp_BytesPerFunction = 32;
+				static constexpr aint mcp_BytesPerLine = 24;
+				static constexpr aint mcp_BytesPerFunctionLines = 4;
+
+				umint mp_AddressOffset;
+
+				NMib::NThread::CLowLevelLock mp_Lock;
+				CSymStr mp_SymbolsFilename;
+				CHeader mp_Header;
+				void *mp_pSymbols;
+
+				NThread::CLowLevelLock mp_CacheLock;
+				NContainer::TCMap<umint, CAddressInfoCache, CSort_Default, NMib::NMemory::CAllocator_NonTrackedHeap> mp_Cache;
 			};
 
 			CSymbols &fg_GetSymbols();

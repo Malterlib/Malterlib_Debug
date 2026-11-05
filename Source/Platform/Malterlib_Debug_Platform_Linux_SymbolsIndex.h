@@ -19,15 +19,15 @@ namespace NMib
 
 			struct CRange
 			{
-				umint m_LowPC;
-				umint m_HighPC;
-
 				CRange();
 				CRange(CRange const &_ToCopy);
 				CRange(CRange &&_ToMove);
 				CRange(umint _Low, umint _High);
 
 				bool f_Contains(umint _Value) const;
+
+				umint m_LowPC;
+				umint m_HighPC;
 			};
 
 			struct CLineEntry
@@ -71,7 +71,22 @@ namespace NMib
 					Computational unit address ranges MAY overlap.
 					Function (Sub Program) address ranges WILL NOT overlap.
 				*/
+				CSymbolsIndex(char const *_pFilename, umint _BaseAddress);
+				~CSymbolsIndex();
+
+				bool f_OK() const;
+
+				CLinuxStackTraceInfo *f_Lookup(umint _Address);
+				void f_Return(CStackTraceInfo *_pInfo);
+
 			private:
+				Dwarf_Signed fp_LookupLineInUnit(umint _Address, CUnit const &_Unit) const;
+				CFunction const *fp_LookupFunctionInUnit(umint _Address, CUnit const &_Unit) const;
+				bool fp_CollectUnits();
+				bool fp_IndexUnitFunctions(CUnit &_Unit) const;
+				bool fp_CollectFunction(Dwarf_Die _pDie, CUnit &_Unit) const;
+				bool fp_CollectFunctions(Dwarf_Die _pDie, CUnit &_Unit) const;
+
 				bool mp_bOK;
 				mutable CSymStr mp_ErrorMessage;
 
@@ -82,22 +97,6 @@ namespace NMib
 
 				CSymStr mp_ModuleFilename;
 				umint mp_BaseAddress;
-
-				Dwarf_Signed fp_LookupLineInUnit(umint _Address, CUnit const &_Unit) const;
-				CFunction const *fp_LookupFunctionInUnit(umint _Address, CUnit const &_Unit) const;
-				bool fp_CollectUnits();
-				bool fp_IndexUnitFunctions(CUnit &_Unit) const;
-				bool fp_CollectFunction(Dwarf_Die _pDie, CUnit &_Unit) const;
-				bool fp_CollectFunctions(Dwarf_Die _pDie, CUnit &_Unit) const;
-
-			public:
-				CSymbolsIndex(char const *_pFilename, umint _BaseAddress);
-				~CSymbolsIndex();
-
-				bool f_OK() const;
-
-				CLinuxStackTraceInfo *f_Lookup(umint _Address);
-				void f_Return(CStackTraceInfo *_pInfo);
 			};
 		}
 	}

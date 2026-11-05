@@ -17,11 +17,11 @@ namespace NMib
 
 			struct CLinuxStackTraceInfo : public CStackTraceInfo
 			{
+				CLinuxStackTraceInfo(CSymStr &&_FuncName, CSymStr &&_ModuleName, CSymStr &&_FileName, int _iLine);
+
 				CSymStr m_FunctionName;
 				CSymStr m_ModuleName;
 				CSymStr m_FileName;
-
-				CLinuxStackTraceInfo(CSymStr &&_FuncName, CSymStr &&_ModuleName, CSymStr &&_FileName, int _iLine);
 			};
 
 			//
