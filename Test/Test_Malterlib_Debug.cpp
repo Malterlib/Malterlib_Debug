@@ -581,15 +581,15 @@ struct CDebug_Tests : public NMib::NTest::CTest
 
 			*ThreadLocal = 55;
 
-			struct CThreadLocalTest
+			struct CDebugThreadLocalTest
 			{
 				umint m_Value0 = 0;
 				umint m_Value1 = 55;
 				umint m_Value2 = 111;
 			};
 
-			NThread::TCThreadLocal<CThreadLocalTest> ThreadLocalClass;
-			*ThreadLocalClass = CThreadLocalTest();
+			NThread::TCThreadLocal<CDebugThreadLocalTest> ThreadLocalClass;
+			*ThreadLocalClass = CDebugThreadLocalTest();
 
 			NThread::TCThreadLocalDynamic<int32> ThreadLocalDynamic
 				(
