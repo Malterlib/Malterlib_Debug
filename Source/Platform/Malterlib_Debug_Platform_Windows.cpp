@@ -394,6 +394,24 @@ void NMib::NSys::fg_Debug_ReleaseStackTraceInfo(CStackTraceInfo *_pInfo)
 		return SubSystem.f_ReleaseStackTraceInfo(_pInfo);
 }
 
+namespace
+{
+	// A message box from a process without a visible window station (a service, or anything else in session 0)
+	// can never be answered, so whoever waits for it hangs forever
+	bool fg_HasInteractiveWindowStation()
+	{
+		HWINSTA hWindowStation = GetProcessWindowStation();
+		if (!hWindowStation)
+			return false;
+
+		USEROBJECTFLAGS Flags{};
+		if (!GetUserObjectInformationW(hWindowStation, UOI_FLAGS, &Flags, sizeof(Flags), nullptr))
+			return true; // Unknown: keep showing the message box
+
+		return (Flags.dwFlags & WSF_VISIBLE) != 0;
+	}
+}
+
 NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 const *_pFileName, int32 _Line, void *_pCodePointer, NMib::NStr::CStrNonTracked const &_ErrorMessage)
 {
 	DMibDeadlockDetectorPause;
@@ -436,7 +454,7 @@ NMib::EDebugCheckFailureAction NMib::NSys::fg_Debug_ReportContractFailure(ch8 co
 				return 0;
 			}
 
-			if (fg_GetSys()->f_GetRunningAsDaemon())
+			if (fg_GetSys()->f_GetRunningAsDaemon() || !fg_HasInteractiveWindowStation())
 			{
 				Ret = EDebugCheckFailureAction_Break;
 				return 0;
