@@ -226,7 +226,7 @@ class CSynthProvider_TCAVLTreeAggregate(CSynthProvider_Container):
 		try:
 			if self.m_ValueObjectType.GetPointeeType().IsPointerType():
 				return
-			self.m_Root = self.m_ValueObject.GetValueForExpressionPath('.m_Root')
+			self.m_Root = self.m_ValueObject.GetValueForExpressionPath('.m_pRoot')
 
 			if not self.fp_ExtractType():
 				return
@@ -380,9 +380,9 @@ class CSynthProvider_TCMap(CSynthProvider_Container):
 			self.m_Tree = fg_FindRawChild(self.m_ValueObject, 'mp_Tree')
 			if not fg_IsValidSBValue(self.m_Tree):
 				self.m_Tree = fg_ChildPath(self.m_ValueObject, 'mp_Tree')
-			self.m_Root = self.m_Tree.GetValueForExpressionPath('.m_Root')
+			self.m_Root = self.m_Tree.GetValueForExpressionPath('.m_pRoot')
 			if not fg_IsValidSBValue(self.m_Root):
-				self.m_Root = fg_FindRawChild(self.m_Tree, 'm_Root')
+				self.m_Root = fg_FindRawChild(self.m_Tree, 'm_pRoot')
 			if not self.fp_ExtractType():
 				return
 
