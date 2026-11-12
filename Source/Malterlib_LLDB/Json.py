@@ -465,7 +465,7 @@ def fg_JsonObjectTreePreview(_TreeValue, _MaxEntries):
 	if TreeType.GetNumberOfTemplateArguments() < 4:
 		return None
 
-	Root = fg_JsonDirectChild(TreeValue, 'm_Root')
+	Root = fg_JsonDirectChild(TreeValue, 'm_pRoot')
 
 	DataType = fg_GetValidCanonicalType(TreeType.GetTemplateArgumentType(3))
 	return fg_JsonObjectAVLPreview(TreeValue, Root, TreeType, DataType, _MaxEntries)
@@ -507,7 +507,7 @@ def fg_JsonObjectMapPreview(_MapValue, _MaxEntries):
 	if not fg_JsonIsValidValue(Tree):
 		return None
 
-	Root = fg_JsonDirectChild(Tree, 'm_Root')
+	Root = fg_JsonDirectChild(Tree, 'm_pRoot')
 	TreeType = fg_GetInheritedType(fg_GetValueType(Tree), 'NMib::NIntrusive::TCAVLTreeAggregate')
 	if TreeType is None or not TreeType.IsValid() or TreeType.GetNumberOfTemplateArguments() < 4:
 		return fg_JsonObjectSummaryFromRoot(Root)
@@ -520,7 +520,7 @@ def fg_JsonObjectMapPlaceholder(_MapValue):
 		return None
 
 	Tree = fg_JsonDirectChild(_MapValue, 'mp_Tree')
-	Root = fg_JsonDirectChild(Tree, 'm_Root')
+	Root = fg_JsonDirectChild(Tree, 'm_pRoot')
 	return fg_JsonObjectSummaryFromRoot(Root)
 
 def fg_JsonObjectSummaryFromObject(_ObjectValue, _MaxEntries):

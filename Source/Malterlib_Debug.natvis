@@ -710,7 +710,7 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,NMib::NContainer::CMapSet,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((umint)mp_Tree.m_Root &amp; ~umint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((umint)mp_Tree.m_pRoot &amp; ~umint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
@@ -760,7 +760,7 @@
   <Type Name="NMib::NContainer::TCMap&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CAVLTree::CLink *)((umint)mp_Tree.m_Root &amp; ~umint(3))</HeadPointer>
+        <HeadPointer>(CAVLTree::CLink *)((umint)mp_Tree.m_pRoot &amp; ~umint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
@@ -800,7 +800,7 @@
   <Type Name="NMib::NIntrusive::TCAVLTreeAggregate&lt;*,*,*,*&gt;">
     <Expand>
       <TreeItems>
-        <HeadPointer>(CLink *)((umint)m_Root &amp; ~umint(3))</HeadPointer>
+        <HeadPointer>(CLink *)((umint)m_pRoot &amp; ~umint(3))</HeadPointer>
         <LeftPointer>
           (
           (CThis *)
@@ -894,14 +894,14 @@
 
 
   <Type Name="NMib::NContainer::TCRegistry&lt;*,*,*&gt;">
-    <DisplayString Condition="(((umint)mp_Children.m_Tree.m_Root) &amp; ~umint(3)) != 0">
+    <DisplayString Condition="(((umint)mp_Children.m_Tree.m_pRoot) &amp; ~umint(3)) != 0">
       + {mp_Key.mp_Name}   {mp_Data}
     </DisplayString>
     <DisplayString>
       {mp_Key.mp_Name}   {mp_Data}
     </DisplayString>
     <Expand>
-      <ExpandedItem Condition="(((umint)mp_Children.m_Tree.m_Root) &amp; ~umint(3)) != 0">
+      <ExpandedItem Condition="(((umint)mp_Children.m_Tree.m_pRoot) &amp; ~umint(3)) != 0">
         mp_Children.m_Tree
       </ExpandedItem>
     </Expand>

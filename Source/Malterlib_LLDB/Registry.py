@@ -78,7 +78,7 @@ def fg_SummaryProvider_TCRegistry(_Value, dict):
 		ValueData = fg_ChildPath(_Value, 'mp_Data')
 		if not fg_IsValidSBValue(ValueData):
 			return None
-		pRootChild = fg_ChildPath(_Value, 'mp_Children.m_Tree.m_Root')
+		pRootChild = fg_ChildPath(_Value, 'mp_Children.m_Tree.m_pRoot')
 		if not fg_IsValidSBValue(pRootChild):
 			return None
 
