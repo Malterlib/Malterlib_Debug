@@ -400,12 +400,12 @@ namespace
 	// can never be answered, so whoever waits for it hangs forever
 	bool fg_HasInteractiveWindowStation()
 	{
-		HWINSTA hWindowStation = GetProcessWindowStation();
-		if (!hWindowStation)
+		HWINSTA pWindowStation = GetProcessWindowStation();
+		if (!pWindowStation)
 			return false;
 
 		USEROBJECTFLAGS Flags{};
-		if (!GetUserObjectInformationW(hWindowStation, UOI_FLAGS, &Flags, sizeof(Flags), nullptr))
+		if (!GetUserObjectInformationW(pWindowStation, UOI_FLAGS, &Flags, sizeof(Flags), nullptr))
 			return true; // Unknown: keep showing the message box
 
 		return (Flags.dwFlags & WSF_VISIBLE) != 0;
